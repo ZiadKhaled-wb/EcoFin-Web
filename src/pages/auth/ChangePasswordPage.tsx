@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "@/components/auth/AuthLayout";
 import FormField from "@/components/ui/FormField";
-import { LockIcon } from "@/components/ui/icons";
+import { LockIcon } from "@/components/ui/Icons";
 import FormError from "@/components/ui/FormError";
 import Notice from "@/components/ui/Notice";
 import SubmitButton from "@/components/ui/SubmitButton";

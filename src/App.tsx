@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import GuestOnly from "@/components/guards/GuestOnly";
 import RequireAuth from "@/components/guards/RequireAuth";
@@ -10,9 +11,13 @@ import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 import ChangePasswordPage from "@/pages/auth/ChangePasswordPage";
 import DashboardPage from "@/pages/DashboardPage";
 
+// Dev-only living style guide; never reachable in production builds.
+const DesignSystemPage = lazy(() => import("@/pages/DesignSystemPage"));
+
 export default function App() {
   return (
     <BrowserRouter>
+      <Suspense fallback={null}>
       <Routes>
         {/* Signed-out only */}
         <Route element={<GuestOnly />}>
@@ -21,6 +26,8 @@ export default function App() {
           <Route path="/activate-workspace" element={<ActivateWorkspacePage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         </Route>
+
+        {import.meta.env.DEV && <Route path="/design-system" element={<DesignSystemPage />} />}
 
         {/* Supabase magic-link landing: reachable regardless of session */}
         <Route path="/reset-password" element={<ResetPasswordPage />} />
@@ -39,6 +46,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

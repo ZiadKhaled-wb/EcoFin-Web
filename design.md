@@ -1,196 +1,263 @@
-# EcoFin Pro — Frontend Design & Engineering Guide
+# EcoFin Pro Design System: Constitution
 
-Attach this file to every agent that builds a new module. Follow it exactly.
-If something is missing, extend this file in the same PR instead of improvising.
+The single source of truth for how EcoFin looks, behaves, and is built.
+Attach this file to every agent. Tokens: `src/index.css`. Live reference:
+`/design-system` (dev only, `npm run dev`). If a rule is missing, add it here in the same PR.
 
-## 1. Product context
+**Status:** Steps 1 (constitution), 2 (tokens) and 4 (core components) done. Next: Step 5, layout and navigation (AppShell, Sidebar, Topbar, PageHeader).
 
-EcoFin Pro is a multi-tenant ERP + POS for Egyptian small and mid-size businesses.
-Users are owners, accountants, cashiers, collectors, and warehouse staff, often on
-shared counter PCs, cheap tablets, or touch POS screens, in a hurry, sometimes in
-poor lighting. Design for speed, legibility, and zero ambiguity with money and stock.
+---
 
-**Language:** Arabic first. **Direction:** RTL first. English is secondary.
+## 1. Philosophy
 
-## 2. Visual direction: clean slate + blue
+1. **Speed over ornament.** Users are cashiers, accountants, and owners in a hurry.
+2. **Zero ambiguity with money and stock.** Numbers are aligned, labelled, and never truncated silently.
+3. **One way to do each thing.** A developer never invents a button, sidebar, table, or state.
+4. **Arabic and RTL first.** English is secondary. Nothing ships untested in Arabic.
+5. **Calm.** Quiet surfaces, one accent color, attention reserved for what needs it.
+6. **Security is a UX rule** (section 17).
 
-Light, calm, familiar. One **centered white card** on a light slate page, a blue
-primary action, and small line icons inside inputs. This is the approved look from
-the original auth designs and applies to every auth page. Do not change it per page.
+## 2. Visual direction: B, Deep Teal (approved)
 
-- Page: `bg-paper`. Card: white, `rounded-panel`, `border-line`, soft shadow, `max-w-[26rem]`
-  (`wide` = `max-w-lg` for long forms).
-- Wordmark: "Eco" in ink + "Fin" in `brand-600` + a blue "Pro" pill, always LTR (built into `AuthLayout`).
-- Title centered, `text-2xl font-black`; subtitle centered, `text-sm text-ink-mute`.
-- Inputs: `bg-field` (slate-100), `rounded-control`, leading icon at the physical left, LTR
-  values in IBM Plex Mono; passwords have a show/hide eye toggle at the physical right.
-- Errors: red border on the inputs + a pale red pill with an alert icon (`FormError`).
-- Success: pale green box, centered check icon and message; secondary (outlined blue) button below.
+Light theme is primary. Cool paper page, white surfaces, deep teal primary, ochre for attention.
+Auth pages: one centered white card (`AuthLayout`), wordmark "Eco**Fin**" + "Pro" pill.
+Never: decorative gradients, split/brand-panel layouts, heavy shadows, emoji as icons,
+a different palette per module.
 
-Never use: gradients as decoration, split/brand-panel layouts, heavy shadows,
-all-caps labels, emoji as icons, a different palette per module.
+## 3. Color architecture
 
-## 3. Tokens (source of truth: `src/index.css` `@theme`)
+Hex values exist **only** in `src/index.css` `@theme`. Everywhere else uses token classes.
 
 | Role | Token | Hex |
 |---|---|---|
-| Text | `ink` | #0f172a |
-| Secondary text | `ink-soft` | #475569 |
-| Muted text / help | `ink-mute` | #64748b |
-| Page background | `paper` | #f8fafc |
-| Surface (card) | `surface` | #ffffff |
-| Input background | `field` | #f1f5f9 |
-| Borders | `line` / `line-strong` | #e2e8f0 / #cbd5e1 |
-| Brand (primary) | `brand-600`, `700` hover, `800` active, `50/100` tints | #2563eb ... |
-| Disabled button | `disabled` | #94a3b8 |
-| Attention / warning / POS highlight | `ochre-500`, `ochre-50` | #d97706 / #fffbeb |
-| Error | `danger-600`, `danger-50` | #dc2626 / #fef2f2 |
-| Success | `success-700` (text), `success-600`, `success-50` | #047857 / #059669 / #ecfdf5 |
+| Text / secondary / muted | `ink` / `ink-soft` / `ink-mute` | #12201e / #3f524e / #5b6d69 |
+| Page / card | `paper` / `surface` | #f3f6f5 / #ffffff |
+| Input background | `field` | #e8f3f1 |
+| Borders | `line` / `line-strong` | #d8e1de / #b4c3bf |
+| Brand | `brand-600` primary, `700` hover, `800` active, `500` focus, `50/100` tints | #0b6b60 ... |
+| Disabled | `disabled` | #9aaaa6 |
+| Attention (warning, POS highlight) | `ochre-500` / `ochre-50` | #b7791f / #fbf3e2 |
+| Error | `danger-600` / `danger-50` | #b42318 / #fdecea |
+| Success | `success-700` text, `success-600`, `success-50` | #116a41 / #17794b / #e6f4ec |
 
-Rules: use tokens, never raw hex or arbitrary Tailwind colors. Never convey meaning
-by color alone (pair with text or an icon). Use `success-700` for success text (contrast).
-`ink-mute` is the lightest allowed body text.
+Rules
+- No raw hex, no `bg-[#...]`, no Tailwind default palette (`blue-500`, `slate-100`) in app code.
+- Meaning is never color-only: pair with text or an icon.
+- Text contrast >= 4.5:1. `ink-mute` is the lightest allowed body text.
+- Brand teal = actions and focus. Ochre = "look here". Red = error/destructive. Green = success. Do not repurpose.
 
 ## 4. Typography
 
-- **IBM Plex Sans Arabic** for all UI text (Arabic + Latin). Weights: 400, 500, 600, 700.
-- **IBM Plex Mono** only for codes/keys/slugs (license keys, SKUs, tenant slug).
-- Base size 16px. Scale: `text-sm` (help, meta), `text-base` (body, inputs),
-  `text-xl`/`text-2xl` (page titles), `text-3xl` (rare, brand statements).
-- Sentence case. Arabic body line-height >= 1.6 (Tailwind default is fine; do not tighten).
-- Line length under 75 characters for prose.
-- **Numbers:** Latin digits everywhere (0-9). Money, quantities, and codes use the
-  `.num` class (tabular, LTR-isolated) so columns align and never flip in RTL.
-  Money format: `1,250.00 ج.م` with currency after, wrapped in `.num`.
+Fonts: **IBM Plex Sans Arabic** (all UI, Arabic + Latin), **IBM Plex Mono** (codes, keys, slugs, LTR field values).
 
-## 5. RTL rules (non-negotiable)
-
-- Build RTL first. `<html lang="ar" dir="rtl">` is set in `index.html`.
-- Use **logical** utilities: `ms-*`, `me-*`, `ps-*`, `pe-*`, `text-start`, `text-end`,
-  `border-s`, `start-*`, `end-*`. Avoid `ml/mr/pl/pr/left/right` unless the element is
-  forced LTR (comment why, as in the password toggle).
-- Force `dir="ltr"` on: emails, usernames, URLs, license keys, slugs, passwords, SKUs, barcodes.
-- Directional icons (arrows, chevrons) must be mirrored in RTL.
-- Test every screen with real Arabic strings, never lorem ipsum or English placeholders.
-
-## 6. Layout, spacing, density
-
-- 4px base grid via Tailwind spacing. Forms: `space-y-5`. Sections: `mt-7`/`mt-8`.
-- Radius: `rounded-control` (12px: inputs, buttons, notices), `rounded-panel` (24px: cards). Nothing else.
-- **Touch targets >= 44px** (controls are `min-h-12`) on every interactive element. POS screens
-  may go bigger (`min-h-14`), never smaller.
-- Depth comes from borders (`border-line`), not shadows. Avoid cards-in-cards.
-- Breakpoints: design mobile-first, verify at 360px, 768px, 1280px. POS layouts must
-  work at 1024x768 landscape.
-- Motion: only in response to a user action (loading spinner, open/close). No entrance
-  animations. `prefers-reduced-motion` is already handled globally.
-
-## 7. Component vocabulary (reuse; do not reinvent)
-
-Component classes live in `src/index.css`: `field-label`, `field-input`,
-`field-input-error`, `help-text`, `error-text`, `success-text`, `btn`, `btn-primary`,
-`btn-secondary`, `btn-link`, `notice` (+ `-success|-error|-info`), `spinner`, `num`.
-Icons: `components/ui/icons.tsx` (line icons, 20px, `currentColor`); add new ones there.
-
-React components:
-
-| Component | Path | Use |
+| Role class | Use | Style |
 |---|---|---|
-| `AuthLayout` | `components/auth/` | Centered card shell for signed-out pages. Props: `title`, `subtitle`, `wide`; slots: `context`, `loading`, `terminalError` |
-| `FormField` | `components/ui/` | Label + input + help + error. Props: `icon`, `invalid`, `ltr`. Password toggle built in |
-| `FormError` | `components/ui/` | Form-level error, `role="alert"` |
-| `Notice` | `components/ui/` | Non-terminal success/info message |
-| `SubmitButton` | `components/ui/` | Primary/secondary, built-in loading state |
-| `TenantSlugField` | `components/auth/` | Tenant context: read-only when known |
+| `type-display` | Big brand/marketing statements, POS grand total | 3xl bold |
+| `type-page-title` | One per page (`h1`) | 2xl black |
+| `type-section-title` | Section / panel headings (`h2`) | lg bold |
+| `type-body` | Paragraphs, table cells | base |
+| `type-label` | Field labels, table headers | sm medium |
+| `type-caption` | Help text, metadata | sm, muted |
 
-Before creating a new component, check this table. If you add one, add it here.
-Signed-in pages need an app shell (sidebar/topbar); design it once, document it here.
+Base 16px. Sentence case. Arabic line-height never tighter than the roles above. Prose <= 75 characters.
+**Numbers:** Latin digits (0-9). Money, quantities, and codes use `.num` (tabular, LTR-isolated).
+Money: `1,250.00 ج.م` (currency after), inside `.num`.
 
-## 8. States (every screen must design all of them)
+## 5. Spacing and sizing
 
-1. **Idle** 2. **Loading** (`loading` slot or `SubmitButton loading`) 3. **Field error**
-(inline under the input, `FormField error`) 4. **Form error** (`FormError`)
-5. **Terminal error** (page can't continue; `terminalError` slot, always with a way out)
-6. **Rate-limited** (submit disabled, message with live countdown; `useCountdown`)
-7. **Empty** (says what to do next, with a primary action) 8. **Success** (brief, calm).
+- 4px grid. Allowed Tailwind steps: 1, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 16. Nothing arbitrary (`p-[13px]`).
+- Form fields: `space-y-5`. Sections: `space-y-8` to `space-y-12`. Page padding: `px-5`, `sm:px-10`.
+- Control heights: **md = 48px (default, `min-h-12`)**, lg = 56px (POS actions), sm = 36px (dense tables on desktop only).
+- **Minimum touch target 44px** on any interactive element (icon buttons: `size-11`).
+- Card max widths: auth `26rem`, wide auth `32rem`, content `max-w-5xl`+.
 
-Lists and tables also need: loading skeleton or spinner, empty, error with retry.
+## 6. Radius and borders
 
-## 9. Copy rules (Arabic)
+`rounded-control` (12px): inputs, buttons, notices, chips. `rounded-panel` (24px): cards, panels, dialogs.
+`rounded-full`: pills, avatars. Nothing else. Borders: 1px `line`; emphasis `line-strong`; error `danger-600`.
 
-- Say what happened and what to do. Errors never apologize and are never vague.
-- Buttons name the action: "حفظ كلمة المرور", not "إرسال". The same action keeps the
-  same verb through the whole flow (button, toast, confirmation).
-- Plain words for users. "منشأة" not "tenant", "كود التفعيل" not "license key".
-- Never use technical error codes in UI text.
-- Ellipsis for progress: "جارٍ الحفظ...".
+## 7. Elevation
 
-## 10. Security UX rules
+Two levels only, and borders do most of the work.
+`shadow-card` (resting card) and `shadow-overlay` (dropdowns, popovers, dialogs, drawers).
+Z-index scale (CSS vars): sticky 20, dropdown 30, overlay 40, modal 50, toast 60. Never write raw z-index numbers.
 
-- **Never reveal whether an account, email, or tenant exists.** Login 401s show one
-  message: "بيانات الدخول غير صحيحة." Forgot-password shows one success message for
-  every input. Do not add "user not found", and do not add resend buttons that reveal timing.
-- Only exception: `ACCOUNT_DISABLED`, shown only after a correct password.
-- Passwords: never trimmed, length-only validation (8-128), no composition rules,
-  correct `autoComplete` (`current-password` / `new-password`).
-- Client validation is a convenience. The server is the authority. Never enforce
-  extra rules client-side that the server does not.
-- `must_change_password` gate: mirrored by `RequirePasswordChanged`. Do not link `/change-password` from navigation.
+## 8. Iconography
 
-## 11. Architecture & conventions
+Line icons, 24px grid, 1.75 stroke, `currentColor`, rendered at 20px (18px inline with text).
+All icons live in `components/ui/Icons.tsx`. Decorative icons are `aria-hidden`; icon-only buttons need `aria-label`.
+Directional icons (arrows, chevrons) mirror in RTL. No emoji, no icon fonts, no mixed icon sets.
+
+## 9. Motion
+
+Motion explains a change; it never decorates. Durations: `--duration-fast` 120ms (hover/press),
+`--duration-base` 200ms (open/close), easing `ease-standard`. Allowed: color/opacity transitions,
+overlay open/close, spinner. Not allowed: entrance animations, parallax, bouncing.
+`prefers-reduced-motion` is handled globally. POS flows have no non-essential motion.
+
+## 10. Interaction rules
+
+| Need | Use | Not |
+|---|---|---|
+| Confirm a destructive action, one decision | Confirmation dialog (names the item and amount) | Browser `confirm()` |
+| Short form (<= 5 fields), single step | Modal | Modal for anything scrollable |
+| Edit/preview a record beside a list | Drawer (side sheet) | Navigating away and losing list state |
+| Multi-step or complex operation | Dedicated page or Wizard | Modal, Drawer |
+| Explain a control | Tooltip (hover/focus, never essential info) | Tooltip for errors |
+| Row actions | Row action menu; primary action visible | Ten inline buttons per row |
+| Result of an action | Toast (transient) or inline `Notice` (persistent) | Alert dialogs |
+
+Every action has visible progress (loading state) and a visible result. Never fail silently.
+
+## 11. States (mandatory matrix)
+
+Every interactive component documents and renders: default, hover, focus-visible, active, disabled,
+loading, error. Inputs add: filled, read-only, success. Tables and lists add: loading, empty (with
+next action), error (with retry), populated, selected, filtered, sorted, paginated.
+POS tiles add: available, selected, low stock, out of stock.
+Screens: idle, loading, field error, form error, terminal error, rate-limited, empty, success.
+
+## 12. Accessibility floor (WCAG 2.2 AA)
+
+Visible `:focus-visible` (global). Labels bound to inputs (`FormField` does it). Errors announced
+(`role="alert"`), `aria-invalid` + `aria-describedby`. Full keyboard operation, logical tab order,
+no keyboard traps in overlays (focus returns to the trigger on close). Contrast >= 4.5:1.
+Works at 200% zoom. Respect reduced motion. Dialogs: `role="dialog"`, labelled, Esc closes.
+
+## 13. Responsive
+
+| Name | Width | Tailwind |
+|---|---|---|
+| Mobile | < 768 | default |
+| Tablet | 768 - 1023 | `md:` |
+| Desktop | 1024 - 1535 | `lg:` |
+| Large | >= 1536 | `2xl:` |
+
+Build mobile first; verify at 360, 768, 1280. Mobile is a redesign, not a squeeze:
+sidebar becomes a bottom bar or drawer; tables become card lists or scroll inside their own
+container; dialogs become full-screen sheets; filters collapse into a drawer; primary actions stay
+reachable with a thumb. **POS must work at 1024x768 landscape and on tablets.**
+
+## 14. RTL / LTR
+
+`<html lang="ar" dir="rtl">`. Use logical utilities (`ms-*`, `me-*`, `ps-*`, `pe-*`, `text-start`,
+`border-s`, `start-*`). Physical `left/right` only inside forced-LTR controls, with a comment why
+(icon and toggle in `FormField`). Force `dir="ltr"` on emails, usernames, URLs, codes, slugs, passwords,
+SKUs, barcodes. Mirror directional icons. Test with real Arabic strings, never lorem ipsum.
+
+## 15. Naming conventions
+
+- Components: `PascalCase.tsx`, default export. Hooks: `useThing.ts`, named export. Utilities: `camelCase.ts`.
+- Tokens: role-based, not appearance-based (`ink-mute`, not `gray-500`). Brand steps are numeric (`brand-600`).
+- Component classes in CSS: `kebab-case`, block-first (`field-input`, `field-input-error`, `notice-success`).
+- Type roles: `type-*`. Status tones: `success | error | info | warning`. Sizes: `sm | md | lg`.
+- Props: `variant`, `size`, `tone`, `loading`, `disabled`, `error`, `help`, `icon`. Reuse these names.
+- Arabic copy lives next to the component until an i18n layer is introduced (ADR needed).
+
+## 16. Component architecture
+
+Three layers. A layer may import only from layers above it.
+
+1. **Primitives** (`components/ui/`): Button, Input, Select, Checkbox, Badge, Notice, Spinner... Generic, no business knowledge, no API calls.
+2. **Composites** (`components/layout/`, `components/data/`, `components/forms/`): AppShell, Sidebar, PageHeader, DataTable, FormSection. Built only from primitives.
+3. **Business** (`modules/<name>/components/`): ProductCard, Cart, PaymentPanel, StockBadge. Built from primitives and composites; own the domain logic.
+
+Current primitives (all registered on `/design-system`):
+
+| Component | Notes |
+|---|---|
+| `Button` | `variant`: primary, secondary, ghost, danger. `size`: sm 36 / md 48 / lg 56. `loading`, `icon`, `fullWidth`. Defaults to `type="button"` |
+| `SubmitButton` | Full-width `Button`, defaults to `type="submit"`. Use inside forms |
+| `Input` | Bare input: `icon`, `invalid`, `ltr`; password toggle built in |
+| `FormField` | `FieldShell` + `Input`: label, help, error. Use for every text-like field |
+| `FieldShell` | Label + help + error wrapper. Build new field types on it |
+| `IconButton` | Icon-only `Button`. `label` is required (aria-label + tooltip). 44px default |
+| `Textarea` | Multi-line field with label/help/error |
+| `RadioGroup` | 2-5 visible options in a `fieldset`. More options: `Select` |
+| `NumberInput`, `MoneyInput` | String values (never floats). Accept Arabic-Indic digits. `decimals`, `suffix`. `MoneyInput` = 2 decimals, "ج.م", no negatives |
+| `SearchInput` | Search box, Esc clears, icon on the start side. Barcode: `autoFocus` + Enter |
+| `EmptyState`, `ErrorState` | Empty says what to do next and offers the action. Error offers retry |
+| `Select` | Native select with `options`, `placeholder`, label/help/error |
+| `Checkbox` | Whole row clickable (>= 44px), `description`, `error` |
+| `Switch` | Immediate on/off setting. Inside forms use `Checkbox` |
+| `Badge` | `tone`: neutral, brand, success, warning, danger; `dot` |
+| `Spinner`, `Skeleton` | Standalone loading (spinner) and content placeholder (skeleton) |
+| `Notice`, `FormError` | Persistent messages: `Notice` for page-level, `FormError` for form-level errors |
+| `Icons` | Line icon set. Add new icons here only |
+
+Also: `AuthLayout` (centered auth card), guards (`RequireAuth`, `RequirePasswordChanged`, `GuestOnly`).
+
+Field rule: never render a raw `<input>`, `<select>` or `<button>` in a page. Use the components above.
+Loading rule: buttons use `loading`; inline waits use `Spinner`; content areas use `Skeleton` shaped like the final content.
+
+Roadmap (build only when a real screen needs it): Modal, Drawer, Toast, Tooltip, Tabs, DatePicker, Combobox (searchable select), AppShell, Sidebar, Topbar, PageHeader, DataTable.
+
+Money rule: monetary and quantity values are strings from input to API. Never `parseFloat` money. Show with `.num`.
+
+## 17. Security UX rules
+
+Never reveal whether an account, email, or tenant exists: login 401s show one message ("بيانات الدخول غير صحيحة."),
+forgot-password shows one success message for every input, no resend that reveals timing.
+Only exception: `ACCOUNT_DISABLED`, shown after a correct password. Passwords: never trimmed, length-only
+validation (8-128), correct `autoComplete`. Client validation is convenience; the server is the authority.
+`/change-password` is a gate, not linked from navigation. Never show technical error codes to users.
+
+## 18. Dark theme strategy (Midnight, future)
+
+Utilities compile to `var(--color-*)`, so dark mode is a token override: `[data-theme="dark"] { --color-ink: ...; }`
+in `index.css`. No component changes. Preconditions we enforce now: no hard-coded colors, no
+`bg-white`/`text-black`, status colors defined as tint + text pairs, shadows from tokens.
+Dark ships only after every component in section 16 has been checked against it.
+
+## 19. ERP / POS principles
+
+- Optimize for keyboard and barcode scanners: autofocus the scan/search field, keep focus after each action, Enter confirms; show shortcuts in the UI.
+- Totals are the loudest thing on screen (`type-display`, `.num`). Money right-aligned in tables, tabular.
+- Big targets (>= 56px) for quantity, payment method, and confirm on POS.
+- Destructive/irreversible actions (void, refund, close shift) require explicit confirmation naming the amount and item.
+- Never silently discard a sale; show a persistent offline indicator. (Offline queueing needs its own ADR.)
+- One table system for every list (products, customers, orders, invoices...): same toolbar, filters, sorting, pagination, bulk actions, empty/error states.
+- Permissions gate the UI (`user.permissions`), never role-name checks in components.
+
+## 20. Governance
+
+**Adding or changing a component**
+1. Confirm no existing component or variant solves it.
+2. Build it in `components/ui/` (or the right layer) using tokens only.
+3. Implement the full state matrix (section 11), RTL, keyboard, and accessibility.
+4. Add it to `/design-system` (`DesignSystemPage.tsx`) with every variant and state.
+5. Update section 16 here, and note the change in the PR description.
+
+**Definition of done for any UI work:** tokens only, RTL verified with real Arabic, all states,
+keyboard reachable, >= 44px targets, numbers in `.num`, no enumeration leaks, registered in `/design-system`, `npm run check` passes.
+
+**Changes to tokens or these rules** need review, because they affect every screen.
+
+---
+
+## Appendix A. Frontend architecture and conventions
 
 ```
 src/
-  lib/          api.ts (axios), supabase.ts (reset page ONLY), validation.ts, cn.ts
-  types/        shared TS types (auth.ts)
-  store/        zustand stores (authStore)
-  services/     one file per backend domain: authApi.ts, later salesApi.ts ...
-  hooks/        reusable hooks
-  components/   ui/ (primitives), auth/, guards/, layout/ (app shell, later)
-  pages/        route-level screens for shell-level flows (auth, dashboard)
-  modules/      NEW MODULES GO HERE: modules/<name>/{pages,components,api,types}
+  lib/         api.ts (axios), supabase.ts (reset page ONLY), validation.ts, cn.ts
+  types/       shared types
+  store/       zustand (client state only: session, UI prefs, POS cart)
+  services/    one <domain>Api.ts per backend domain
+  hooks/       reusable hooks
+  components/  ui/ (primitives), auth/, guards/, layout/ (later), data/ (later)
+  pages/       shell-level screens (auth, dashboard, design-system)
+  modules/     NEW MODULES: modules/<name>/{pages,components,api,types}
 ```
 
-- **All HTTP goes through `src/lib/api.ts`.** No raw `fetch`/`axios` in components.
-  The interceptor handles Bearer injection, one refresh attempt on `UNAUTHORIZED`,
-  and `MUST_CHANGE_PASSWORD`. Components catch `ApiError` (`status`, `code`, `message`,
-  `retryAfter`, `fields`).
-- One `services/<domain>Api.ts` per backend domain. Components never build URLs.
-- **Server state uses TanStack Query** (`useQuery`/`useMutation`). Do not copy server
-  data into zustand. zustand is for client state only (session, UI prefs, POS cart).
-- Routes: signed-out routes under `GuestOnly`, signed-in under `RequireAuth` then
-  `RequirePasswordChanged`. Gate new routes by role/permission with a `RequirePermission`
-  guard built on `user.permissions` (never hard-code role names in components).
-- Roles come from `types/auth.ts`. The nine tenant roles plus `SUPER_ADMIN` (platform only).
+- All HTTP goes through `src/lib/api.ts`. Components catch `ApiError` (`status`, `code`, `message`, `retryAfter`, `fields`).
+- Server state uses TanStack Query. Do not copy server data into zustand.
+- Routes: signed-out under `GuestOnly`; signed-in under `RequireAuth` then `RequirePasswordChanged`. Module routes mount inside the latter.
+- Roles from `types/auth.ts` (nine tenant roles + `SUPER_ADMIN`, platform only).
 - Env vars are `VITE_*` only, documented in `.env.example`. No secrets in the frontend.
-- TypeScript strict. No `any` (one documented exception in `lib/api.ts`).
-- Named `default` exports for pages/components, named exports for hooks/utils.
-- File names: `PascalCase.tsx` components, `camelCase.ts` everything else.
+- TypeScript strict, no `any` (one documented exception in `lib/api.ts`).
 
-## 12. POS-specific notes
+## Appendix B. Copy rules (Arabic)
 
-- Optimize for keyboard and barcode scanner: autofocus the scan/search field, keep focus
-  after each action, support Enter to confirm. Document shortcuts in the UI.
-- Large tap targets (>= 56px) for quantity, payment method, and confirm actions.
-- Totals are the loudest thing on screen. Use `.num`, `text-3xl`+, `font-bold`.
-- Destructive or irreversible actions (void, refund, close shift) need explicit
-  confirmation with the amount and item named in the dialog.
-- Must survive a slow or dropped connection: show a persistent offline indicator and
-  never silently discard a sale. (Offline queueing is a separate ADR.)
-
-## 13. Accessibility floor
-
-Visible keyboard focus (global `:focus-visible`), labels bound to inputs (`FormField`
-does this), errors announced (`role="alert"`), `aria-invalid` and `aria-describedby`
-on invalid fields, contrast >= 4.5:1, no color-only meaning, works at 200% zoom.
-
-## 14. New-module checklist
-
-- [ ] Uses tokens and component classes only; no new colors or ad-hoc styles
-- [ ] RTL verified with real Arabic; logical utilities used
-- [ ] All states designed (section 8)
-- [ ] Data via `services/` + TanStack Query; errors handled via `ApiError`
-- [ ] Route wrapped in the right guards and permission check
-- [ ] Touch targets >= 44px; numbers in `.num`
-- [ ] No enumeration leaks in any auth-adjacent copy
-- [ ] New shared components added to section 7
+Say what happened and what to do. Buttons name the action ("حفظ كلمة المرور", not "إرسال") and keep the same verb through
+button, toast, and confirmation. Plain words: "منشأة" not "tenant", "كود التفعيل" not "license key".
+Progress uses an ellipsis: "جارٍ الحفظ...". Errors do not apologize and are never vague.

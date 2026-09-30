@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "@/components/auth/AuthLayout";
 import FormField from "@/components/ui/FormField";
-import { LockIcon } from "@/components/ui/icons";
+import { LockIcon } from "@/components/ui/Icons";
 import FormError from "@/components/ui/FormError";
 import SubmitButton from "@/components/ui/SubmitButton";
 import { supabase } from "@/lib/supabase"; // deliberate: see lib/supabase.ts

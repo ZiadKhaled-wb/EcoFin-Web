@@ -6,7 +6,7 @@ import FormField from "@/components/ui/FormField";
 import FormError from "@/components/ui/FormError";
 import Notice from "@/components/ui/Notice";
 import SubmitButton from "@/components/ui/SubmitButton";
-import { LockIcon, UserIcon } from "@/components/ui/icons";
+import { LockIcon, UserIcon } from "@/components/ui/Icons";
 import { ApiError, getErrorMessage } from "@/lib/api";
 import { rateLimitMessage, useCountdown } from "@/hooks/useCountdown";
 import { useTenantSlug } from "@/hooks/useTenantSlug";

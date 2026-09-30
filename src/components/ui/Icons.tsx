@@ -41,3 +41,18 @@ export const AlertIcon = (p: P) => (
 export const CheckCircleIcon = (p: P) => (
     <svg {...base} {...p}><circle cx="12" cy="12" r="9" /><path d="m8.5 12.5 2.5 2.5 4.5-5" /></svg>
 );
+export const ChevronDownIcon = (p: P) => (
+    <svg {...base} {...p}><path d="m6 9 6 6 6-6" /></svg>
+);
+export const CheckIcon = (p: P) => (
+    <svg {...base} {...p}><path d="m5 12.5 4.5 4.5L19 7" /></svg>
+);
+export const SearchIcon = (p: P) => (
+    <svg {...base} {...p}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+);
+export const XIcon = (p: P) => (
+    <svg {...base} {...p}><path d="M6 6l12 12M18 6 6 18" /></svg>
+);
+export const InboxIcon = (p: P) => (
+    <svg {...base} {...p}><path d="M4 13 6.5 5h11L20 13v6H4z" /><path d="M4 13h4l1.5 3h5L16 13h4" /></svg>
+);

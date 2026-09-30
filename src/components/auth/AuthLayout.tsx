@@ -48,7 +48,7 @@ export default function AuthLayout({
     <div className="flex min-h-dvh items-center justify-center bg-paper p-4">
       <div
         className={cn(
-          "w-full rounded-panel border border-line bg-surface p-6 shadow-xl shadow-ink/5 sm:p-8",
+          "w-full rounded-panel border border-line bg-surface p-6 shadow-card sm:p-8",
           wide ? "max-w-lg" : "max-w-[26rem]",
         )}
       >

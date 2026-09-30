@@ -4,7 +4,7 @@ import AuthLayout from "@/components/auth/AuthLayout";
 import FormField from "@/components/ui/FormField";
 import FormError from "@/components/ui/FormError";
 import SubmitButton from "@/components/ui/SubmitButton";
-import { KeyIcon } from "@/components/ui/icons";
+import { KeyIcon } from "@/components/ui/Icons";
 import { ApiError, getErrorMessage } from "@/lib/api";
 import { authApi } from "@/services/authApi";
 import { rateLimitMessage, useCountdown } from "@/hooks/useCountdown";

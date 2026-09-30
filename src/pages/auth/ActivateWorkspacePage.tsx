@@ -4,7 +4,7 @@ import AuthLayout from "@/components/auth/AuthLayout";
 import FormField from "@/components/ui/FormField";
 import FormError from "@/components/ui/FormError";
 import SubmitButton from "@/components/ui/SubmitButton";
-import { KeyIcon, LockIcon, MailIcon, UserIcon } from "@/components/ui/icons";
+import { KeyIcon, LockIcon, MailIcon, UserIcon } from "@/components/ui/Icons";
 import { ApiError, getErrorMessage } from "@/lib/api";
 import { USERNAME_MIN, validateNewPassword } from "@/lib/validation";
 import { authApi } from "@/services/authApi";

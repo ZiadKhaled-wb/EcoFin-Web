@@ -5,7 +5,7 @@ import TenantSlugField from "@/components/auth/TenantSlugField";
 import FormField from "@/components/ui/FormField";
 import FormError from "@/components/ui/FormError";
 import SubmitButton from "@/components/ui/SubmitButton";
-import { CheckCircleIcon, UserIcon } from "@/components/ui/icons";
+import { CheckCircleIcon, UserIcon } from "@/components/ui/Icons";
 import { ApiError } from "@/lib/api";
 import { rateLimitMessage, useCountdown } from "@/hooks/useCountdown";
 import { useTenantSlug } from "@/hooks/useTenantSlug";

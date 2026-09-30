@@ -2,7 +2,7 @@
 
 /* ==========================================================================
    EcoFin Pro — design tokens + component classes.
-   Direction: clean slate + blue. Centered white card on a light page.
+   Direction: B, Deep Teal. Centered white card on a light page.
    Arabic-first, RTL-first, touch-friendly (POS). See /design.md.
    ========================================================================== */
 
@@ -10,40 +10,58 @@
   --font-sans: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
 
-  /* Neutrals: slate */
-  --color-ink: #0f172a;
-  --color-ink-soft: #475569;
-  --color-ink-mute: #64748b;
-  --color-paper: #f8fafc;
+  /* Neutrals: cool, slightly green (never pure grey) */
+  --color-ink: #12201e;
+  --color-ink-soft: #3f524e;
+  --color-ink-mute: #5b6d69;
+  --color-paper: #f3f6f5;
   --color-surface: #ffffff;
-  --color-field: #f1f5f9;
-  --color-line: #e2e8f0;
-  --color-line-strong: #cbd5e1;
-  --color-disabled: #94a3b8;
+  --color-field: #e8f3f1;
+  --color-line: #d8e1de;
+  --color-line-strong: #b4c3bf;
+  --color-disabled: #9aaaa6;
 
-  /* Brand: blue */
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-800: #1e40af;
-  --color-brand-900: #1e3a8a;
+  /* Brand: deep teal (direction B) */
+  --color-brand-50: #e8f3f1;
+  --color-brand-100: #cfe7e3;
+  --color-brand-500: #12897b;
+  --color-brand-600: #0b6b60;
+  --color-brand-700: #085548;
+  --color-brand-800: #063f36;
+  --color-brand-900: #042b26;
 
   /* Attention / warnings / POS highlights */
-  --color-ochre-50: #fffbeb;
-  --color-ochre-500: #d97706;
-  --color-ochre-700: #b45309;
+  --color-ochre-50: #fbf3e2;
+  --color-ochre-500: #b7791f;
+  --color-ochre-700: #8a5a12;
 
   /* Status */
-  --color-danger-50: #fef2f2;
-  --color-danger-600: #dc2626;
-  --color-success-50: #ecfdf5;
-  --color-success-600: #059669;
-  --color-success-700: #047857;
+  --color-danger-50: #fdecea;
+  --color-danger-600: #b42318;
+  --color-success-50: #e6f4ec;
+  --color-success-600: #17794b;
+  --color-success-700: #116a41;
 
   --radius-control: 0.75rem;
   --radius-panel: 1.5rem;
+
+  /* Elevation: only two levels. Borders carry most of the structure. */
+  --shadow-card: 0 1px 2px rgb(18 32 30 / 0.04), 0 12px 32px -12px rgb(18 32 30 / 0.12);
+  --shadow-overlay: 0 8px 16px -4px rgb(18 32 30 / 0.12), 0 24px 48px -12px rgb(18 32 30 / 0.2);
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Non-utility tokens. Read with var(--name). */
+:root {
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+
+  --z-sticky: 20;
+  --z-dropdown: 30;
+  --z-overlay: 40;
+  --z-modal: 50;
+  --z-toast: 60;
 }
 
 @layer base {
@@ -63,6 +81,10 @@
   button:disabled {
     cursor: not-allowed;
   }
+  /* We render our own clear button in SearchInput */
+  input[type="search"]::-webkit-search-cancel-button {
+    appearance: none;
+  }
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -74,12 +96,32 @@
 }
 
 @layer components {
+  /* ---- Type roles (see design.md section 4). Use these, not ad-hoc sizes. ---- */
+  .type-display {
+    @apply text-3xl font-bold leading-tight;
+  }
+  .type-page-title {
+    @apply text-2xl font-black leading-snug;
+  }
+  .type-section-title {
+    @apply text-lg font-bold leading-snug;
+  }
+  .type-body {
+    @apply text-base leading-relaxed text-ink;
+  }
+  .type-label {
+    @apply text-sm font-medium text-ink;
+  }
+  .type-caption {
+    @apply text-sm text-ink-mute;
+  }
+
   /* ---- Forms ---- */
   .field-label {
     @apply block text-sm font-medium text-ink;
   }
   .field-input {
-    @apply block min-h-12 w-full rounded-control border border-line bg-field px-3.5 py-2.5 text-base text-ink transition-colors;
+    @apply block min-h-12 w-full rounded-control border border-line-strong/60 bg-field px-3.5 py-2.5 text-base text-ink transition-colors;
     @apply placeholder:text-ink-mute/60 focus:border-brand-600 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-brand-600/25;
     @apply read-only:bg-line read-only:text-ink-soft disabled:bg-line disabled:text-ink-mute;
   }
@@ -106,8 +148,111 @@
   .btn-secondary {
     @apply border border-brand-600 bg-surface text-brand-600 hover:bg-brand-50 disabled:border-line-strong disabled:text-ink-mute;
   }
+  .btn-ghost {
+    @apply text-brand-600 hover:bg-brand-50 disabled:text-ink-mute;
+  }
+  .btn-danger {
+    @apply bg-danger-600 text-white hover:brightness-90 active:brightness-75 disabled:bg-disabled;
+  }
+  .btn-sm {
+    @apply min-h-9 px-3 text-sm;
+  }
+  .btn-lg {
+    @apply min-h-14 px-6 text-lg;
+  }
+  .btn-icon {
+    @apply size-11 min-h-0 px-0;
+  }
+  .btn-icon.btn-sm {
+    @apply size-9;
+  }
+  .btn-icon.btn-lg {
+    @apply size-14;
+  }
   .btn-link {
     @apply font-medium text-brand-600 underline underline-offset-4 hover:text-brand-800;
+  }
+
+  /* ---- Checkbox + Switch (native input + styled sibling, RTL-safe) ---- */
+  .check-box {
+    @apply mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border border-line-strong bg-surface text-white transition-colors;
+  }
+  .check-box svg {
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .check-input:checked + .check-box {
+    @apply border-brand-600 bg-brand-600;
+  }
+  .check-input:checked + .check-box svg {
+    opacity: 1;
+  }
+  .check-input[aria-invalid="true"] + .check-box {
+    @apply border-danger-600;
+  }
+  .switch-track {
+    @apply relative inline-block h-6 w-11 shrink-0 rounded-full bg-line-strong transition-colors;
+    transition-duration: var(--duration-base);
+  }
+  .switch-thumb {
+    @apply absolute top-0.5 size-5 rounded-full bg-white shadow;
+    inset-inline-start: 0.125rem;
+    transition: inset-inline-start var(--duration-base) var(--ease-standard);
+  }
+  .switch-input:checked + .switch-track {
+    @apply bg-brand-600;
+  }
+  .switch-input:checked + .switch-track .switch-thumb {
+    inset-inline-start: 1.375rem;
+  }
+  .radio-dot {
+    @apply mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-line-strong bg-surface transition-colors;
+  }
+  .radio-dot::after {
+    content: "";
+    @apply size-2.5 rounded-full bg-brand-600;
+    transform: scale(0);
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+  .radio-input:checked + .radio-dot {
+    @apply border-brand-600;
+  }
+  .radio-input:checked + .radio-dot::after {
+    transform: scale(1);
+  }
+  .check-input:focus-visible + .check-box,
+  .radio-input:focus-visible + .radio-dot,
+  .switch-input:focus-visible + .switch-track {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+
+  /* ---- Badge ---- */
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .badge-neutral {
+    @apply bg-line text-ink-soft;
+  }
+  .badge-brand {
+    @apply bg-brand-50 text-brand-800;
+  }
+  .badge-success {
+    @apply bg-success-50 text-success-700;
+  }
+  .badge-warning {
+    @apply bg-ochre-50 text-ochre-700;
+  }
+  .badge-danger {
+    @apply bg-danger-50 text-danger-600;
+  }
+  .badge-dot {
+    @apply size-1.5 rounded-full bg-current;
+  }
+
+  /* ---- Skeleton ---- */
+  .skeleton {
+    @apply animate-pulse rounded-control bg-line;
   }
 
   /* ---- Notices (page-level, non-terminal) ---- */
