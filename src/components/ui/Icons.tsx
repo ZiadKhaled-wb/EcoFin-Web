@@ -1,58 +1,68 @@
-import type { SVGProps } from "react";
+import type { ComponentType, ReactElement } from "react";
+import {
+    Bell, Calculator, Check, ChartColumn, ChevronDown, ChevronLeft, ChevronRight, CircleAlert,
+    CircleCheck, Eye, EyeOff, Factory, Download, Inbox, KeyRound, LayoutDashboard, ListFilter,
+    Lock, LogOut, Mail, Menu, Package, Pencil, Plus, Printer, ScanBarcode, Search, Settings,
+    ShoppingCart, Trash2, Truck, User, UserCog, Users, X, type LucideProps,
+} from "lucide-react";
+import { cn } from "@/lib/cn";
 
-const base = {
-    width: 20,
-    height: 20,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.75,
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    "aria-hidden": true,
-} as const;
+/**
+ * The ONLY place icons are imported from lucide-react. Everything else imports from here.
+ * Defaults: 20px, 1.75 stroke, currentColor, aria-hidden (decorative).
+ * Icon-only buttons must carry their own aria-label (see IconButton).
+ */
+export type IconComponent = (props: LucideProps) => ReactElement;
 
-type P = SVGProps<SVGSVGElement>;
+const wrap =
+    (Icon: ComponentType<LucideProps>, mirrorInRtl = false): IconComponent =>
+        (p) => (
+            <Icon
+            size={20}
+            strokeWidth={1.75}
+            aria-hidden
+            {...p}
+            className={cn(mirrorInRtl && "rtl:-scale-x-100", p.className)}
+            />
+        );
 
-export const UserIcon = (p: P) => (
-    <svg {...base} {...p}><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
-);
-export const LockIcon = (p: P) => (
-    <svg {...base} {...p}><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
-);
-export const MailIcon = (p: P) => (
-    <svg {...base} {...p}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
-);
-export const KeyIcon = (p: P) => (
-    <svg {...base} {...p}><circle cx="8" cy="15" r="4" /><path d="m11 12 9-9m-3 3 3 3" /></svg>
-);
-export const EyeIcon = (p: P) => (
-    <svg {...base} {...p}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>
-);
-export const EyeOffIcon = (p: P) => (
-    <svg {...base} {...p}>
-        <path d="M3 3l18 18" />
-        <path d="M10.6 6.1A9.9 9.9 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.7 8.4 2 12 2 12s3.5 7 10 7c1.7 0 3.2-.4 4.5-1" />
-    </svg>
-);
-export const AlertIcon = (p: P) => (
-    <svg {...base} {...p}><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16.5v.01" /></svg>
-);
-export const CheckCircleIcon = (p: P) => (
-    <svg {...base} {...p}><circle cx="12" cy="12" r="9" /><path d="m8.5 12.5 2.5 2.5 4.5-5" /></svg>
-);
-export const ChevronDownIcon = (p: P) => (
-    <svg {...base} {...p}><path d="m6 9 6 6 6-6" /></svg>
-);
-export const CheckIcon = (p: P) => (
-    <svg {...base} {...p}><path d="m5 12.5 4.5 4.5L19 7" /></svg>
-);
-export const SearchIcon = (p: P) => (
-    <svg {...base} {...p}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-);
-export const XIcon = (p: P) => (
-    <svg {...base} {...p}><path d="M6 6l12 12M18 6 6 18" /></svg>
-);
-export const InboxIcon = (p: P) => (
-    <svg {...base} {...p}><path d="M4 13 6.5 5h11L20 13v6H4z" /><path d="M4 13h4l1.5 3h5L16 13h4" /></svg>
-);
+// Fields and feedback
+export const UserIcon = wrap(User);
+export const LockIcon = wrap(Lock);
+export const MailIcon = wrap(Mail);
+export const KeyIcon = wrap(KeyRound);
+export const EyeIcon = wrap(Eye);
+export const EyeOffIcon = wrap(EyeOff);
+export const AlertIcon = wrap(CircleAlert);
+export const CheckCircleIcon = wrap(CircleCheck);
+export const CheckIcon = wrap(Check);
+export const SearchIcon = wrap(Search);
+export const XIcon = wrap(X);
+export const InboxIcon = wrap(Inbox);
+export const ChevronDownIcon = wrap(ChevronDown);
+
+// Direction-aware: "Start" points to the start edge, "End" toward the end edge (mirrored in RTL).
+export const ChevronStartIcon = wrap(ChevronLeft, true);
+export const ChevronEndIcon = wrap(ChevronRight, true);
+
+// Navigation and actions
+export const MenuIcon = wrap(Menu);
+export const DashboardIcon = wrap(LayoutDashboard);
+export const CartIcon = wrap(ShoppingCart);
+export const PackageIcon = wrap(Package);
+export const TruckIcon = wrap(Truck);
+export const UsersIcon = wrap(Users);
+export const FactoryIcon = wrap(Factory);
+export const TeamIcon = wrap(UserCog);
+export const CalculatorIcon = wrap(Calculator);
+export const ChartIcon = wrap(ChartColumn);
+export const SettingsIcon = wrap(Settings);
+export const LogoutIcon = wrap(LogOut);
+export const BellIcon = wrap(Bell);
+export const PlusIcon = wrap(Plus);
+export const EditIcon = wrap(Pencil);
+export const TrashIcon = wrap(Trash2);
+export const PrintIcon = wrap(Printer);
+export const DownloadIcon = wrap(Download);
+export const FilterIcon = wrap(ListFilter);
+export const BarcodeIcon = wrap(ScanBarcode);

@@ -61,6 +61,7 @@
   --z-dropdown: 30;
   --z-overlay: 40;
   --z-modal: 50;
+  --z-popover: 55; /* portaled menus/popovers/tooltips: must sit above modals */
   --z-toast: 60;
 }
 
@@ -280,5 +281,52 @@
     direction: ltr;
     unicode-bidi: isolate;
     display: inline-block;
+  }
+}
+
+/* ---- Overlay motion (open/close only; reduced-motion handled globally) ---- */
+@keyframes ds-fade-in { from { opacity: 0; } }
+@keyframes ds-fade-out { to { opacity: 0; } }
+@keyframes ds-slide-in { from { transform: translateX(var(--slide-from)); } }
+@keyframes ds-slide-out { to { transform: translateX(var(--slide-from)); } }
+
+.drawer-overlay[data-state="open"] { animation: ds-fade-in var(--duration-base) var(--ease-standard); }
+.drawer-overlay[data-state="closed"] { animation: ds-fade-out var(--duration-fast) var(--ease-standard); }
+.drawer-panel[data-state="open"] { animation: ds-slide-in var(--duration-base) var(--ease-standard); }
+.drawer-panel[data-state="closed"] { animation: ds-slide-out var(--duration-fast) var(--ease-standard); }
+/* "start" is the right edge in RTL, so the slide origin flips with direction */
+.drawer-start { --slide-from: -100%; }
+[dir="rtl"] .drawer-start { --slide-from: 100%; }
+.drawer-end { --slide-from: 100%; }
+[dir="rtl"] .drawer-end { --slide-from: -100%; }
+
+@layer components {
+  /* ---- Sidebar ---- */
+  .sidebar-link {
+    @apply flex min-h-11 w-full items-center gap-3 rounded-control px-3 text-sm font-medium text-ink-soft transition-colors hover:bg-paper hover:text-ink;
+  }
+  .sidebar-link-active {
+    @apply bg-brand-50 text-brand-800 hover:bg-brand-50 hover:text-brand-800;
+  }
+
+  /* ---- Dropdown menu ---- */
+  .menu-content {
+    @apply min-w-56 rounded-panel border border-line bg-surface p-1.5 shadow-overlay;
+    z-index: var(--z-popover);
+  }
+  .menu-item {
+    @apply flex min-h-11 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-sm font-medium text-ink outline-none;
+  }
+  .menu-item[data-highlighted] {
+    @apply bg-brand-50 text-brand-800;
+  }
+  .menu-item[data-disabled] {
+    @apply pointer-events-none opacity-50;
+  }
+  .menu-item-danger {
+    @apply text-danger-600;
+  }
+  .menu-item-danger[data-highlighted] {
+    @apply bg-danger-50 text-danger-600;
   }
 }

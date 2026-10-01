@@ -4,7 +4,7 @@ The single source of truth for how EcoFin looks, behaves, and is built.
 Attach this file to every agent. Tokens: `src/index.css`. Live reference:
 `/design-system` (dev only, `npm run dev`). If a rule is missing, add it here in the same PR.
 
-**Status:** Steps 1 (constitution), 2 (tokens) and 4 (core components) done. Next: Step 5, layout and navigation (AppShell, Sidebar, Topbar, PageHeader).
+**Status:** Steps 1 (constitution), 2 (tokens), 4 (core components) and 5 (layout and navigation) done. Next: forms foundation (react-hook-form + zod), remaining overlays (Modal, Toast, Tooltip), `lib/format.ts`, then DataTable.
 
 ---
 
@@ -80,12 +80,12 @@ Money: `1,250.00 ج.م` (currency after), inside `.num`.
 
 Two levels only, and borders do most of the work.
 `shadow-card` (resting card) and `shadow-overlay` (dropdowns, popovers, dialogs, drawers).
-Z-index scale (CSS vars): sticky 20, dropdown 30, overlay 40, modal 50, toast 60. Never write raw z-index numbers.
+Z-index scale (CSS vars): sticky 20, dropdown 30, overlay 40, modal 50, popover 55 (portaled menus/tooltips, above modals), toast 60. Never write raw z-index numbers.
 
 ## 8. Iconography
 
 Line icons, 24px grid, 1.75 stroke, `currentColor`, rendered at 20px (18px inline with text).
-All icons live in `components/ui/Icons.tsx`. Decorative icons are `aria-hidden`; icon-only buttons need `aria-label`.
+All icons come from **lucide-react**, imported ONLY in `components/ui/Icons.tsx`, which applies our defaults and exports named wrappers (`SearchIcon`...). Add icons there; never import lucide elsewhere. Direction-aware icons: `ChevronStartIcon` / `ChevronEndIcon` mirror in RTL. Decorative icons are `aria-hidden`; icon-only buttons need `aria-label`.
 Directional icons (arrows, chevrons) mirror in RTL. No emoji, no icon fonts, no mixed icon sets.
 
 ## 9. Motion
@@ -183,14 +183,30 @@ Current primitives (all registered on `/design-system`):
 | `Badge` | `tone`: neutral, brand, success, warning, danger; `dot` |
 | `Spinner`, `Skeleton` | Standalone loading (spinner) and content placeholder (skeleton) |
 | `Notice`, `FormError` | Persistent messages: `Notice` for page-level, `FormError` for form-level errors |
-| `Icons` | Line icon set. Add new icons here only |
+| `Icons` | The icon set (lucide-react wrapped with our defaults). Add new icons here only |
+| `Card`, `Divider`, `PageContainer` | Bordered surface (`padded={false}` for tables, `elevated` for shadow); separator; standard page width and padding |
+| `Breadcrumb` | Trail with direction-aware separators; last item is `aria-current` |
+| `Wordmark` | EcoFin Pro logo lockup, always LTR |
+| `Drawer` | Radix Dialog side sheet (`side="start"|"end"`). Mobile nav, record preview/edit beside a list |
+| `DropdownMenu*` | Radix menu: `Trigger`, `Content`, `Item` (`icon`, `tone="danger"`), `Label`, `Separator`. Row actions, account menu |
 
+Layout (`components/layout/`): `AppShell` (sidebar on lg+, drawer on mobile, topbar, skip link), `SidebarNav`, `Topbar` (account menu), `PageHeader`.
 Also: `AuthLayout` (centered auth card), guards (`RequireAuth`, `RequirePasswordChanged`, `GuestOnly`).
+
+Page recipe (every signed-in page):
+```tsx
+<PageContainer>            {/* skip for full-bleed screens like POS */}
+  <PageHeader title="..." breadcrumbs={[...]} actions={...} />
+  <Card>...</Card>
+</PageContainer>
+```
+Navigation is data: add a module by editing `src/config/navigation.ts` (label, icon, route, `roles`/`permission`).
+Hiding a link is UX only. Every route and API must still enforce access (`RequirePermission`, server checks).
 
 Field rule: never render a raw `<input>`, `<select>` or `<button>` in a page. Use the components above.
 Loading rule: buttons use `loading`; inline waits use `Spinner`; content areas use `Skeleton` shaped like the final content.
 
-Roadmap (build only when a real screen needs it): Modal, Drawer, Toast, Tooltip, Tabs, DatePicker, Combobox (searchable select), AppShell, Sidebar, Topbar, PageHeader, DataTable.
+Roadmap (build only when a real screen needs it): Modal, ConfirmationDialog, Toast, Tooltip, Tabs, Popover, DatePicker, Combobox (searchable select), DataTable, Pagination, FilterBar, MetricCard, sidebar collapse.
 
 Money rule: monetary and quantity values are strings from input to API. Never `parseFloat` money. Show with `.num`.
 
@@ -235,6 +251,16 @@ keyboard reachable, >= 44px targets, numbers in `.num`, no enumeration leaks, re
 
 ---
 
+## Appendix A0. Stack decisions (confirmed)
+
+| Concern | Decision | Rule |
+|---|---|---|
+| Overlays and menus | **Radix UI primitives**, styled with our tokens | Never hand-roll focus traps, portals, or menu keyboard handling. Wrap Radix in `components/ui/`; pages never import `@radix-ui/*` directly. App is wrapped in `DirectionProvider dir="rtl"` |
+| Forms and validation | **react-hook-form + zod** (+ `@hookform/resolvers`) | zod schemas are the single source of validation rules, shared by form and API types. (Lands with the forms foundation step; the auth pages migrate then) |
+| Icons | **lucide-react**, only via `components/ui/Icons.tsx` | One stroke width, one size grid |
+| Server state | TanStack Query | See Appendix A |
+| Client state | zustand | Session, UI prefs, POS cart only |
+
 ## Appendix A. Frontend architecture and conventions
 
 ```
@@ -244,7 +270,8 @@ src/
   store/       zustand (client state only: session, UI prefs, POS cart)
   services/    one <domain>Api.ts per backend domain
   hooks/       reusable hooks
-  components/  ui/ (primitives), auth/, guards/, layout/ (later), data/ (later)
+  config/      navigation.ts (the menu: modules, routes, who sees what)
+  components/  ui/ (primitives), auth/, guards/, layout/ (shell), data/ (later)
   pages/       shell-level screens (auth, dashboard, design-system)
   modules/     NEW MODULES: modules/<name>/{pages,components,api,types}
 ```

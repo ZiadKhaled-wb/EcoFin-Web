@@ -9,7 +9,10 @@ import LoginPage from "@/pages/auth/LoginPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
 import ChangePasswordPage from "@/pages/auth/ChangePasswordPage";
+import AppShell from "@/components/layout/AppShell";
+import { navLeaves } from "@/config/navigation";
 import DashboardPage from "@/pages/DashboardPage";
+import ModulePlaceholderPage from "@/pages/ModulePlaceholderPage";
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import("@/pages/DesignSystemPage"));
@@ -38,8 +41,15 @@ export default function App() {
           <Route path="/change-password" element={<ChangePasswordPage />} />
 
           <Route element={<RequirePasswordChanged />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            {/* Future ERP/POS modules mount here, e.g. /pos, /inventory */}
+            <Route element={<AppShell />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              {/* Real modules replace these placeholders (one route per menu item) */}
+              {navLeaves()
+                .filter((i) => i.to && i.to !== "/dashboard")
+                .map((i) => (
+                  <Route key={i.id} path={i.to} element={<ModulePlaceholderPage />} />
+                ))}
+            </Route>
           </Route>
         </Route>
 

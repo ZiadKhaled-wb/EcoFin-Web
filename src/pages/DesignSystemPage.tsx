@@ -1,5 +1,18 @@
 import { useState, type ReactNode } from "react";
+import PageHeader from "@/components/layout/PageHeader";
 import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
+import Divider from "@/components/ui/Divider";
+import Drawer from "@/components/ui/Drawer";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/DropdownMenu";
+import Wordmark from "@/components/ui/Wordmark";
 import Button from "@/components/ui/Button";
 import Checkbox from "@/components/ui/Checkbox";
 import EmptyState from "@/components/ui/EmptyState";
@@ -51,6 +64,36 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
         <h2 className="type-section-title border-b border-line pb-2">{title}</h2>
         {children}
         </section>
+    );
+}
+
+function OverlayDemo() {
+    const [start, setStart] = useState(false);
+    const [end, setEnd] = useState(false);
+    return (
+        <div className="flex flex-wrap items-center gap-3 rounded-panel border border-line bg-surface p-6">
+        <Button variant="secondary" onClick={() => setStart(true)}>Drawer (start)</Button>
+        <Button variant="secondary" onClick={() => setEnd(true)}>Drawer (end)</Button>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+            <Button variant="secondary" icon={<Icons.FilterIcon />}>Dropdown menu</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+            <DropdownMenuLabel><span className="type-caption">إجراءات</span></DropdownMenuLabel>
+            <DropdownMenuItem icon={<Icons.EditIcon />}>تعديل</DropdownMenuItem>
+            <DropdownMenuItem icon={<Icons.PrintIcon />}>طباعة</DropdownMenuItem>
+            <DropdownMenuItem icon={<Icons.DownloadIcon />} disabled>تصدير (معطّل)</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem tone="danger" icon={<Icons.TrashIcon />}>حذف</DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        <Drawer open={start} onOpenChange={setStart} title="Drawer على جهة البداية">
+            <p className="type-body p-4">يُغلق بزر الإغلاق أو Esc أو النقر خارجه. التركيز محبوس داخله ويعود للزر عند الإغلاق.</p>
+        </Drawer>
+        <Drawer open={end} onOpenChange={setEnd} side="end" title="Drawer على جهة النهاية">
+            <p className="type-body p-4">للمعاينة أو التعديل بجانب قائمة.</p>
+        </Drawer>
+        </div>
     );
 }
 
@@ -229,6 +272,35 @@ export default function DesignSystemPage() {
 
         <Section title="SearchInput">
             <SearchDemo />
+        </Section>
+
+        <Section title="Layout: PageHeader, Card, Divider, Wordmark">
+            <div className="space-y-6 rounded-panel border border-line bg-paper p-6">
+            <PageHeader
+                title="المنتجات"
+                description="إدارة المنتجات والأسعار."
+                breadcrumbs={[{ label: "الرئيسية", to: "/dashboard" }, { label: "المخزون" }, { label: "المنتجات" }]}
+                actions={<Button icon={<Icons.PlusIcon />}>منتج جديد</Button>}
+            />
+            <div className="grid gap-5 md:grid-cols-2">
+                <Card title="عنوان البطاقة" description="وصف قصير." actions={<Badge tone="success" dot>نشط</Badge>}>
+                <p className="type-body">محتوى البطاقة. الحدود تحمل البنية، والظل اختياري (elevated).</p>
+                <Divider className="my-4" />
+                <p className="type-caption">Divider أفقي.</p>
+                </Card>
+                <Card padded={false}>
+                <EmptyState title="بطاقة بلا حشو" description="padded={false} للجداول والمحتوى الممتد." />
+                </Card>
+            </div>
+            <div className="flex items-center gap-6">
+                <Wordmark />
+                <Wordmark size="md" />
+            </div>
+            </div>
+        </Section>
+
+        <Section title="Overlays: Drawer and DropdownMenu">
+            <OverlayDemo />
         </Section>
 
         <Section title="Badge">

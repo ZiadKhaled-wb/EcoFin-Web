@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import SubmitButton from "@/components/ui/SubmitButton";
+import Wordmark from "@/components/ui/Wordmark";
 import { cn } from "@/lib/cn";
 
 interface Props {
@@ -15,19 +16,6 @@ interface Props {
   /** Wider card for long forms (activate-workspace). */
   wide?: boolean;
   children?: ReactNode;
-}
-
-function Wordmark() {
-  return (
-    <div dir="ltr" className="flex items-center justify-center gap-1.5 text-2xl font-black tracking-tight">
-      <span>
-        Eco<span className="text-brand-600">Fin</span>
-      </span>
-      <span className="rounded-full bg-brand-600 px-2 py-0.5 text-xs font-bold leading-none text-white">
-        Pro
-      </span>
-    </div>
-  );
 }
 
 /**
@@ -52,7 +40,7 @@ export default function AuthLayout({
           wide ? "max-w-lg" : "max-w-[26rem]",
         )}
       >
-        <Wordmark />
+        <Wordmark className="justify-center" />
 
         <h1 className="mt-6 text-center text-2xl font-black leading-snug">{title}</h1>
         {subtitle && <p className="mt-1.5 text-center text-sm text-ink-mute">{subtitle}</p>}
