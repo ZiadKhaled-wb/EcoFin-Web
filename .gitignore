@@ -4,3 +4,6 @@ dist
 .env.local
 *.local
 .DS_Store
+.claude/settings.local.json
+.env.*
+!.env.example
