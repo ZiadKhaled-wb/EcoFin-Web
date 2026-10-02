@@ -1,5 +1,7 @@
 # React + TypeScript + Vite
 
+> Requires **Node.js 24** (`^24.0.0`) and npm 11+. See `.nvmrc` / `.node-version` — run `nvm use` (or `fnm use`) before installing dependencies.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
