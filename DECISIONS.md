@@ -23,3 +23,6 @@ The master adds the contracts dependency when F03 merges.
 
 ### D11. Playwright MCP isn't available this sprint
 Client tasks write Playwright tests that are skipped unless `RUN_E2E=1`. Nobody walked the flows live in a browser. That's listed as manual work in the test plan.
+
+### D18. Client permission code is split between F09 and F06
+F09 builds `usePermissions()` + `<RequirePermission>`; F06 adds `useCan`, `<Can>`, `useBranchAccess` on top.
