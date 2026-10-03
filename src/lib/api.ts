@@ -111,7 +111,7 @@ api.interceptors.request.use((config) => {
 let refreshing: Promise<string | null> | null = null;
 
 async function doRefresh(): Promise<string | null> {
-  const { refreshToken, setSession } = useAuthStore.getState();
+  const { refreshToken, setSession, clearSession } = useAuthStore.getState();
   if (!refreshToken) return null;
   try {
     // Plain axios: must not re-enter our interceptors.
@@ -124,12 +124,20 @@ async function doRefresh(): Promise<string | null> {
     if (!parsed.success) return null;
     setSession(parsed.data);
     return parsed.data.accessToken;
-  } catch {
+  } catch (err) {
+    // Only a server rejection (4xx) ends the session. A network error, a timeout or a 5xx
+    // keeps it: the next request or timer tick tries again.
+    const status = axios.isAxiosError(err) ? err.response?.status : undefined;
+    if (status !== undefined && status >= 400 && status < 500) clearSession();
     return null;
   }
 }
 
-/** Refreshes the session once, however many callers ask at the same time. */
+/**
+ * Refreshes the session once, however many callers ask at the same time. Returns the new access
+ * token, or null. On null the session is already cleared if the server rejected the refresh;
+ * otherwise (no answer) it is kept.
+ */
 export function refreshAccessToken(): Promise<string | null> {
   refreshing ??= doRefresh().finally(() => {
     refreshing = null;
@@ -143,7 +151,8 @@ api.interceptors.response.use(
     const apiError = toApiError(error);
     const original = error.config;
 
-    // 401 on an authenticated request -> one refresh attempt, else sign out.
+    // 401 on an authenticated request -> one refresh attempt. A rejected refresh clears the
+    // session (see doRefresh); a refresh with no answer keeps it.
     // INVALID_CREDENTIALS (a wrong current password) is not a dead session.
     // Route guards react to the cleared store, so no hard redirect is needed.
     if (
@@ -156,7 +165,6 @@ api.interceptors.response.use(
       original._retried = true;
       const token = await refreshAccessToken();
       if (token) return api(original);
-      useAuthStore.getState().clearSession();
     }
 
     // 403 MUST_CHANGE_PASSWORD -> client state is stale; guards redirect.

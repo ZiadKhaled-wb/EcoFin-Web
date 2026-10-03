@@ -3,7 +3,7 @@ import { api } from '@/lib/api';
 import { queryClient } from '@/lib/queryClient';
 import { authApi, buildForgotBody, buildLoginBody } from '@/services/authApi';
 import { useAuthStore } from '@/store/authStore';
-import { loginResponse, session } from '@/test/authFixtures';
+import { loginResponse, ORG_A, session } from '@/test/authFixtures';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -68,5 +68,26 @@ describe('auth store', () => {
     expect(useAuthStore.getState().orgId).toBeTruthy();
     useAuthStore.getState().clearSession();
     expect(useAuthStore.getState().tenantSlug).toBe('shop-a');
+  });
+});
+
+describe('reply parsing', () => {
+  it('rejects a login reply that does not match the contract', async () => {
+    vi.spyOn(api, 'post').mockResolvedValue({ data: { accessToken: 'only-this' } });
+    await expect(authApi.login({ identifier: 'a@b.co', password: 'pw' })).rejects.toMatchObject({
+      status: 500,
+      code: 'UNKNOWN',
+    });
+  });
+
+  it('rejects a select-shop reply that does not match the contract', async () => {
+    vi.spyOn(api, 'post').mockResolvedValue({ data: { shop: {} } });
+    await expect(authApi.selectShop(ORG_A)).rejects.toMatchObject({ code: 'UNKNOWN' });
+  });
+
+  it('returns the parsed login reply', async () => {
+    const reply = loginResponse();
+    vi.spyOn(api, 'post').mockResolvedValue({ data: reply });
+    await expect(authApi.login({ identifier: 'a@b.co', password: 'pw' })).resolves.toEqual(reply);
   });
 });

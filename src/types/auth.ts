@@ -39,5 +39,5 @@ export interface AuthUser {
   role: Role;
   /** Permission keys. Filled by F09 (`GET /api/me/permissions`); empty until then. */
   permissions: string[];
-  must_change_password: boolean;
+  mustChangePassword: boolean;
 }

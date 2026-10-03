@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react';
 import axios from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { REFRESH_LEAD_MS, useSilentRefresh } from '@/hooks/useSilentRefresh';
+import { REFRESH_LEAD_MS, REFRESH_RETRY_MS, useSilentRefresh } from '@/hooks/useSilentRefresh';
 import { useAuthStore } from '@/store/authStore';
-import { session } from '@/test/authFixtures';
+import { networkError, refreshRejected, session } from '@/test/authFixtures';
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -31,8 +31,24 @@ describe('useSilentRefresh', () => {
     expect(useAuthStore.getState().accessToken).toBe('access-b');
   });
 
-  it('clears the session when the refresh fails', async () => {
-    vi.spyOn(axios, 'post').mockRejectedValue(new Error('no'));
+  it('keeps the session and retries when the refresh gets no answer', async () => {
+    const post = vi
+      .spyOn(axios, 'post')
+      .mockRejectedValueOnce(networkError())
+      .mockResolvedValue({ data: session('b') });
+    signIn(30_000); // already inside the 60 s window: fires at once
+    renderHook(() => useSilentRefresh());
+    await vi.advanceTimersByTimeAsync(10);
+    expect(post).toHaveBeenCalledTimes(1);
+    expect(useAuthStore.getState().accessToken).toBe('access-a');
+
+    await vi.advanceTimersByTimeAsync(REFRESH_RETRY_MS + 10);
+    expect(post).toHaveBeenCalledTimes(2);
+    expect(useAuthStore.getState().accessToken).toBe('access-b');
+  });
+
+  it('clears the session when the server rejects the refresh', async () => {
+    vi.spyOn(axios, 'post').mockRejectedValue(refreshRejected(401));
     signIn(30_000); // already inside the 60 s window: fires at once
     renderHook(() => useSilentRefresh());
     await vi.advanceTimersByTimeAsync(10);

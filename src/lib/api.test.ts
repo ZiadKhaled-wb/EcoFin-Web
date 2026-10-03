@@ -2,7 +2,14 @@ import axios, { type InternalAxiosRequestConfig } from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { api, ApiError } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
-import { httpError, httpOk, ORG_A, session } from '@/test/authFixtures';
+import {
+  httpError,
+  httpOk,
+  networkError,
+  ORG_A,
+  refreshRejected,
+  session,
+} from '@/test/authFixtures';
 
 const originalAdapter = api.defaults.adapter;
 
@@ -80,8 +87,28 @@ describe('401 handling', () => {
     expect(calls.filter((c) => c === `Bearer ${refreshed.accessToken}`)).toHaveLength(3);
   });
 
-  it('clears the session when the refresh fails', async () => {
-    vi.spyOn(axios, 'post').mockRejectedValue(new Error('refresh rejected'));
+  it('keeps the session when the refresh gets no answer (offline, timeout, 5xx)', async () => {
+    const post = vi.spyOn(axios, 'post').mockRejectedValue(networkError());
+    api.defaults.adapter = async (config) => {
+      throw httpError(config, 401, 'TOKEN_EXPIRED');
+    };
+    await expect(api.get('/api/a')).rejects.toBeInstanceOf(ApiError);
+    expect(useAuthStore.getState().accessToken).toBe('old');
+    expect(useAuthStore.getState().refreshToken).toBe('refresh-old');
+
+    // The next request tries the refresh again, and a good answer recovers the session.
+    post.mockResolvedValue({ data: session('back') });
+    api.defaults.adapter = async (config) => {
+      if (config.headers.Authorization === 'Bearer old')
+        throw httpError(config, 401, 'TOKEN_EXPIRED');
+      return httpOk(config, { ok: true });
+    };
+    await expect(api.get('/api/b')).resolves.toMatchObject({ data: { ok: true } });
+    expect(useAuthStore.getState().accessToken).toBe('access-back');
+  });
+
+  it('clears the session when the server rejects the refresh (4xx)', async () => {
+    vi.spyOn(axios, 'post').mockRejectedValue(refreshRejected(401));
     api.defaults.adapter = async (config) => {
       throw httpError(config, 401, 'TOKEN_EXPIRED');
     };

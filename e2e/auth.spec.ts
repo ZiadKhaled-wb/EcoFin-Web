@@ -6,6 +6,8 @@ import { expect, test, type Page } from '@playwright/test';
  *   E2E_OWNER_EMAIL, E2E_OWNER_PASSWORD            a login with ONE shop
  *   E2E_MULTI_EMAIL, E2E_MULTI_PASSWORD            a login with TWO shops
  *   E2E_MULTI_SHOP_NAME                            the name of the shop to choose
+ *   E2E_RESET_EMAIL, E2E_RESET_PASSWORD            a DEDICATED user for the forgot-password
+ *                                                  test (its password is changed, then restored)
  *   E2E_API_URL        (default http://localhost:3000)
  *   E2E_MAILPIT_URL    (default http://127.0.0.1:54324)
  * Labels are Arabic (the default language); override with E2E_* if the copy changes.
@@ -31,29 +33,85 @@ const storedAuth = (page: Page) =>
     return raw ? (JSON.parse(raw) as { state: Record<string, string> }).state : null;
   });
 
+/** Overwrites fields of the persisted auth state (the zustand store reads it on page load). */
+const patchStoredAuth = (page: Page, patch: Record<string, string>) =>
+  page.evaluate((fields) => {
+    const raw = localStorage.getItem('ecofin-auth');
+    if (!raw) return;
+    const stored = JSON.parse(raw) as { state: Record<string, string> };
+    Object.assign(stored.state, fields);
+    localStorage.setItem('ecofin-auth', JSON.stringify(stored));
+  }, patch);
+
+const authHeaders = (state: Record<string, string> | null) => ({
+  Authorization: `Bearer ${state?.accessToken ?? ''}`,
+  'x-org-id': state?.orgId ?? '',
+});
+
 test.describe('auth flows', () => {
   test.skip(process.env.RUN_E2E !== '1', 'set RUN_E2E=1 to run browser tests');
 
-  test('log in, then a request still works after the access token expired', async ({ page }) => {
+  test('expired access token: the silent refresh runs and the NEW token works on /me', async ({
+    page,
+    request,
+  }) => {
     await login(page, env('E2E_OWNER_EMAIL'), env('E2E_OWNER_PASSWORD'));
     await expect(page).toHaveURL(/\/dashboard/);
+    const before = await storedAuth(page);
 
-    // Force-expire: break the access token and say it is already past due.
-    await page.evaluate(() => {
-      const raw = localStorage.getItem('ecofin-auth');
-      if (!raw) return;
-      const stored = JSON.parse(raw) as { state: Record<string, string> };
-      stored.state.accessToken = 'expired.invalid.token';
-      stored.state.expiresAt = new Date(Date.now() - 1000).toISOString();
-      localStorage.setItem('ecofin-auth', JSON.stringify(stored));
+    // expiresAt in the past: on load the silent-refresh timer fires at once (delay 0).
+    await patchStoredAuth(page, {
+      accessToken: 'expired.invalid.token',
+      expiresAt: new Date(Date.now() - 1000).toISOString(),
     });
-
-    // The next authenticated request gets 401, refreshes once and is retried.
     const refresh = page.waitForResponse((r) => r.url().endsWith('/api/auth/refresh'));
     await page.reload();
     expect((await refresh).status()).toBe(200);
+    await expect
+      .poll(async () => (await storedAuth(page))?.accessToken)
+      .not.toBe('expired.invalid.token');
+
+    // The new token really works on an authenticated endpoint.
+    const after = await storedAuth(page);
+    expect(after?.orgId).toBe(before?.orgId);
+    const me = await request.get(`${API}/api/auth/me`, { headers: authHeaders(after) });
+    expect(me.status()).toBe(200);
+    // Not asserted: that the previous access token now fails. The contract does not promise
+    // that a refresh revokes the old access token (only logout is specified to).
+  });
+
+  test('401 path: a garbage token with a future expiry triggers exactly one refresh, then the retried call succeeds', async ({
+    page,
+  }) => {
+    await login(page, env('E2E_OWNER_EMAIL'), env('E2E_OWNER_PASSWORD'));
     await expect(page).toHaveURL(/\/dashboard/);
-    expect((await storedAuth(page))?.accessToken).not.toBe('expired.invalid.token');
+
+    // Future expiry: the silent timer stays idle, so only the 401 interceptor can refresh.
+    await patchStoredAuth(page, {
+      accessToken: 'garbage.invalid.token',
+      expiresAt: new Date(Date.now() + 60 * 60_000).toISOString(),
+    });
+    await page.reload();
+    await expect(page).toHaveURL(/\/dashboard/);
+
+    let refreshCalls = 0;
+    page.on('request', (r) => {
+      if (r.url().endsWith('/api/auth/refresh')) refreshCalls += 1;
+    });
+
+    // Two parallel calls through the app's own axios client (same module instance in dev).
+    const statuses = await page.evaluate(async () => {
+      const modulePath = '/src/lib/api.ts';
+      const { api } = (await import(/* @vite-ignore */ modulePath)) as {
+        api: { get: (url: string) => Promise<{ status: number }> };
+      };
+      const results = await Promise.all([api.get('/api/auth/me'), api.get('/api/auth/me')]);
+      return results.map((r) => r.status);
+    });
+
+    expect(statuses).toEqual([200, 200]);
+    expect(refreshCalls).toBe(1);
+    expect((await storedAuth(page))?.accessToken).not.toBe('garbage.invalid.token');
   });
 
   test('log out, then the old token is rejected with 401', async ({ page, request }) => {
@@ -78,7 +136,9 @@ test.describe('auth flows', () => {
     page,
     request,
   }) => {
-    const email = env('E2E_OWNER_EMAIL');
+    // A dedicated user: this test changes its password and puts it back at the end.
+    const email = env('E2E_RESET_EMAIL');
+    const originalPassword = env('E2E_RESET_PASSWORD');
     const newPassword = `New-${Date.now()}-pw`;
 
     await page.goto('/forgot-password');
@@ -115,6 +175,13 @@ test.describe('auth flows', () => {
 
     await login(page, email, newPassword);
     await expect(page).toHaveURL(/\/dashboard/);
+
+    // Put the original password back, so the next run starts from the same state.
+    const restore = await request.post(`${API}/api/auth/change-password`, {
+      headers: authHeaders(await storedAuth(page)),
+      data: { currentPassword: newPassword, newPassword: originalPassword },
+    });
+    expect(restore.status()).toBe(200);
   });
 
   test('one login with two shops sees the picker and lands in the chosen shop', async ({

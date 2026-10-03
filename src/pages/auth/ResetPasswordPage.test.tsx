@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -49,6 +49,16 @@ describe('ResetPasswordPage', () => {
   it('shows the invalid-link state when the URL carried no recovery token', async () => {
     renderReset();
     expect(await screen.findByText(t('auth.reset.invalidLink'))).toBeInTheDocument();
+    expect(supa.signOut).toHaveBeenCalledWith({ scope: 'local' });
+  });
+
+  it('drops the recovery session when the page unmounts', async () => {
+    supa.session = { access_token: 'recovery-token' };
+    const { unmount } = renderReset();
+    await screen.findByLabelText(t('auth.reset.newPassword'));
+    supa.signOut.mockClear(); // a sign-out queued by an earlier test's unmount may land late
+    unmount();
+    await waitFor(() => expect(supa.signOut).toHaveBeenCalledWith({ scope: 'local' }));
   });
 
   it('refuses mismatching passwords without calling the server', async () => {
@@ -122,5 +132,6 @@ describe('ResetPasswordPage', () => {
     await user.type(screen.getByLabelText(t('auth.reset.confirm')), 'new-password-1');
     await user.click(screen.getByRole('button', { name: t('auth.reset.submit') }));
     expect(await screen.findByText(t('auth.reset.invalidLink'))).toBeInTheDocument();
+    expect(supa.signOut).toHaveBeenCalledWith({ scope: 'local' });
   });
 });

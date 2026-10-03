@@ -57,7 +57,7 @@ const buildUser = (account: Account, shop: ShopMembership, mustChange: boolean):
   username: account.username,
   role: shop.role,
   permissions: [],
-  must_change_password: mustChange,
+  mustChangePassword: mustChange,
 });
 
 // Tokens live in localStorage (persist), as decided in D16. Trade-off: readable by injected JS.
@@ -123,7 +123,7 @@ export const useAuthStore = create<AuthState>()(
       flagMustChangePassword: () =>
         set((s) => ({
           mustChangePassword: true,
-          user: s.user ? { ...s.user, must_change_password: true } : s.user,
+          user: s.user ? { ...s.user, mustChangePassword: true } : s.user,
         })),
 
       setTenantSlug: (tenantSlug) => set({ tenantSlug }),

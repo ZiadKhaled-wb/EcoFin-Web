@@ -1,12 +1,17 @@
 import {
   AuthForgotPasswordBody,
   AuthLoginBody,
+  AuthLoginResponse,
+  AuthSelectShopResponse,
   type AuthChangePasswordBody,
-  type AuthLoginResponse,
+  type AuthChangePasswordResponse,
+  type AuthForgotPasswordResponse,
+  type AuthLogoutResponse,
   type AuthResetPasswordBody,
-  type AuthSelectShopResponse,
+  type AuthResetPasswordResponse,
+  type AuthSelectShopBody,
 } from '@ecotech/contracts';
-import { api } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 
 /** What a form hands us before it becomes a contract body. */
@@ -38,27 +43,47 @@ export const buildLoginBody = (input: IdentifierInput & { password: string }) =>
 export const buildForgotBody = (input: IdentifierInput) =>
   AuthForgotPasswordBody.safeParse(toIdentifierBody(input));
 
+/** A reply that does not match the contract is a generic error, never trusted data. */
+function parseReply<T>(
+  schema: { safeParse: (d: unknown) => { success: true; data: T } | { success: false } },
+  data: unknown,
+): T {
+  const parsed = schema.safeParse(data);
+  if (!parsed.success) throw new ApiError(500, 'UNKNOWN', 'Reply does not match the contract');
+  return parsed.data;
+}
+
 export const authApi = {
   login: (body: AuthLoginBody) =>
-    api.post<AuthLoginResponse>('/api/auth/login', body, { skipAuth: true }).then((r) => r.data),
+    api
+      .post<unknown>('/api/auth/login', body, { skipAuth: true })
+      .then((r) => parseReply(AuthLoginResponse, r.data)),
 
   /** Needs the Bearer token from login, but no x-org-id yet. */
-  selectShop: (orgId: string) =>
-    api.post<AuthSelectShopResponse>('/api/auth/select-shop', { orgId }).then((r) => r.data),
+  selectShop: (orgId: string) => {
+    const body: AuthSelectShopBody = { orgId };
+    return api
+      .post<unknown>('/api/auth/select-shop', body)
+      .then((r) => parseReply(AuthSelectShopResponse, r.data));
+  },
 
   forgotPassword: (body: AuthForgotPasswordBody) =>
-    api.post('/api/auth/forgot-password', body, { skipAuth: true }).then((r) => r.data),
+    api
+      .post<AuthForgotPasswordResponse>('/api/auth/forgot-password', body, { skipAuth: true })
+      .then((r) => r.data),
 
   resetPassword: (body: AuthResetPasswordBody) =>
-    api.post('/api/auth/reset-password', body, { skipAuth: true }).then((r) => r.data),
+    api
+      .post<AuthResetPasswordResponse>('/api/auth/reset-password', body, { skipAuth: true })
+      .then((r) => r.data),
 
   changePassword: (body: AuthChangePasswordBody) =>
-    api.post('/api/auth/change-password', body).then((r) => r.data),
+    api.post<AuthChangePasswordResponse>('/api/auth/change-password', body).then((r) => r.data),
 
   /** Revokes the session on the server, then always clears the store and the query cache. */
   async logout() {
     try {
-      await api.post('/api/auth/logout');
+      await api.post<AuthLogoutResponse>('/api/auth/logout');
     } catch {
       /* ignore: we clear locally regardless */
     } finally {

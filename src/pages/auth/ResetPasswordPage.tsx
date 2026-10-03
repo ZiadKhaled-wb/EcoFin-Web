@@ -13,6 +13,9 @@ import { validateNewPassword } from './authErrors';
 
 type Status = 'checking' | 'ready' | 'invalid';
 
+/** Drops the in-memory recovery session so it never lingers. */
+const dropRecoverySession = () => supabase.auth.signOut({ scope: 'local' }).catch(() => undefined);
+
 /**
  * Landing page of the emailed recovery link (#access_token=...&type=recovery).
  * The Supabase client only reads the recovery token from the URL; the password itself is
@@ -22,6 +25,7 @@ export default function ResetPasswordPage() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<Status>('checking');
   const recoveryToken = useRef<string | null>(null);
+  const pendingSignOut = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState<{ password?: string; confirm?: string }>({});
@@ -29,6 +33,8 @@ export default function ResetPasswordPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    // React StrictMode re-runs effects at once: a sign-out queued by the cleanup is cancelled.
+    clearTimeout(pendingSignOut.current);
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY' && session) {
         recoveryToken.current = session.access_token;
@@ -43,9 +49,13 @@ export default function ResetPasswordPage() {
         setStatus('ready');
       } else {
         setStatus((prev) => (prev === 'ready' ? prev : 'invalid'));
+        void dropRecoverySession();
       }
     });
-    return () => data.subscription.unsubscribe();
+    return () => {
+      data.subscription.unsubscribe();
+      pendingSignOut.current = setTimeout(() => void dropRecoverySession(), 0);
+    };
   }, []);
 
   const onSubmit = async (e: FormEvent) => {
@@ -62,6 +72,7 @@ export default function ResetPasswordPage() {
     } catch (err) {
       if (err instanceof ApiError && ['TOKEN_EXPIRED', 'TOKEN_INVALID'].includes(err.code)) {
         setStatus('invalid');
+        void dropRecoverySession();
       } else {
         setFormError(t('auth.reset.failed'));
       }
@@ -69,7 +80,7 @@ export default function ResetPasswordPage() {
       return;
     }
     // Drop the in-memory recovery session; it must never outlive this page.
-    await supabase.auth.signOut({ scope: 'local' }).catch(() => undefined);
+    await dropRecoverySession();
     navigate('/login', { replace: true, state: { notice: 'reset' } });
   };
 

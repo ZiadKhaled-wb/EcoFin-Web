@@ -64,3 +64,11 @@ export function httpError(
 export function httpOk<T>(config: InternalAxiosRequestConfig, data: T): AxiosResponse<T> {
   return { status: 200, statusText: 'OK', headers: {}, config, data };
 }
+
+/** A refresh call the server answered with a status (axios rejects like this). */
+export function refreshRejected(status: number) {
+  return httpError({ headers: {} } as InternalAxiosRequestConfig, status, 'TOKEN_INVALID');
+}
+
+/** A refresh call that got no answer at all (offline, timeout). */
+export const networkError = () => new AxiosError('Network Error', 'ERR_NETWORK');
