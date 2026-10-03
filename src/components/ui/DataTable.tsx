@@ -24,11 +24,12 @@ import { formatNumber } from '@/lib/format';
 import { t } from '@/i18n';
 
 declare module '@tanstack/react-table' {
-  // The generics must match the library's own declaration to merge.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // The generics must match the library's own declaration to merge, so both are used below.
   interface ColumnMeta<TData extends RowData, TValue> {
     /** Money, quantities, codes: end-aligned, tabular, LTR-isolated (`.num`). */
     numeric?: boolean;
+    /** Type-only marker so the merged declaration uses both generics. Never set at runtime. */
+    readonly types?: { row: TData; value: TValue };
   }
 }
 
