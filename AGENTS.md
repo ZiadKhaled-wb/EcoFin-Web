@@ -21,12 +21,13 @@ EcoTech Pro: multi-tenant SaaS POS with in-house installments for Egyptian furni
    - reviewing → `.claude/skills/ecotech-review/SKILL.md`
    (Claude Code loads these as skills; other agents read the files and follow them exactly.)
 3. Only your slice in `docs/EcoTech_Pro_Slices.md`.
-4. Database: **only** the tables your task names, in `docs/EcoTech_Pro_Data_Model.md` (the source of truth for tables, columns, enums and write functions). Big picture: `docs/EcoTech_Pro_Entities.md`.
+4. Database: **only** the tables your task names, in `docs/EcoTech_Pro_Data_Model.md` (the source of truth for tables, columns, enums and write functions). Big picture: `docs/EcoTech_Pro_Entities.md`. (Server repo only: don't use `docs/db/initialization-v2.1.sql`; it's deprecated.)
 5. How to use each tool: the "How to use the tools" table in `AGENT_SETUP.md`.
 
 ## Finding code
 - If `graphify-out/GRAPH_REPORT.md` exists, read it first (plain file, no install needed).
 - Open only the files your task lists, plus what they import. Smart agents with the graphify CLI can use `graphify query/explain/path`.
+- Database schema (server repo): `supabase/migrations/20261002000000_v1_baseline.sql`. Search it for the table you need; never read it whole.
 - Never read whole folders. Never rebuild or commit `graphify-out/`; the maintainers do that.
 
 ## Commands

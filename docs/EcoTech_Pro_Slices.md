@@ -78,7 +78,7 @@ Built first. Everything else depends on it. Mostly smart agents.
 **Plan:** V1 · **Agent:** Smart · **Reuse:** New · **Depends on:** F01
 **What it does:** makes the database rebuildable from the repo, and makes every schema change a reviewed file.
 **Includes:**
-- Migration tool (Drizzle) with a `migrations/` folder; a fresh empty database builds from zero with one command
+- Supabase CLI migrations (plain SQL files in `supabase/migrations/`); a fresh empty database builds from zero with one command (`supabase db reset`). Drizzle is used only for typed queries, not migrations. Table and column spec: `docs/EcoTech_Pro_Data_Model.md`
 - Separate seed script for dev data and for the first super admin
 - Table conventions: `id` (uuid), `organization_id`, `created_at`, `updated_at`, `created_by`; money as `numeric(18,2)`; status fields as real enums; soft delete (`archived_at`) instead of hard delete for business records
 - Foreign keys use `(id, organization_id)` so a row can't point to another shop's row
@@ -519,11 +519,11 @@ Built first. Everything else depends on it. Mostly smart agents.
 **Done when:** the open balance equals contract totals − payments − returns.
 
 ### R03 · Credit profile and limit
-**Plan:** V1 · **Agent:** Smart · **Reuse:** Rewrite · **Depends on:** R01, N01
+**Plan:** V1 · **Agent:** Smart · **Reuse:** Rewrite · **Depends on:** R01
 **What it does:** decides how much more credit a customer can get.
 **Includes:**
 - Credit limit per customer (set by a user with `credit.approve`, with a default from settings, e.g. a multiple of income)
-- Current exposure = unpaid principal of all active contracts
+- Current exposure = unpaid principal of all active contracts (the contracts table exists from the baseline migration, so this can be built before installment sales; exposure is zero until then)
 - Payment behaviour summary: on-time %, days late, current overdue
 - Used on the server by the installment sale (N02): a sale above the available limit is blocked unless someone with permission approves the exception
 
@@ -669,7 +669,7 @@ Built first. Everything else depends on it. Mostly smart agents.
 The shop lends its own money. Rules are built new on the server; nothing is reused from the old X-Core engine.
 
 ### N01 · Installment rules engine
-**Plan:** V1 · **Agent:** Smart · **Reuse:** New · **Depends on:** P03, P04, F12, R03
+**Plan:** V1 · **Agent:** Smart · **Reuse:** New · **Depends on:** P03, P04, F12, R03, R04, R05
 **What it does:** calculates and enforces the terms of every installment sale on the server.
 **Includes:**
 - Reads the shop's policy (P03): min down payment %, max months, markup % (flat or by duration tiers), allowed frequencies (monthly, weekly), minimum installment amount, rounding
