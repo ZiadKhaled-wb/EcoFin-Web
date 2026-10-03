@@ -1,8 +1,8 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { cn } from "@/lib/cn";
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { cn } from '@/lib/cn';
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
-export type ButtonSize = "sm" | "md" | "lg";
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
@@ -17,22 +17,22 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const VARIANT: Record<ButtonVariant, string> = {
-  primary: "btn-primary",
-  secondary: "btn-secondary",
-  ghost: "btn-ghost",
-  danger: "btn-danger",
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  ghost: 'btn-ghost',
+  danger: 'btn-danger',
 };
-const SIZE: Record<ButtonSize, string> = { sm: "btn-sm", md: "", lg: "btn-lg" };
+const SIZE: Record<ButtonSize, string> = { sm: 'btn-sm', md: '', lg: 'btn-lg' };
 
 /** The only button. Defaults to type="button" so it never submits by accident. */
 export default function Button({
-  variant = "primary",
-  size = "md",
+  variant = 'primary',
+  size = 'md',
   loading,
   loadingLabel,
   fullWidth,
   icon,
-  type = "button",
+  type = 'button',
   disabled,
   className,
   children,
@@ -43,7 +43,7 @@ export default function Button({
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      className={cn("btn", VARIANT[variant], SIZE[size], fullWidth && "w-full", className)}
+      className={cn('btn', VARIANT[variant], SIZE[size], fullWidth && 'w-full', className)}
       {...rest}
     >
       {loading ? <span className="spinner" aria-hidden /> : icon}

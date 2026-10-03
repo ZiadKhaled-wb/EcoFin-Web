@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import type { AuthUser, Session } from "@/types/auth";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import type { AuthUser, Session } from '@/types/auth';
 
 interface AuthState {
   user: AuthUser | null;
@@ -40,6 +40,6 @@ export const useAuthStore = create<AuthState>()(
       setTenantSlug: (tenantSlug) => set({ tenantSlug }),
       clearSession: () => set({ user: null, accessToken: null, refreshToken: null }),
     }),
-    { name: "ecofin-auth", version: 1 },
+    { name: 'ecofin-auth', version: 1 },
   ),
 );

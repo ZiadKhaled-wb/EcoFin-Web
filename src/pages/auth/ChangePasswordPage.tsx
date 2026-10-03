@@ -1,17 +1,17 @@
-import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import AuthLayout from "@/components/auth/AuthLayout";
-import FormField from "@/components/ui/FormField";
-import { LockIcon } from "@/components/ui/Icons";
-import FormError from "@/components/ui/FormError";
-import Notice from "@/components/ui/Notice";
-import SubmitButton from "@/components/ui/SubmitButton";
-import { ApiError, getErrorMessage } from "@/lib/api";
-import { validateNewPassword } from "@/lib/validation";
-import { authApi } from "@/services/authApi";
-import { useAuthStore } from "@/store/authStore";
+import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthLayout from '@/components/auth/AuthLayout';
+import FormField from '@/components/ui/FormField';
+import { LockIcon } from '@/components/ui/Icons';
+import FormError from '@/components/ui/FormError';
+import Notice from '@/components/ui/Notice';
+import SubmitButton from '@/components/ui/SubmitButton';
+import { ApiError, getErrorMessage } from '@/lib/api';
+import { validateNewPassword } from '@/lib/validation';
+import { authApi } from '@/services/authApi';
+import { useAuthStore } from '@/store/authStore';
 
-type Errors = Partial<Record<"currentPassword" | "newPassword" | "confirmPassword", string>>;
+type Errors = Partial<Record<'currentPassword' | 'newPassword' | 'confirmPassword', string>>;
 
 /**
  * THE GATE. A temp-password user can reach only this page and logout
@@ -24,25 +24,25 @@ export default function ChangePasswordPage() {
   const setLogin = useAuthStore((s) => s.setLogin);
   const clearSession = useAuthStore((s) => s.clearSession);
 
-  const [currentPassword, setCurrent] = useState("");
-  const [newPassword, setNew] = useState("");
-  const [confirmPassword, setConfirm] = useState("");
+  const [currentPassword, setCurrent] = useState('');
+  const [newPassword, setNew] = useState('');
+  const [confirmPassword, setConfirm] = useState('');
   const [errors, setErrors] = useState<Errors>({});
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setFormError("");
+    setFormError('');
 
     const next: Errors = {};
-    if (!currentPassword) next.currentPassword = "أدخل كلمة المرور الحالية.";
+    if (!currentPassword) next.currentPassword = 'أدخل كلمة المرور الحالية.';
     const v = validateNewPassword(newPassword, confirmPassword);
     if (v.password) next.newPassword = v.password;
     if (v.confirm) next.confirmPassword = v.confirm;
     if (!next.newPassword && newPassword === currentPassword)
-      next.newPassword = "كلمة المرور الجديدة يجب أن تختلف عن الحالية.";
+      next.newPassword = 'كلمة المرور الجديدة يجب أن تختلف عن الحالية.';
     setErrors(next);
     if (Object.keys(next).length) return;
 
@@ -53,29 +53,31 @@ export default function ChangePasswordPage() {
       // Silent re-login for a fresh token that no longer carries the flag.
       try {
         const res = await authApi.login({
-          tenant_slug: tenantSlug ?? "",
-          identifier: user?.username ?? user?.email ?? "",
+          tenant_slug: tenantSlug ?? '',
+          identifier: user?.username ?? user?.email ?? '',
           password: newPassword,
         });
         setLogin(res.user, res.session, res.must_change_password);
         setDone(true);
-        setTimeout(() => navigate("/dashboard", { replace: true }), 800);
+        setTimeout(() => navigate('/dashboard', { replace: true }), 800);
       } catch {
         clearSession();
-        navigate("/login", { replace: true, state: { notice: "changed" } });
+        navigate('/login', { replace: true, state: { notice: 'changed' } });
       }
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.status === 401) return void setErrors({ currentPassword: "كلمة المرور الحالية غير صحيحة." });
-        if (err.code === "VALIDATION_FAILED" && err.fields) return void setErrors(err.fields as Errors);
+        if (err.status === 401)
+          return void setErrors({ currentPassword: 'كلمة المرور الحالية غير صحيحة.' });
+        if (err.code === 'VALIDATION_FAILED' && err.fields)
+          return void setErrors(err.fields as Errors);
         if (err.status === 403) {
           // Should not happen on this page. Log and force a clean re-login.
-          console.error("Unexpected 403 on change-password", err);
+          console.error('Unexpected 403 on change-password', err);
           clearSession();
-          return void navigate("/login", { replace: true });
+          return void navigate('/login', { replace: true });
         }
       }
-      setFormError(getErrorMessage(err, "تعذر تغيير كلمة المرور. حاول مرة أخرى."));
+      setFormError(getErrorMessage(err, 'تعذر تغيير كلمة المرور. حاول مرة أخرى.'));
     } finally {
       setSubmitting(false);
     }
@@ -126,7 +128,7 @@ export default function ChangePasswordPage() {
           <button
             type="button"
             className="btn-link mx-auto block text-sm"
-            onClick={() => authApi.logout().then(() => navigate("/login", { replace: true }))}
+            onClick={() => authApi.logout().then(() => navigate('/login', { replace: true }))}
           >
             تسجيل الخروج
           </button>

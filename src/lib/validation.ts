@@ -11,7 +11,7 @@ export function validateNewPassword(password: string, confirm: string) {
     errors.password = `كلمة المرور يجب ألا تزيد عن ${PASSWORD_MAX} حرفًا.`;
   }
   if (!errors.password && password !== confirm) {
-    errors.confirm = "كلمتا المرور غير متطابقتين.";
+    errors.confirm = 'كلمتا المرور غير متطابقتين.';
   }
   return errors;
 }

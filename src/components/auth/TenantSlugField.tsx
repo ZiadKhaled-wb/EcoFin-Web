@@ -1,4 +1,4 @@
-import FormField from "@/components/ui/FormField";
+import FormField from '@/components/ui/FormField';
 
 interface Props {
   slug: string;
@@ -13,7 +13,10 @@ export default function TenantSlugField({ slug, onChange, locked, onUnlock }: Pr
     return (
       <div className="notice notice-info flex items-center justify-between gap-3">
         <span>
-          تسجيل الدخول إلى: <strong className="font-mono" dir="ltr">{slug}</strong>
+          تسجيل الدخول إلى:{' '}
+          <strong className="font-mono" dir="ltr">
+            {slug}
+          </strong>
         </span>
         <button type="button" className="btn-link" onClick={onUnlock}>
           تغيير

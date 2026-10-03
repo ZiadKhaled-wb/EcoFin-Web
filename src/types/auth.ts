@@ -1,26 +1,26 @@
 export type Role =
-  | "OWNER"
-  | "OPS_MANAGER"
-  | "ACCOUNTANT"
-  | "CASHIER"
-  | "COLLECTOR"
-  | "WAREHOUSE_MANAGER"
-  | "HR_MANAGER"
-  | "LAWYER"
-  | "EMPLOYEE"
-  | "SUPER_ADMIN"; // platform users only; not a tenant role (ADR-0004 D6)
+  | 'OWNER'
+  | 'OPS_MANAGER'
+  | 'ACCOUNTANT'
+  | 'CASHIER'
+  | 'COLLECTOR'
+  | 'WAREHOUSE_MANAGER'
+  | 'HR_MANAGER'
+  | 'LAWYER'
+  | 'EMPLOYEE'
+  | 'SUPER_ADMIN'; // platform users only; not a tenant role (ADR-0004 D6)
 
 export const ROLE_LABELS: Record<Role, string> = {
-  OWNER: "المالك",
-  OPS_MANAGER: "مدير العمليات",
-  ACCOUNTANT: "محاسب",
-  CASHIER: "كاشير",
-  COLLECTOR: "محصّل",
-  WAREHOUSE_MANAGER: "أمين المخزن",
-  HR_MANAGER: "مدير الموارد البشرية",
-  LAWYER: "محامي",
-  EMPLOYEE: "موظف",
-  SUPER_ADMIN: "مدير المنصة",
+  OWNER: 'المالك',
+  OPS_MANAGER: 'مدير العمليات',
+  ACCOUNTANT: 'محاسب',
+  CASHIER: 'كاشير',
+  COLLECTOR: 'محصّل',
+  WAREHOUSE_MANAGER: 'أمين المخزن',
+  HR_MANAGER: 'مدير الموارد البشرية',
+  LAWYER: 'محامي',
+  EMPLOYEE: 'موظف',
+  SUPER_ADMIN: 'مدير المنصة',
 };
 
 export interface AuthUser {
