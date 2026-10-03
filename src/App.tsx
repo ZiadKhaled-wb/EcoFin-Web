@@ -3,12 +3,12 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import GuestOnly from '@/components/guards/GuestOnly';
 import RequireAuth from '@/components/guards/RequireAuth';
 import RequirePasswordChanged from '@/components/guards/RequirePasswordChanged';
-import ActivationPage from '@/pages/auth/ActivationPage';
-import ActivateWorkspacePage from '@/pages/auth/ActivateWorkspacePage';
+import RequireShop from '@/components/guards/RequireShop';
 import LoginPage from '@/pages/auth/LoginPage';
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 import ChangePasswordPage from '@/pages/auth/ChangePasswordPage';
+import ShopPickerPage from '@/pages/auth/ShopPickerPage';
 import AppShell from '@/components/layout/AppShell';
 import { navLeaves } from '@/config/navigation';
 import DashboardPage from '@/pages/DashboardPage';
@@ -25,30 +25,33 @@ export default function App() {
           {/* Signed-out only */}
           <Route element={<GuestOnly />}>
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/activate" element={<ActivationPage />} />
-            <Route path="/activate-workspace" element={<ActivateWorkspacePage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           </Route>
 
           {import.meta.env.DEV && <Route path="/design-system" element={<DesignSystemPage />} />}
 
-          {/* Supabase magic-link landing: reachable regardless of session */}
+          {/* Emailed recovery link landing: reachable regardless of session */}
           <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Signed-in */}
           <Route element={<RequireAuth />}>
-            {/* The gate: the only page a temp-password user may see */}
-            <Route path="/change-password" element={<ChangePasswordPage />} />
+            {/* A login with several shops picks one here (no shop is active yet) */}
+            <Route path="/select-shop" element={<ShopPickerPage />} />
 
-            <Route element={<RequirePasswordChanged />}>
-              <Route element={<AppShell />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
-                {/* Real modules replace these placeholders (one route per menu item) */}
-                {navLeaves()
-                  .filter((i) => i.to && i.to !== '/dashboard')
-                  .map((i) => (
-                    <Route key={i.id} path={i.to} element={<ModulePlaceholderPage />} />
-                  ))}
+            <Route element={<RequireShop />}>
+              {/* The gate: the only page a temp-password user may see */}
+              <Route path="/change-password" element={<ChangePasswordPage />} />
+
+              <Route element={<RequirePasswordChanged />}>
+                <Route element={<AppShell />}>
+                  <Route path="/dashboard" element={<DashboardPage />} />
+                  {/* Real modules replace these placeholders (one route per menu item) */}
+                  {navLeaves()
+                    .filter((i) => i.to && i.to !== '/dashboard')
+                    .map((i) => (
+                      <Route key={i.id} path={i.to} element={<ModulePlaceholderPage />} />
+                    ))}
+                </Route>
               </Route>
             </Route>
           </Route>

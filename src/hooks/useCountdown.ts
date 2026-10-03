@@ -12,6 +12,3 @@ export function useCountdown() {
 
   return { seconds, start: setSeconds };
 }
-
-export const rateLimitMessage = (seconds: number) =>
-  `محاولات كثيرة. يمكنك المحاولة مرة أخرى بعد ${seconds} ثانية.`;
