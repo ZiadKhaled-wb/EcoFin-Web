@@ -1,0 +1,19 @@
+{
+  "dashboard": "Dashboard",
+  "sales": "Sales",
+  "pos": "Point of sale",
+  "orders": "Orders",
+  "invoices": "Invoices",
+  "inventory": "Inventory",
+  "products": "Products",
+  "categories": "Categories",
+  "stock": "Stock movements",
+  "warehouses": "Warehouses",
+  "purchasing": "Purchasing",
+  "customers": "Customers",
+  "suppliers": "Suppliers",
+  "employees": "Employees",
+  "accounting": "Accounting",
+  "reports": "Reports",
+  "settings": "Settings"
+}

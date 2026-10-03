@@ -1,0 +1,15 @@
+{
+  "search": "بحث في الجدول",
+  "filterAll": "الكل",
+  "sortBy": "ترتيب حسب {column}",
+  "sortedAsc": "مرتّب تصاعديًا",
+  "sortedDesc": "مرتّب تنازليًا",
+  "empty": "لا توجد بيانات",
+  "noResults": "لا توجد نتائج مطابقة",
+  "noResultsHint": "غيّر البحث أو الفلتر وحاول مرة أخرى.",
+  "pageOf": "صفحة {page} من {pages}",
+  "total": "{total} صف",
+  "previous": "السابق",
+  "next": "التالي",
+  "pagination": "التنقل بين الصفحات"
+}

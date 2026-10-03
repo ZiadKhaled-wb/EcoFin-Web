@@ -1,3 +1,6 @@
+import BranchSwitcher from '@/components/layout/BranchSwitcher';
+import LanguageSwitch from '@/components/layout/LanguageSwitch';
+import { t } from '@/i18n';
 import { ChevronDownIcon, LogoutIcon, MenuIcon } from '@/components/ui/Icons';
 import Badge from '@/components/ui/Badge';
 import IconButton from '@/components/ui/IconButton';
@@ -14,7 +17,13 @@ import { authApi } from '@/services/authApi';
 import { useAuthStore } from '@/store/authStore';
 import { ROLE_LABELS } from '@/types/auth';
 
-export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
+export default function Topbar({
+  onMenuClick,
+  menuOpen = false,
+}: {
+  onMenuClick: () => void;
+  menuOpen?: boolean;
+}) {
   const user = useAuthStore((s) => s.user);
   const tenantSlug = useAuthStore((s) => s.tenantSlug);
   const name = user?.username ?? user?.email ?? '';
@@ -23,13 +32,17 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
     <header className="sticky top-0 z-(--z-sticky) flex h-16 items-center gap-3 border-b border-line bg-surface px-4 sm:px-6">
       <IconButton
         className="lg:hidden"
-        label="فتح القائمة"
+        label={t('shell.openMenu')}
         icon={<MenuIcon />}
+        aria-expanded={menuOpen}
+        aria-haspopup="dialog"
         onClick={onMenuClick}
       />
       <Wordmark size="md" className="lg:hidden" />
 
-      <div className="ms-auto flex items-center gap-3">
+      <div className="ms-auto flex items-center gap-2 sm:gap-3">
+        <BranchSwitcher />
+        <LanguageSwitch />
         {tenantSlug && (
           <span dir="ltr" className="hidden font-mono text-xs text-ink-mute sm:inline">
             {tenantSlug}
@@ -40,13 +53,13 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
             <button
               type="button"
               className="flex min-h-11 items-center gap-2 rounded-control px-2 hover:bg-paper"
-              aria-label="قائمة الحساب"
+              aria-label={t('shell.accountMenu')}
             >
               <span
                 aria-hidden
                 className="flex size-9 items-center justify-center rounded-full bg-brand-600 text-sm font-bold uppercase text-white"
               >
-                {name.charAt(0) || '؟'}
+                {name.charAt(0) || t('shell.unknownUser')}
               </span>
               <span className="hidden max-w-40 truncate text-sm font-medium sm:inline">{name}</span>
               <ChevronDownIcon size={16} className="text-ink-mute" />
@@ -68,7 +81,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
               icon={<LogoutIcon />}
               onSelect={() => void authApi.logout()}
             >
-              تسجيل الخروج
+              {t('shell.logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

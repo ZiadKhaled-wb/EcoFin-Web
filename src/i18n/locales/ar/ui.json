@@ -1,0 +1,15 @@
+{
+  "close": "إغلاق",
+  "search": "بحث",
+  "searchPlaceholder": "ابحث...",
+  "clearSearch": "مسح البحث",
+  "retry": "إعادة المحاولة",
+  "loading": "جارٍ التحميل...",
+  "showPassword": "إظهار كلمة المرور",
+  "hidePassword": "إخفاء كلمة المرور",
+  "cancel": "إلغاء",
+  "confirm": "تأكيد",
+  "errorTitle": "تعذر تحميل البيانات",
+  "errorDescription": "حدث خطأ أثناء الاتصال بالخادم. حاول مرة أخرى.",
+  "dismissToast": "إغلاق الإشعار"
+}

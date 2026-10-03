@@ -17,7 +17,11 @@ export default defineConfig([
       reactRefresh.configs.vite,
       prettier,
     ],
-    rules: { '@typescript-eslint/no-explicit-any': 'error' },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+      // Dialogs and results use our Dialog and Toast components (design.md section 10).
+      'no-alert': 'error',
+    },
     languageOptions: {
       globals: globals.browser,
     },

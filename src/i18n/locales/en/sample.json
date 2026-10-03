@@ -1,0 +1,39 @@
+{
+  "title": "Sample page",
+  "description": "Built entirely from the shared components.",
+  "states": {
+    "label": "View state",
+    "data": "Data",
+    "loading": "Loading",
+    "empty": "Empty",
+    "error": "Error"
+  },
+  "table": {
+    "name": "Product",
+    "status": "Status",
+    "price": "Price",
+    "statusFilter": "Status",
+    "active": "Available",
+    "draft": "Draft",
+    "emptyTitle": "No products yet",
+    "emptyDescription": "Add the first product and it will show up here.",
+    "emptyAction": "Add a product"
+  },
+  "form": {
+    "title": "Form validated by a contract schema",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "submit": "Save",
+    "success": "Saved successfully."
+  },
+  "dialog": {
+    "open": "Open dialog",
+    "title": "Confirm the action",
+    "description": "Do you want to continue? You can still back out before saving.",
+    "confirmed": "Confirmed."
+  },
+  "restricted": {
+    "title": "Restricted page",
+    "body": "Only people who may view the audit log can see this page."
+  }
+}

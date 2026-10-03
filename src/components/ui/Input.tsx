@@ -1,4 +1,5 @@
-import { useState, type InputHTMLAttributes, type ReactNode } from 'react';
+import { useState, type InputHTMLAttributes, type ReactNode, type Ref } from 'react';
+import { t } from '@/i18n';
 import { cn } from '@/lib/cn';
 import { EyeIcon, EyeOffIcon } from '@/components/ui/Icons';
 
@@ -9,6 +10,8 @@ export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   icon?: ReactNode;
   /** Force LTR for emails, usernames, codes. Password inputs are always LTR. */
   ltr?: boolean;
+  /** React 19: a ref is an ordinary prop. Lets react-hook-form focus the first invalid field. */
+  ref?: Ref<HTMLInputElement>;
 };
 
 /**
@@ -47,7 +50,7 @@ export default function Input({ invalid, icon, ltr, type, className, ...rest }: 
           type="button"
           onClick={() => setVisible((v) => !v)}
           className="absolute right-2 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-control text-ink-mute hover:bg-line hover:text-ink"
-          aria-label={visible ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+          aria-label={visible ? t('ui.hidePassword') : t('ui.showPassword')}
           aria-pressed={visible}
         >
           {visible ? <EyeOffIcon /> : <EyeIcon />}

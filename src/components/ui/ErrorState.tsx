@@ -1,11 +1,12 @@
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
 import { AlertIcon } from '@/components/ui/Icons';
+import { t } from '@/i18n';
 
 /** A region failed to load. Always offer a retry when one exists. */
 export default function ErrorState({
-  title = 'تعذر تحميل البيانات',
-  description = 'حدث خطأ أثناء الاتصال بالخادم. حاول مرة أخرى.',
+  title = t('ui.errorTitle'),
+  description = t('ui.errorDescription'),
   onRetry,
   className,
 }: {
@@ -25,7 +26,7 @@ export default function ErrorState({
       action={
         onRetry && (
           <Button variant="secondary" onClick={onRetry}>
-            إعادة المحاولة
+            {t('ui.retry')}
           </Button>
         )
       }

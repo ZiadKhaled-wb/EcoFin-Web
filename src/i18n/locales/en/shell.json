@@ -1,0 +1,45 @@
+{
+  "skipToContent": "Skip to content",
+  "menu": "Menu",
+  "openMenu": "Open menu",
+  "mainNav": "Main navigation",
+  "accountMenu": "Account menu",
+  "logout": "Sign out",
+  "language": "Language",
+  "languageName": {
+    "ar": "العربية",
+    "en": "English"
+  },
+  "switchTo": "Switch language to {language}",
+  "branch": "Branch",
+  "noBranches": "No branches",
+  "branchesFailed": "Could not load branches",
+  "unknownUser": "?",
+  "home": "Home",
+  "breadcrumb": "Breadcrumb",
+  "placeholder": {
+    "title": "This module is under construction",
+    "description": "Your data and tools will appear here once the module is ready.",
+    "fallbackName": "Module"
+  },
+  "dashboard": {
+    "welcome": "Welcome {name}",
+    "cardTitle": "Start here",
+    "cardDescription": "Modules are added over time from the side menu.",
+    "signedIn": "You are signed in."
+  },
+  "forbidden": {
+    "title": "You do not have permission to open this page",
+    "description": "Ask the shop owner to give your account the right permission.",
+    "back": "Back to the dashboard"
+  },
+  "permissionsFailed": {
+    "title": "Could not check your permissions",
+    "description": "We could not verify your permissions. Try again."
+  },
+  "errorBoundary": {
+    "title": "Something unexpected happened",
+    "description": "This page could not be shown. Reload it and try again.",
+    "reload": "Reload the page"
+  }
+}
