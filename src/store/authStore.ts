@@ -104,9 +104,7 @@ export const useAuthStore = create<AuthState>()(
           };
           return {
             account,
-            accessToken: res.accessToken,
-            refreshToken: res.refreshToken,
-            expiresAt: res.expiresAt,
+            // No tokens in the reply (D23): the login tokens stay, only the shop changes.
             orgId: res.shop.orgId,
             tenantSlug: res.shop.tenantSlug,
             user: buildUser(account, res.shop, s.mustChangePassword),

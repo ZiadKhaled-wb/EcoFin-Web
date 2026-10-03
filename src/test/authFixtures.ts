@@ -39,7 +39,6 @@ export const loginResponse = (over: Partial<AuthLoginResponse> = {}): AuthLoginR
 });
 
 export const selectShopResponse = (shop = shopB): AuthSelectShopResponse => ({
-  ...session('shop'),
   user: { id: USER_ID, email: 'owner@example.com' },
   shop,
 });

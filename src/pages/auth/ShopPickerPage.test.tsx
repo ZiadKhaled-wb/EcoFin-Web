@@ -38,8 +38,13 @@ describe('ShopPickerPage', () => {
     expect(screen.getByText(t('auth.role.CASHIER'))).toBeInTheDocument();
   });
 
-  it('calls select-shop, stores the new session and orgId, then enters the app', async () => {
+  it('calls select-shop, keeps the login tokens, stores orgId, then enters the app', async () => {
     const post = vi.spyOn(api, 'post').mockResolvedValue({ data: selectShopResponse(shopB) });
+    const tokensBefore = (({ accessToken, refreshToken, expiresAt }) => ({
+      accessToken,
+      refreshToken,
+      expiresAt,
+    }))(useAuthStore.getState());
     renderPicker();
     await userEvent.click(screen.getByRole('button', { name: /Shop B/ }));
 
@@ -47,7 +52,12 @@ describe('ShopPickerPage', () => {
     expect(post).toHaveBeenCalledWith('/api/auth/select-shop', { orgId: ORG_B });
     const state = useAuthStore.getState();
     expect(state.orgId).toBe(ORG_B);
-    expect(state.accessToken).toBe('access-shop');
+    expect({
+      accessToken: state.accessToken,
+      refreshToken: state.refreshToken,
+      expiresAt: state.expiresAt,
+    }).toEqual(tokensBefore);
+    expect(tokensBefore.accessToken).toBeTruthy();
     expect(state.user?.role).toBe('CASHIER');
   });
 
