@@ -1,39 +1,39 @@
-import { useEffect, useState, type FormEvent } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import AuthLayout from "@/components/auth/AuthLayout";
-import FormField from "@/components/ui/FormField";
-import FormError from "@/components/ui/FormError";
-import SubmitButton from "@/components/ui/SubmitButton";
-import { KeyIcon, LockIcon, MailIcon, UserIcon } from "@/components/ui/Icons";
-import { ApiError, getErrorMessage } from "@/lib/api";
-import { USERNAME_MIN, validateNewPassword } from "@/lib/validation";
-import { authApi } from "@/services/authApi";
-import { useAuthStore } from "@/store/authStore";
+import { useEffect, useState, type FormEvent } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import AuthLayout from '@/components/auth/AuthLayout';
+import FormField from '@/components/ui/FormField';
+import FormError from '@/components/ui/FormError';
+import SubmitButton from '@/components/ui/SubmitButton';
+import { KeyIcon, LockIcon, MailIcon, UserIcon } from '@/components/ui/Icons';
+import { ApiError, getErrorMessage } from '@/lib/api';
+import { USERNAME_MIN, validateNewPassword } from '@/lib/validation';
+import { authApi } from '@/services/authApi';
+import { useAuthStore } from '@/store/authStore';
 
-type Status = "loading" | "ready" | "unavailable";
-type Errors = Partial<Record<"email" | "username" | "password" | "confirmPassword", string>>;
+type Status = 'loading' | 'ready' | 'unavailable';
+type Errors = Partial<Record<'email' | 'username' | 'password' | 'confirmPassword', string>>;
 
 export default function ActivateWorkspacePage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const licenseKey = (params.get("key") ?? "").toUpperCase();
+  const licenseKey = (params.get('key') ?? '').toUpperCase();
   const setTenantSlug = useAuthStore((s) => s.setTenantSlug);
 
-  const [status, setStatus] = useState<Status>("loading");
-  const [pageError, setPageError] = useState("");
-  const [orgName, setOrgName] = useState("");
+  const [status, setStatus] = useState<Status>('loading');
+  const [pageError, setPageError] = useState('');
+  const [orgName, setOrgName] = useState('');
 
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<Errors>({});
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!licenseKey) {
-      navigate("/activate", { replace: true });
+      navigate('/activate', { replace: true });
       return;
     }
     let cancelled = false;
@@ -42,19 +42,19 @@ export default function ActivateWorkspacePage() {
       .then((data) => {
         if (cancelled) return;
         if (data.is_used) {
-          navigate("/login", { replace: true });
+          navigate('/login', { replace: true });
         } else if (!data.org_name) {
-          setPageError("لا توجد منشأة مسجلة لهذا الكود. تواصل مع الدعم.");
-          setStatus("unavailable");
+          setPageError('لا توجد منشأة مسجلة لهذا الكود. تواصل مع الدعم.');
+          setStatus('unavailable');
         } else {
           setOrgName(data.org_name);
-          setStatus("ready");
+          setStatus('ready');
         }
       })
       .catch((err) => {
         if (cancelled) return;
-        setPageError(getErrorMessage(err, "تعذر التحقق من كود التفعيل."));
-        setStatus("unavailable");
+        setPageError(getErrorMessage(err, 'تعذر التحقق من كود التفعيل.'));
+        setStatus('unavailable');
       });
     return () => {
       cancelled = true;
@@ -63,10 +63,10 @@ export default function ActivateWorkspacePage() {
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setFormError("");
+    setFormError('');
 
     const next: Errors = {};
-    if (!email.trim()) next.email = "أدخل البريد الإلكتروني المسجل لهذه المنشأة.";
+    if (!email.trim()) next.email = 'أدخل البريد الإلكتروني المسجل لهذه المنشأة.';
     if (username.trim().length < USERNAME_MIN)
       next.username = `اسم المستخدم يجب ألا يقل عن ${USERNAME_MIN} أحرف.`;
     const pw = validateNewPassword(password, confirmPassword);
@@ -85,23 +85,23 @@ export default function ActivateWorkspacePage() {
         confirmPassword,
       });
       setTenantSlug(res.tenant_slug);
-      navigate("/login", { replace: true, state: { notice: "activated" } });
+      navigate('/login', { replace: true, state: { notice: 'activated' } });
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.code === "LICENSE_USED") return void navigate("/login", { replace: true });
-        if (err.code === "LICENSE_EXPIRED") {
-          setPageError("انتهت صلاحية كود التفعيل. تواصل مع الدعم لتجديده.");
-          return void setStatus("unavailable");
+        if (err.code === 'LICENSE_USED') return void navigate('/login', { replace: true });
+        if (err.code === 'LICENSE_EXPIRED') {
+          setPageError('انتهت صلاحية كود التفعيل. تواصل مع الدعم لتجديده.');
+          return void setStatus('unavailable');
         }
         if (err.status === 401) {
           // INVALID_CREDENTIALS here means the email doesn't match the license.
-          return void setErrors({ email: "هذا البريد لا يطابق البريد المسجل لهذا الكود." });
+          return void setErrors({ email: 'هذا البريد لا يطابق البريد المسجل لهذا الكود.' });
         }
-        if (err.code === "VALIDATION_FAILED" && err.fields) {
+        if (err.code === 'VALIDATION_FAILED' && err.fields) {
           return void setErrors(err.fields as Errors);
         }
       }
-      setFormError(getErrorMessage(err, "تعذر تفعيل المنشأة. حاول مرة أخرى."));
+      setFormError(getErrorMessage(err, 'تعذر تفعيل المنشأة. حاول مرة أخرى.'));
     } finally {
       setSubmitting(false);
     }
@@ -120,14 +120,14 @@ export default function ActivateWorkspacePage() {
           </div>
         )
       }
-      loading={status === "loading"}
+      loading={status === 'loading'}
       loadingLabel="جارٍ التحقق من الكود..."
       terminalError={
-        status === "unavailable"
+        status === 'unavailable'
           ? {
               message: pageError,
-              actionLabel: "العودة إلى صفحة التفعيل",
-              onAction: () => navigate("/activate", { replace: true }),
+              actionLabel: 'العودة إلى صفحة التفعيل',
+              onAction: () => navigate('/activate', { replace: true }),
             }
           : undefined
       }

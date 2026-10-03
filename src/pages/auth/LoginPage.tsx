@@ -1,45 +1,45 @@
-import { useState, type FormEvent } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import AuthLayout from "@/components/auth/AuthLayout";
-import TenantSlugField from "@/components/auth/TenantSlugField";
-import FormField from "@/components/ui/FormField";
-import FormError from "@/components/ui/FormError";
-import Notice from "@/components/ui/Notice";
-import SubmitButton from "@/components/ui/SubmitButton";
-import { LockIcon, UserIcon } from "@/components/ui/Icons";
-import { ApiError, getErrorMessage } from "@/lib/api";
-import { rateLimitMessage, useCountdown } from "@/hooks/useCountdown";
-import { useTenantSlug } from "@/hooks/useTenantSlug";
-import { authApi } from "@/services/authApi";
-import { useAuthStore } from "@/store/authStore";
+import { useState, type FormEvent } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import AuthLayout from '@/components/auth/AuthLayout';
+import TenantSlugField from '@/components/auth/TenantSlugField';
+import FormField from '@/components/ui/FormField';
+import FormError from '@/components/ui/FormError';
+import Notice from '@/components/ui/Notice';
+import SubmitButton from '@/components/ui/SubmitButton';
+import { LockIcon, UserIcon } from '@/components/ui/Icons';
+import { ApiError, getErrorMessage } from '@/lib/api';
+import { rateLimitMessage, useCountdown } from '@/hooks/useCountdown';
+import { useTenantSlug } from '@/hooks/useTenantSlug';
+import { authApi } from '@/services/authApi';
+import { useAuthStore } from '@/store/authStore';
 
 const NOTICES: Record<string, string> = {
-  activated: "تم تفعيل المنشأة. سجّل الدخول للمتابعة.",
-  reset: "تم تغيير كلمة المرور. سجّل الدخول بكلمة المرور الجديدة.",
-  changed: "تم تغيير كلمة المرور. سجّل الدخول من جديد.",
+  activated: 'تم تفعيل المنشأة. سجّل الدخول للمتابعة.',
+  reset: 'تم تغيير كلمة المرور. سجّل الدخول بكلمة المرور الجديدة.',
+  changed: 'تم تغيير كلمة المرور. سجّل الدخول من جديد.',
 };
 
 // D8: every 401 is the same message. Never branch on the backend's wording.
-const GENERIC_CREDENTIALS_ERROR = "بيانات الدخول غير صحيحة.";
+const GENERIC_CREDENTIALS_ERROR = 'بيانات الدخول غير صحيحة.';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const notice = NOTICES[(location.state as { notice?: string } | null)?.notice ?? ""];
+  const notice = NOTICES[(location.state as { notice?: string } | null)?.notice ?? ''];
 
   const tenant = useTenantSlug();
   const setLogin = useAuthStore((s) => s.setLogin);
   const setTenantSlug = useAuthStore((s) => s.setTenantSlug);
 
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { seconds, start } = useCountdown();
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setLoading(true);
     try {
       const res = await authApi.login({
@@ -50,11 +50,11 @@ export default function LoginPage() {
       setTenantSlug(tenant.slug);
       setLogin(res.user, res.session, res.must_change_password);
       // must_change_password blocks everything else.
-      navigate(res.must_change_password ? "/change-password" : "/dashboard", { replace: true });
+      navigate(res.must_change_password ? '/change-password' : '/dashboard', { replace: true });
     } catch (err) {
       if (err instanceof ApiError && err.status === 429) start(err.retryAfter ?? 60);
       else if (err instanceof ApiError && err.status === 401) setError(GENERIC_CREDENTIALS_ERROR);
-      else setError(getErrorMessage(err, "تعذر تسجيل الدخول. حاول مرة أخرى."));
+      else setError(getErrorMessage(err, 'تعذر تسجيل الدخول. حاول مرة أخرى.'));
     } finally {
       setLoading(false);
     }
@@ -100,10 +100,15 @@ export default function LoginPage() {
 
         <p className="text-center text-sm">
           <span className="text-ink-mute">نسيت كلمة المرور؟ </span>
-          <Link to="/forgot-password" className="btn-link">استعادة كلمة المرور</Link>
+          <Link to="/forgot-password" className="btn-link">
+            استعادة كلمة المرور
+          </Link>
         </p>
         <p className="text-center text-sm text-ink-mute">
-          لم تفعّل منشأتك بعد؟ <Link to="/activate" className="btn-link">فعّل الكود</Link>
+          لم تفعّل منشأتك بعد؟{' '}
+          <Link to="/activate" className="btn-link">
+            فعّل الكود
+          </Link>
         </p>
       </form>
     </AuthLayout>

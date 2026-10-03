@@ -1,4 +1,4 @@
-import { AlertIcon } from "@/components/ui/Icons";
+import { AlertIcon } from '@/components/ui/Icons';
 
 /** Form-level error (not tied to one field): a pale red pill with an icon. */
 export default function FormError({ message }: { message?: string }) {

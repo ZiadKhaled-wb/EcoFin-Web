@@ -1,8 +1,8 @@
-import axios, { AxiosError } from "axios";
-import { useAuthStore } from "@/store/authStore";
-import type { Session } from "@/types/auth";
+import axios, { AxiosError } from 'axios';
+import { useAuthStore } from '@/store/authStore';
+import type { Session } from '@/types/auth';
 
-declare module "axios" {
+declare module 'axios' {
   interface AxiosRequestConfig {
     /** Public endpoints (login, check-license…) must not send a Bearer token. */
     skipAuth?: boolean;
@@ -10,7 +10,7 @@ declare module "axios" {
   }
 }
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? "";
+const BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
 /** Normalised error every caller receives. Pages never touch AxiosError. */
 export class ApiError extends Error {
@@ -27,7 +27,7 @@ export class ApiError extends Error {
     fields?: Record<string, string>,
   ) {
     super(message);
-    this.name = "ApiError";
+    this.name = 'ApiError';
     this.status = status;
     this.code = code;
     this.retryAfter = retryAfter;
@@ -49,10 +49,10 @@ function extractFields(data: Json): Record<string, string> | undefined {
     for (const item of raw) {
       if (item?.field && item?.message) out[String(item.field)] = String(item.message);
     }
-  } else if (typeof raw === "object") {
+  } else if (typeof raw === 'object') {
     for (const [key, value] of Object.entries(raw)) {
       const msg = Array.isArray(value) ? value[0] : value;
-      if (typeof msg === "string") out[key] = msg;
+      if (typeof msg === 'string') out[key] = msg;
     }
   }
   return Object.keys(out).length ? out : undefined;
@@ -61,14 +61,14 @@ function extractFields(data: Json): Record<string, string> | undefined {
 function toApiError(error: AxiosError<Json>): ApiError {
   const res = error.response;
   if (!res) {
-    return new ApiError(0, "NETWORK_ERROR", "تعذر الاتصال بالخادم. تحقق من اتصالك بالإنترنت.");
+    return new ApiError(0, 'NETWORK_ERROR', 'تعذر الاتصال بالخادم. تحقق من اتصالك بالإنترنت.');
   }
   const data = res.data;
-  const retryHeader = Number.parseInt(String(res.headers?.["retry-after"] ?? ""), 10);
+  const retryHeader = Number.parseInt(String(res.headers?.['retry-after'] ?? ''), 10);
   return new ApiError(
     res.status,
-    data?.code ?? data?.error?.code ?? "UNKNOWN",
-    data?.message ?? data?.error?.message ?? "حدث خطأ غير متوقع. حاول مرة أخرى.",
+    data?.code ?? data?.error?.code ?? 'UNKNOWN',
+    data?.message ?? data?.error?.message ?? 'حدث خطأ غير متوقع. حاول مرة أخرى.',
     Number.isFinite(retryHeader) ? retryHeader : undefined,
     extractFields(data),
   );
@@ -77,7 +77,7 @@ function toApiError(error: AxiosError<Json>): ApiError {
 export const api = axios.create({
   baseURL: BASE_URL,
   timeout: 15_000,
-  headers: { "Content-Type": "application/json" },
+  headers: { 'Content-Type': 'application/json' },
 });
 
 api.interceptors.request.use((config) => {
@@ -114,7 +114,7 @@ api.interceptors.response.use(
     // Route guards react to the cleared store, so no hard redirect is needed.
     if (
       apiError.status === 401 &&
-      apiError.code === "UNAUTHORIZED" &&
+      apiError.code === 'UNAUTHORIZED' &&
       original &&
       !original.skipAuth &&
       !original._retried
@@ -132,7 +132,7 @@ api.interceptors.response.use(
     }
 
     // 403 MUST_CHANGE_PASSWORD -> client state is stale; guards redirect.
-    if (apiError.status === 403 && apiError.code === "MUST_CHANGE_PASSWORD") {
+    if (apiError.status === 403 && apiError.code === 'MUST_CHANGE_PASSWORD') {
       useAuthStore.getState().flagMustChangePassword();
     }
 

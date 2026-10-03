@@ -1,11 +1,43 @@
-import type { ComponentType, ReactElement } from "react";
+import type { ComponentType, ReactElement } from 'react';
 import {
-    Bell, Calculator, Check, ChartColumn, ChevronDown, ChevronLeft, ChevronRight, CircleAlert,
-    CircleCheck, Eye, EyeOff, Factory, Download, Inbox, KeyRound, LayoutDashboard, ListFilter,
-    Lock, LogOut, Mail, Menu, Package, Pencil, Plus, Printer, ScanBarcode, Search, Settings,
-    ShoppingCart, Trash2, Truck, User, UserCog, Users, X, type LucideProps,
-} from "lucide-react";
-import { cn } from "@/lib/cn";
+  Bell,
+  Calculator,
+  Check,
+  ChartColumn,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  CircleAlert,
+  CircleCheck,
+  Eye,
+  EyeOff,
+  Factory,
+  Download,
+  Inbox,
+  KeyRound,
+  LayoutDashboard,
+  ListFilter,
+  Lock,
+  LogOut,
+  Mail,
+  Menu,
+  Package,
+  Pencil,
+  Plus,
+  Printer,
+  ScanBarcode,
+  Search,
+  Settings,
+  ShoppingCart,
+  Trash2,
+  Truck,
+  User,
+  UserCog,
+  Users,
+  X,
+  type LucideProps,
+} from 'lucide-react';
+import { cn } from '@/lib/cn';
 
 /**
  * The ONLY place icons are imported from lucide-react. Everything else imports from here.
@@ -15,16 +47,16 @@ import { cn } from "@/lib/cn";
 export type IconComponent = (props: LucideProps) => ReactElement;
 
 const wrap =
-    (Icon: ComponentType<LucideProps>, mirrorInRtl = false): IconComponent =>
-        (p) => (
-            <Icon
-            size={20}
-            strokeWidth={1.75}
-            aria-hidden
-            {...p}
-            className={cn(mirrorInRtl && "rtl:-scale-x-100", p.className)}
-            />
-        );
+  (Icon: ComponentType<LucideProps>, mirrorInRtl = false): IconComponent =>
+  (p) => (
+    <Icon
+      size={20}
+      strokeWidth={1.75}
+      aria-hidden
+      {...p}
+      className={cn(mirrorInRtl && 'rtl:-scale-x-100', p.className)}
+    />
+  );
 
 // Fields and feedback
 export const UserIcon = wrap(User);

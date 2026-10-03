@@ -1,10 +1,10 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 export default function Notice({
-  tone = "info",
+  tone = 'info',
   children,
 }: {
-  tone?: "success" | "error" | "info";
+  tone?: 'success' | 'error' | 'info';
   children: ReactNode;
 }) {
   return (
