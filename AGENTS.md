@@ -33,9 +33,9 @@ EcoTech Pro: multi-tenant SaaS POS with in-house installments for Egyptian furni
 ## Commands
 - Install: `npm ci`
 - Dev: `npm run dev`
-- Type-check: MISSING
+- Type-check: `npm run typecheck`
 - Lint: `npm run lint`
-- Test: MISSING
+- Test: `npm test`
 
 ## Structure
 - `src/` — `main.tsx` (providers) and `App.tsx` (router + route guards)
