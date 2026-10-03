@@ -11,6 +11,7 @@ import {
   UsersIcon,
   type IconComponent,
 } from '@/components/ui/Icons';
+import type { TranslationKey } from '@/i18n';
 import type { AuthUser, Role } from '@/types/auth';
 
 /**
@@ -21,13 +22,14 @@ import type { AuthUser, Role } from '@/types/auth';
  * A group is visible when at least one child is.
  *
  * NOTE: this only hides links (UX). The server is the authority; every module route and API
- * must enforce access itself (RequirePermission guard arrives with the first real module).
+ * must enforce access itself (`RequirePermission` guard, F09).
  *
  * DRAFT role mapping: replace with the real matrix once confirmed.
  */
 export interface NavItem {
   id: string;
-  label: string;
+  /** Translation key (nav namespace), translated where the menu is drawn. */
+  labelKey: TranslationKey;
   icon?: IconComponent;
   to?: string;
   children?: NavItem[];
@@ -40,27 +42,27 @@ const OWNER: Role = 'OWNER';
 const BRANCH_MANAGER: Role = 'BRANCH_MANAGER';
 
 export const NAV: NavItem[] = [
-  { id: 'dashboard', label: 'لوحة التحكم', icon: DashboardIcon, to: '/dashboard' },
+  { id: 'dashboard', labelKey: 'nav.dashboard', icon: DashboardIcon, to: '/dashboard' },
   {
     id: 'sales',
-    label: 'المبيعات',
+    labelKey: 'nav.sales',
     icon: CartIcon,
     children: [
       {
         id: 'pos',
-        label: 'نقطة البيع',
+        labelKey: 'nav.pos',
         to: '/sales/pos',
         roles: [OWNER, BRANCH_MANAGER, 'CASHIER'],
       },
       {
         id: 'orders',
-        label: 'الطلبات',
+        labelKey: 'nav.orders',
         to: '/sales/orders',
         roles: [OWNER, BRANCH_MANAGER, 'CASHIER', 'ACCOUNTANT'],
       },
       {
         id: 'invoices',
-        label: 'الفواتير',
+        labelKey: 'nav.invoices',
         to: '/sales/invoices',
         roles: [OWNER, BRANCH_MANAGER, 'ACCOUNTANT', 'CASHIER'],
       },
@@ -68,31 +70,31 @@ export const NAV: NavItem[] = [
   },
   {
     id: 'inventory',
-    label: 'المخزون',
+    labelKey: 'nav.inventory',
     icon: PackageIcon,
     roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE'],
     children: [
       {
         id: 'products',
-        label: 'المنتجات',
+        labelKey: 'nav.products',
         to: '/inventory/products',
         roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE'],
       },
       {
         id: 'categories',
-        label: 'التصنيفات',
+        labelKey: 'nav.categories',
         to: '/inventory/categories',
         roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE'],
       },
       {
         id: 'stock',
-        label: 'حركة المخزون',
+        labelKey: 'nav.stock',
         to: '/inventory/stock',
         roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE'],
       },
       {
         id: 'warehouses',
-        label: 'المخازن',
+        labelKey: 'nav.warehouses',
         to: '/inventory/warehouses',
         roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE'],
       },
@@ -100,47 +102,47 @@ export const NAV: NavItem[] = [
   },
   {
     id: 'purchasing',
-    label: 'المشتريات',
+    labelKey: 'nav.purchasing',
     icon: TruckIcon,
     to: '/purchasing',
     roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
   },
   {
     id: 'customers',
-    label: 'العملاء',
+    labelKey: 'nav.customers',
     icon: UsersIcon,
     to: '/customers',
     roles: [OWNER, BRANCH_MANAGER, 'CASHIER', 'ACCOUNTANT', 'COLLECTOR'],
   },
   {
     id: 'suppliers',
-    label: 'الموردون',
+    labelKey: 'nav.suppliers',
     icon: FactoryIcon,
     to: '/suppliers',
     roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
   },
   {
     id: 'employees',
-    label: 'الموظفون',
+    labelKey: 'nav.employees',
     icon: TeamIcon,
     to: '/employees',
     roles: [OWNER, BRANCH_MANAGER],
   },
   {
     id: 'accounting',
-    label: 'الحسابات',
+    labelKey: 'nav.accounting',
     icon: CalculatorIcon,
     to: '/accounting',
     roles: [OWNER, 'ACCOUNTANT'],
   },
   {
     id: 'reports',
-    label: 'التقارير',
+    labelKey: 'nav.reports',
     icon: ChartIcon,
     to: '/reports',
     roles: [OWNER, BRANCH_MANAGER, 'ACCOUNTANT'],
   },
-  { id: 'settings', label: 'الإعدادات', icon: SettingsIcon, to: '/settings', roles: [OWNER] },
+  { id: 'settings', labelKey: 'nav.settings', icon: SettingsIcon, to: '/settings', roles: [OWNER] },
 ];
 
 function canSee(item: NavItem, user: AuthUser): boolean {

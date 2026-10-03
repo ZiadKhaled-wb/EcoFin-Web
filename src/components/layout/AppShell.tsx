@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import Drawer from '@/components/ui/Drawer';
 import Wordmark from '@/components/ui/Wordmark';
 import SidebarNav from '@/components/layout/SidebarNav';
 import Topbar from '@/components/layout/Topbar';
 import { NAV, filterNav } from '@/config/navigation';
+import { usePermissions } from '@/features/me/usePermissions';
+import { t } from '@/i18n';
 import { useAuthStore } from '@/store/authStore';
 
 /**
@@ -13,7 +16,12 @@ import { useAuthStore } from '@/store/authStore';
  */
 export default function AppShell() {
   const user = useAuthStore((s) => s.user);
-  const items = useMemo(() => filterNav(NAV, user), [user]);
+  const permissions = usePermissions();
+  const keys = permissions.data?.keys;
+  const items = useMemo(
+    () => filterNav(NAV, user && keys ? { ...user, permissions: [...keys] } : user),
+    [user, keys],
+  );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -22,7 +30,7 @@ export default function AppShell() {
         href="#main"
         className="sr-only z-(--z-toast) rounded-control bg-brand-600 px-4 py-2 text-white focus:not-sr-only focus:fixed focus:start-4 focus:top-4"
       >
-        تخطّي إلى المحتوى
+        {t('shell.skipToContent')}
       </a>
 
       <aside className="sticky top-0 hidden h-dvh flex-col border-e border-line bg-surface lg:flex">
@@ -35,13 +43,15 @@ export default function AppShell() {
       </aside>
 
       <div className="flex min-w-0 flex-col">
-        <Topbar onMenuClick={() => setDrawerOpen(true)} />
+        <Topbar onMenuClick={() => setDrawerOpen(true)} menuOpen={drawerOpen} />
         <main id="main" className="flex-1">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
 
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="القائمة">
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title={t('shell.menu')}>
         <SidebarNav items={items} onNavigate={() => setDrawerOpen(false)} />
       </Drawer>
     </div>

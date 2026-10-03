@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import IconButton from '@/components/ui/IconButton';
 import { XIcon } from '@/components/ui/Icons';
 import { cn } from '@/lib/cn';
+import { t } from '@/i18n';
 
 /**
  * Side sheet on Radix Dialog: focus trap, Esc to close, focus returns to the trigger,
@@ -39,7 +40,7 @@ export default function Drawer({
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <Dialog.Title className="type-section-title">{title}</Dialog.Title>
             <Dialog.Close asChild>
-              <IconButton label="إغلاق" icon={<XIcon />} />
+              <IconButton label={t('ui.close')} icon={<XIcon />} />
             </Dialog.Close>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>

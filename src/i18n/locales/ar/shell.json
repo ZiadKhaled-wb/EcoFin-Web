@@ -1,0 +1,45 @@
+{
+  "skipToContent": "تخطّي إلى المحتوى",
+  "menu": "القائمة",
+  "openMenu": "فتح القائمة",
+  "mainNav": "القائمة الرئيسية",
+  "accountMenu": "قائمة الحساب",
+  "logout": "تسجيل الخروج",
+  "language": "اللغة",
+  "languageName": {
+    "ar": "العربية",
+    "en": "English"
+  },
+  "switchTo": "تغيير اللغة إلى {language}",
+  "branch": "الفرع",
+  "noBranches": "لا توجد فروع",
+  "branchesFailed": "تعذر تحميل الفروع",
+  "unknownUser": "؟",
+  "home": "الرئيسية",
+  "breadcrumb": "مسار التنقل",
+  "placeholder": {
+    "title": "هذه الوحدة قيد الإنشاء",
+    "description": "ستظهر هنا بياناتك وأدواتك فور اكتمال الوحدة.",
+    "fallbackName": "الوحدة"
+  },
+  "dashboard": {
+    "welcome": "مرحبًا {name}",
+    "cardTitle": "ابدأ من هنا",
+    "cardDescription": "الوحدات تُضاف تباعًا من القائمة الجانبية.",
+    "signedIn": "تم تسجيل الدخول بنجاح."
+  },
+  "forbidden": {
+    "title": "ليس لديك صلاحية لفتح هذه الصفحة",
+    "description": "اطلب من مالك المنشأة إضافة الصلاحية المناسبة لحسابك.",
+    "back": "العودة إلى لوحة التحكم"
+  },
+  "permissionsFailed": {
+    "title": "تعذر التحقق من الصلاحيات",
+    "description": "لم نتمكن من التحقق من صلاحياتك. حاول مرة أخرى."
+  },
+  "errorBoundary": {
+    "title": "حدث خطأ غير متوقع",
+    "description": "تعذر عرض هذه الصفحة. أعد تحميلها وحاول مرة أخرى.",
+    "reload": "إعادة تحميل الصفحة"
+  }
+}

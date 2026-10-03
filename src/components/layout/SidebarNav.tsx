@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { ChevronDownIcon } from '@/components/ui/Icons';
 import { cn } from '@/lib/cn';
+import { t } from '@/i18n';
 import type { NavItem } from '@/config/navigation';
 
 function Leaf({
@@ -24,7 +25,7 @@ function Leaf({
       }
     >
       {Icon && !nested && <Icon />}
-      <span className="truncate">{item.label}</span>
+      <span className="truncate">{t(item.labelKey)}</span>
     </NavLink>
   );
 }
@@ -47,7 +48,7 @@ function Group({ item, onNavigate }: { item: NavItem; onNavigate?: () => void })
       >
         <span className="flex items-center gap-3">
           {Icon && <Icon />}
-          {item.label}
+          {t(item.labelKey)}
         </span>
         <ChevronDownIcon
           size={16}
@@ -74,7 +75,7 @@ export default function SidebarNav({
   onNavigate?: () => void;
 }) {
   return (
-    <nav aria-label="القائمة الرئيسية" className="space-y-1 p-3">
+    <nav aria-label={t('shell.mainNav')} className="space-y-1 p-3">
       {items.map((item) =>
         item.children ? (
           <Group key={item.id} item={item} onNavigate={onNavigate} />

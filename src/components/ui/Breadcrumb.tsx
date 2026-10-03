@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
+import { t } from '@/i18n';
 import { ChevronEndIcon } from '@/components/ui/Icons';
 
 export type Crumb = { label: string; to?: string };
 
 export default function Breadcrumb({ items }: { items: Crumb[] }) {
   return (
-    <nav aria-label="مسار التنقل">
+    <nav aria-label={t('shell.breadcrumb')}>
       <ol className="flex flex-wrap items-center gap-1.5 text-sm text-ink-mute">
         {items.map((c, i) => {
           const last = i === items.length - 1;

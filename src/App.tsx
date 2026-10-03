@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import GuestOnly from '@/components/guards/GuestOnly';
 import RequireAuth from '@/components/guards/RequireAuth';
+import RequirePermission from '@/components/guards/RequirePermission';
 import RequirePasswordChanged from '@/components/guards/RequirePasswordChanged';
 import RequireShop from '@/components/guards/RequireShop';
 import LoginPage from '@/pages/auth/LoginPage';
@@ -16,6 +17,9 @@ import ModulePlaceholderPage from '@/pages/ModulePlaceholderPage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
+// Dev-only F09 reference page and a route that needs a permission, to prove the guard.
+const SamplePage = lazy(() => import('@/pages/SamplePage'));
+const RestrictedSamplePage = lazy(() => import('@/pages/RestrictedSamplePage'));
 
 export default function App() {
   return (
@@ -45,6 +49,12 @@ export default function App() {
               <Route element={<RequirePasswordChanged />}>
                 <Route element={<AppShell />}>
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  {import.meta.env.DEV && <Route path="/sample" element={<SamplePage />} />}
+                  {import.meta.env.DEV && (
+                    <Route element={<RequirePermission permission="audit.view" />}>
+                      <Route path="/sample/restricted" element={<RestrictedSamplePage />} />
+                    </Route>
+                  )}
                   {/* Real modules replace these placeholders (one route per menu item) */}
                   {navLeaves()
                     .filter((i) => i.to && i.to !== '/dashboard')

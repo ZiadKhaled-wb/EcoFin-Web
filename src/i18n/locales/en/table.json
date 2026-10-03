@@ -1,0 +1,15 @@
+{
+  "search": "Search the table",
+  "filterAll": "All",
+  "sortBy": "Sort by {column}",
+  "sortedAsc": "Sorted ascending",
+  "sortedDesc": "Sorted descending",
+  "empty": "No data",
+  "noResults": "No matching results",
+  "noResultsHint": "Change the search or the filter and try again.",
+  "pageOf": "Page {page} of {pages}",
+  "total": "{total} rows",
+  "previous": "Previous",
+  "next": "Next",
+  "pagination": "Page navigation"
+}

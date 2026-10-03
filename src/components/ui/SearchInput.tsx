@@ -1,6 +1,7 @@
 import type { InputHTMLAttributes, KeyboardEvent } from 'react';
 import { SearchIcon, XIcon } from '@/components/ui/Icons';
 import { cn } from '@/lib/cn';
+import { t } from '@/i18n';
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value' | 'onChange'> & {
   value: string;
@@ -16,8 +17,8 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'value' | 'onC
 export default function SearchInput({
   value,
   onValueChange,
-  label = 'بحث',
-  placeholder = 'ابحث...',
+  label = t('ui.search'),
+  placeholder = t('ui.searchPlaceholder'),
   className,
   onKeyDown,
   ...rest
@@ -43,7 +44,7 @@ export default function SearchInput({
       {value && (
         <button
           type="button"
-          aria-label="مسح البحث"
+          aria-label={t('ui.clearSearch')}
           onClick={() => onValueChange('')}
           className="absolute end-1.5 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-control text-ink-mute hover:bg-line hover:text-ink"
         >
