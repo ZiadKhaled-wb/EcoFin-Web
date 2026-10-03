@@ -36,7 +36,7 @@ export interface NavItem {
 }
 
 const OWNER: Role = 'OWNER';
-const OPS: Role = 'OPS_MANAGER';
+const OPS: Role = 'BRANCH_MANAGER';
 
 export const NAV: NavItem[] = [
   { id: 'dashboard', label: 'لوحة التحكم', icon: DashboardIcon, to: '/dashboard' },
@@ -64,31 +64,31 @@ export const NAV: NavItem[] = [
     id: 'inventory',
     label: 'المخزون',
     icon: PackageIcon,
-    roles: [OWNER, OPS, 'WAREHOUSE_MANAGER'],
+    roles: [OWNER, OPS, 'WAREHOUSE'],
     children: [
       {
         id: 'products',
         label: 'المنتجات',
         to: '/inventory/products',
-        roles: [OWNER, OPS, 'WAREHOUSE_MANAGER'],
+        roles: [OWNER, OPS, 'WAREHOUSE'],
       },
       {
         id: 'categories',
         label: 'التصنيفات',
         to: '/inventory/categories',
-        roles: [OWNER, OPS, 'WAREHOUSE_MANAGER'],
+        roles: [OWNER, OPS, 'WAREHOUSE'],
       },
       {
         id: 'stock',
         label: 'حركة المخزون',
         to: '/inventory/stock',
-        roles: [OWNER, OPS, 'WAREHOUSE_MANAGER'],
+        roles: [OWNER, OPS, 'WAREHOUSE'],
       },
       {
         id: 'warehouses',
         label: 'المخازن',
         to: '/inventory/warehouses',
-        roles: [OWNER, OPS, 'WAREHOUSE_MANAGER'],
+        roles: [OWNER, OPS, 'WAREHOUSE'],
       },
     ],
   },
@@ -97,7 +97,7 @@ export const NAV: NavItem[] = [
     label: 'المشتريات',
     icon: TruckIcon,
     to: '/purchasing',
-    roles: [OWNER, OPS, 'WAREHOUSE_MANAGER', 'ACCOUNTANT'],
+    roles: [OWNER, OPS, 'WAREHOUSE', 'ACCOUNTANT'],
   },
   {
     id: 'customers',
@@ -111,14 +111,14 @@ export const NAV: NavItem[] = [
     label: 'الموردون',
     icon: FactoryIcon,
     to: '/suppliers',
-    roles: [OWNER, OPS, 'WAREHOUSE_MANAGER', 'ACCOUNTANT'],
+    roles: [OWNER, OPS, 'WAREHOUSE', 'ACCOUNTANT'],
   },
   {
     id: 'employees',
     label: 'الموظفون',
     icon: TeamIcon,
     to: '/employees',
-    roles: [OWNER, OPS, 'HR_MANAGER'],
+    roles: [OWNER, OPS],
   },
   {
     id: 'accounting',

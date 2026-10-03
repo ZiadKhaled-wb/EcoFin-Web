@@ -1,10 +1,11 @@
+import { AuthRefreshResponse, type ErrorCode } from '@ecotech/contracts';
 import axios, { AxiosError } from 'axios';
+import { t } from '@/i18n';
 import { useAuthStore } from '@/store/authStore';
-import type { Session } from '@/types/auth';
 
 declare module 'axios' {
   interface AxiosRequestConfig {
-    /** Public endpoints (login, check-license…) must not send a Bearer token. */
+    /** Public endpoints (login, forgot-password…) must not send a Bearer token or x-org-id. */
     skipAuth?: boolean;
     _retried?: boolean;
   }
@@ -12,19 +13,28 @@ declare module 'axios' {
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
-/** Normalised error every caller receives. Pages never touch AxiosError. */
+/** Code of a failed request: a contract error code, or a client-side one. */
+export type ApiErrorCode = ErrorCode | 'NETWORK_ERROR' | 'UNKNOWN';
+
+/**
+ * Normalised error every caller receives. Pages never touch AxiosError and never show
+ * `serverMessage`: they map `code` to a translated string.
+ */
 export class ApiError extends Error {
   status: number;
-  code: string;
+  code: ApiErrorCode;
   retryAfter?: number;
   fields?: Record<string, string>;
+  /** Raw server text. For logs only, never for the UI. */
+  serverMessage?: string;
 
   constructor(
     status: number,
-    code: string,
+    code: ApiErrorCode,
     message: string,
     retryAfter?: number,
     fields?: Record<string, string>,
+    serverMessage?: string,
   ) {
     super(message);
     this.name = 'ApiError';
@@ -32,25 +42,34 @@ export class ApiError extends Error {
     this.code = code;
     this.retryAfter = retryAfter;
     this.fields = fields;
+    this.serverMessage = serverMessage;
   }
 }
 
-export const getErrorMessage = (err: unknown, fallback: string) =>
-  err instanceof ApiError && err.message ? err.message : fallback;
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Json = any;
+/** Contract error body: `{ error: { code, message, details? } }`. */
+function readErrorBody(data: unknown): { code?: string; message?: string; details?: unknown } {
+  const body = isRecord(data) && isRecord(data.error) ? data.error : {};
+  return {
+    code: typeof body.code === 'string' ? body.code : undefined,
+    message: typeof body.message === 'string' ? body.message : undefined,
+    details: body.details,
+  };
+}
 
-function extractFields(data: Json): Record<string, string> | undefined {
-  const raw = data?.errors ?? data?.details ?? data?.fields;
-  if (!raw) return undefined;
+function extractFields(details: unknown): Record<string, string> | undefined {
+  if (!details) return undefined;
   const out: Record<string, string> = {};
-  if (Array.isArray(raw)) {
-    for (const item of raw) {
-      if (item?.field && item?.message) out[String(item.field)] = String(item.message);
+  if (Array.isArray(details)) {
+    for (const item of details) {
+      if (isRecord(item) && item.field && item.message) {
+        out[String(item.field)] = String(item.message);
+      }
     }
-  } else if (typeof raw === 'object') {
-    for (const [key, value] of Object.entries(raw)) {
+  } else if (isRecord(details)) {
+    for (const [key, value] of Object.entries(details)) {
       const msg = Array.isArray(value) ? value[0] : value;
       if (typeof msg === 'string') out[key] = msg;
     }
@@ -58,19 +77,18 @@ function extractFields(data: Json): Record<string, string> | undefined {
   return Object.keys(out).length ? out : undefined;
 }
 
-function toApiError(error: AxiosError<Json>): ApiError {
+export function toApiError(error: AxiosError<unknown>): ApiError {
   const res = error.response;
-  if (!res) {
-    return new ApiError(0, 'NETWORK_ERROR', 'تعذر الاتصال بالخادم. تحقق من اتصالك بالإنترنت.');
-  }
-  const data = res.data;
+  if (!res) return new ApiError(0, 'NETWORK_ERROR', t('errors.network'));
+  const body = readErrorBody(res.data);
   const retryHeader = Number.parseInt(String(res.headers?.['retry-after'] ?? ''), 10);
   return new ApiError(
     res.status,
-    data?.code ?? data?.error?.code ?? 'UNKNOWN',
-    data?.message ?? data?.error?.message ?? 'حدث خطأ غير متوقع. حاول مرة أخرى.',
+    (body.code as ApiErrorCode | undefined) ?? 'UNKNOWN',
+    t('errors.unknown'),
     Number.isFinite(retryHeader) ? retryHeader : undefined,
-    extractFields(data),
+    extractFields(body.details),
+    body.message,
   );
 }
 
@@ -81,53 +99,63 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().accessToken;
-  if (token && !config.skipAuth) config.headers.Authorization = `Bearer ${token}`;
+  if (config.skipAuth) return config;
+  const { accessToken, orgId } = useAuthStore.getState();
+  if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
+  // The active shop. The server still checks it against the token's memberships.
+  if (orgId) config.headers['x-org-id'] = orgId;
   return config;
 });
 
-/** One shared refresh at a time, so parallel 401s don't stampede the endpoint. */
+/** One shared refresh at a time, so parallel 401s and the silent timer don't stampede. */
 let refreshing: Promise<string | null> | null = null;
 
-async function refreshAccessToken(): Promise<string | null> {
+async function doRefresh(): Promise<string | null> {
   const { refreshToken, setSession } = useAuthStore.getState();
   if (!refreshToken) return null;
   try {
     // Plain axios: must not re-enter our interceptors.
-    // ASSUMPTION: POST /api/auth/refresh { refresh_token } -> { session } | session.
-    const res = await axios.post(`${BASE_URL}/api/auth/refresh`, { refresh_token: refreshToken });
-    const session: Session = res.data?.session ?? res.data;
-    setSession(session);
-    return session.access_token;
+    const res = await axios.post<unknown>(
+      `${BASE_URL}/api/auth/refresh`,
+      { refreshToken },
+      { timeout: 15_000 },
+    );
+    const parsed = AuthRefreshResponse.safeParse(res.data);
+    if (!parsed.success) return null;
+    setSession(parsed.data);
+    return parsed.data.accessToken;
   } catch {
     return null;
   }
 }
 
+/** Refreshes the session once, however many callers ask at the same time. */
+export function refreshAccessToken(): Promise<string | null> {
+  refreshing ??= doRefresh().finally(() => {
+    refreshing = null;
+  });
+  return refreshing;
+}
+
 api.interceptors.response.use(
   (res) => res,
-  async (error: AxiosError<Json>) => {
+  async (error: AxiosError<unknown>) => {
     const apiError = toApiError(error);
     const original = error.config;
 
-    // 401 UNAUTHORIZED -> one refresh attempt, else sign out.
+    // 401 on an authenticated request -> one refresh attempt, else sign out.
+    // INVALID_CREDENTIALS (a wrong current password) is not a dead session.
     // Route guards react to the cleared store, so no hard redirect is needed.
     if (
       apiError.status === 401 &&
-      apiError.code === 'UNAUTHORIZED' &&
+      apiError.code !== 'INVALID_CREDENTIALS' &&
       original &&
       !original.skipAuth &&
       !original._retried
     ) {
       original._retried = true;
-      refreshing ??= refreshAccessToken().finally(() => {
-        refreshing = null;
-      });
-      const token = await refreshing;
-      if (token) {
-        original.headers.Authorization = `Bearer ${token}`;
-        return api(original);
-      }
+      const token = await refreshAccessToken();
+      if (token) return api(original);
       useAuthStore.getState().clearSession();
     }
 

@@ -1,19 +1,20 @@
 import type { ReactNode } from 'react';
 import SubmitButton from '@/components/ui/SubmitButton';
 import Wordmark from '@/components/ui/Wordmark';
+import { t } from '@/i18n';
 import { cn } from '@/lib/cn';
 
 interface Props {
   title: string;
   subtitle?: string;
-  /** Org context slot, e.g. the org name on ActivateWorkspacePage. */
+  /** Org context slot. */
   context?: ReactNode;
   /** Loading slot: replaces the form while something resolves. */
   loading?: boolean;
   loadingLabel?: string;
   /** Terminal error slot: replaces the form, always offers a way out. */
   terminalError?: { message: string; actionLabel: string; onAction: () => void };
-  /** Wider card for long forms (activate-workspace). */
+  /** Wider card for long forms. */
   wide?: boolean;
   children?: ReactNode;
 }
@@ -27,7 +28,7 @@ export default function AuthLayout({
   subtitle,
   context,
   loading,
-  loadingLabel = 'جارٍ التحميل...',
+  loadingLabel = t('common.loading'),
   terminalError,
   wide,
   children,
