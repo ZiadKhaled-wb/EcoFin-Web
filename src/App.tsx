@@ -20,6 +20,10 @@ const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
 // Dev-only F09 reference page and a route that needs a permission, to prove the guard.
 const SamplePage = lazy(() => import('@/pages/SamplePage'));
 const RestrictedSamplePage = lazy(() => import('@/pages/RestrictedSamplePage'));
+const AuditPage = lazy(() => import('@/pages/AuditPage'));
+
+/** Menu items that have a real page (no placeholder route). */
+const REAL_ROUTES = new Set(['/dashboard', '/audit']);
 
 export default function App() {
   return (
@@ -55,9 +59,13 @@ export default function App() {
                       <Route path="/sample/restricted" element={<RestrictedSamplePage />} />
                     </Route>
                   )}
+                  {/* F07: typing the URL without audit.view shows the 403 page. */}
+                  <Route element={<RequirePermission permission="audit.view" />}>
+                    <Route path="/audit" element={<AuditPage />} />
+                  </Route>
                   {/* Real modules replace these placeholders (one route per menu item) */}
                   {navLeaves()
-                    .filter((i) => i.to && i.to !== '/dashboard')
+                    .filter((i) => i.to && !REAL_ROUTES.has(i.to))
                     .map((i) => (
                       <Route key={i.id} path={i.to} element={<ModulePlaceholderPage />} />
                     ))}

@@ -3,6 +3,7 @@ import {
   CartIcon,
   ChartIcon,
   DashboardIcon,
+  EyeIcon,
   FactoryIcon,
   PackageIcon,
   SettingsIcon,
@@ -142,6 +143,8 @@ export const NAV: NavItem[] = [
     to: '/reports',
     roles: [OWNER, BRANCH_MANAGER, 'ACCOUNTANT'],
   },
+  // F07: the owner's audit screen; shown to anyone holding audit.view (an F06 override included).
+  { id: 'audit', labelKey: 'nav.audit', icon: EyeIcon, to: '/audit', permission: 'audit.view' },
   { id: 'settings', labelKey: 'nav.settings', icon: SettingsIcon, to: '/settings', roles: [OWNER] },
 ];
 

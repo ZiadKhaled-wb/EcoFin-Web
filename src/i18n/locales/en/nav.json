@@ -15,5 +15,6 @@
   "employees": "Employees",
   "accounting": "Accounting",
   "reports": "Reports",
+  "audit": "Audit log",
   "settings": "Settings"
 }

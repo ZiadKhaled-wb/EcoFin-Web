@@ -1,0 +1,59 @@
+{
+  "title": "سجل التدقيق",
+  "description": "من فعل ماذا في منشأتك، الأحدث أولًا.",
+  "caption": "قيود سجل التدقيق",
+  "filters": {
+    "label": "عوامل التصفية",
+    "from": "من",
+    "to": "إلى",
+    "action": "الإجراء",
+    "entityType": "نوع السجل",
+    "branch": "الفرع",
+    "all": "الكل",
+    "clear": "مسح عوامل التصفية",
+    "person": "الشخص: {name}",
+    "clearPerson": "عرض الجميع"
+  },
+  "columns": {
+    "time": "الوقت",
+    "action": "الإجراء",
+    "actor": "بواسطة",
+    "record": "السجل",
+    "branch": "الفرع",
+    "ip": "عنوان IP",
+    "details": "التفاصيل"
+  },
+  "actions": {
+    "auth_login": "تسجيل دخول",
+    "auth_logout": "تسجيل خروج",
+    "auth_password_change": "تغيير كلمة المرور",
+    "employee_permission_set": "تغيير صلاحية",
+    "employee_branches_set": "تغيير الفروع"
+  },
+  "entityTypes": {
+    "employee": "موظف"
+  },
+  "system": "النظام",
+  "filterByPerson": "عرض {name} فقط",
+  "openDetails": "التفاصيل",
+  "empty": {
+    "title": "لا توجد قيود",
+    "description": "لا شيء يطابق عوامل التصفية. غيّرها أو امسحها."
+  },
+  "detail": {
+    "title": "تفاصيل القيد",
+    "time": "الوقت",
+    "action": "الإجراء",
+    "actor": "بواسطة",
+    "record": "السجل",
+    "branch": "الفرع",
+    "ip": "عنوان IP",
+    "device": "الجهاز",
+    "userAgent": "المتصفح أو التطبيق",
+    "requestId": "معرّف الطلب",
+    "reason": "السبب",
+    "before": "قبل",
+    "after": "بعد",
+    "none": "—"
+  }
+}
