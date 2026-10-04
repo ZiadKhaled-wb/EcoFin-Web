@@ -9,6 +9,13 @@ import { expect, test, type Page } from '@playwright/test';
  */
 const env = (name: string) => process.env[name] ?? '';
 
+// Own client IP per test, so the API's per-IP login limiter (10 per 15 min) doesn't trip when the
+// suite is rerun locally. The API trusts one proxy hop (Vite's dev proxy passes the header on).
+let ipCounter = Math.floor(Math.random() * 200);
+test.beforeEach(async ({ page }) => {
+  await page.setExtraHTTPHeaders({ 'X-Forwarded-For': `198.51.100.${(ipCounter++ % 250) + 1}` });
+});
+
 async function login(page: Page, email: string, password: string) {
   await page.goto('/login');
   await page.getByLabel('اسم المستخدم أو البريد الإلكتروني').fill(email);

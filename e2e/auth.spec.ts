@@ -16,6 +16,13 @@ const API = process.env.E2E_API_URL ?? 'http://localhost:3000';
 const MAILPIT = process.env.E2E_MAILPIT_URL ?? 'http://127.0.0.1:54324';
 const env = (name: string) => process.env[name] ?? '';
 
+// Own client IP per test, so the API's per-IP login limiter (10 per 15 min) doesn't trip when the
+// suite is rerun locally. The API trusts one proxy hop (Vite's dev proxy passes the header on).
+let ipCounter = Math.floor(Math.random() * 200);
+test.beforeEach(async ({ page }) => {
+  await page.setExtraHTTPHeaders({ 'X-Forwarded-For': `198.51.100.${(ipCounter++ % 250) + 1}` });
+});
+
 const IDENTIFIER = 'اسم المستخدم أو البريد الإلكتروني';
 const PASSWORD = 'كلمة المرور';
 const SIGN_IN = 'تسجيل الدخول';
