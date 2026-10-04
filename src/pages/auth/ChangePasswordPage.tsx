@@ -1,17 +1,46 @@
-import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import AuthLayout from "@/components/auth/AuthLayout";
-import FormField from "@/components/ui/FormField";
-import { LockIcon } from "@/components/ui/Icons";
-import FormError from "@/components/ui/FormError";
-import Notice from "@/components/ui/Notice";
-import SubmitButton from "@/components/ui/SubmitButton";
-import { ApiError, getErrorMessage } from "@/lib/api";
-import { validateNewPassword } from "@/lib/validation";
-import { authApi } from "@/services/authApi";
-import { useAuthStore } from "@/store/authStore";
+import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthLayout from '@/components/auth/AuthLayout';
+import FormField from '@/components/ui/FormField';
+import { LockIcon } from '@/components/ui/Icons';
+import FormError from '@/components/ui/FormError';
+import Notice from '@/components/ui/Notice';
+import SubmitButton from '@/components/ui/SubmitButton';
+import { t } from '@/i18n';
+import { ApiError } from '@/lib/api';
+import { authApi, buildLoginBody } from '@/services/authApi';
+import { useAuthStore } from '@/store/authStore';
+import { validateNewPassword } from './authErrors';
 
-type Errors = Partial<Record<"currentPassword" | "newPassword" | "confirmPassword", string>>;
+type Errors = Partial<Record<'currentPassword' | 'newPassword' | 'confirmPassword', string>>;
+
+/** Silent re-login for a fresh token that no longer carries the must-change flag. */
+async function reLogin(newPassword: string) {
+  const {
+    account,
+    tenantSlug,
+    orgId: previousOrg,
+    setLogin,
+    setActiveShop,
+  } = useAuthStore.getState();
+  const identifier = account?.username ?? account?.email ?? '';
+  const parsed = buildLoginBody({
+    identifier,
+    password: newPassword,
+    ...(tenantSlug ? { tenantSlug } : {}),
+  });
+  if (!parsed.success) throw new Error('re-login body invalid');
+  const res = await authApi.login(parsed.data);
+  setLogin(res, { identifier, tenantSlug: parsed.data.tenantSlug });
+  // Keep the shop the user was working in when the login has several.
+  if (
+    !useAuthStore.getState().orgId &&
+    previousOrg &&
+    res.shops.some((s) => s.orgId === previousOrg)
+  ) {
+    setActiveShop(await authApi.selectShop(previousOrg));
+  }
+}
 
 /**
  * THE GATE. A temp-password user can reach only this page and logout
@@ -19,79 +48,65 @@ type Errors = Partial<Record<"currentPassword" | "newPassword" | "confirmPasswor
  */
 export default function ChangePasswordPage() {
   const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
-  const tenantSlug = useAuthStore((s) => s.tenantSlug);
-  const setLogin = useAuthStore((s) => s.setLogin);
   const clearSession = useAuthStore((s) => s.clearSession);
 
-  const [currentPassword, setCurrent] = useState("");
-  const [newPassword, setNew] = useState("");
-  const [confirmPassword, setConfirm] = useState("");
+  const [currentPassword, setCurrent] = useState('');
+  const [newPassword, setNew] = useState('');
+  const [confirmPassword, setConfirm] = useState('');
   const [errors, setErrors] = useState<Errors>({});
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setFormError("");
+    setFormError('');
 
     const next: Errors = {};
-    if (!currentPassword) next.currentPassword = "أدخل كلمة المرور الحالية.";
+    if (!currentPassword) next.currentPassword = t('auth.change.currentRequired');
     const v = validateNewPassword(newPassword, confirmPassword);
     if (v.password) next.newPassword = v.password;
     if (v.confirm) next.confirmPassword = v.confirm;
     if (!next.newPassword && newPassword === currentPassword)
-      next.newPassword = "كلمة المرور الجديدة يجب أن تختلف عن الحالية.";
+      next.newPassword = t('auth.change.mustDiffer');
     setErrors(next);
     if (Object.keys(next).length) return;
 
     setSubmitting(true);
     try {
-      await authApi.changePassword({ currentPassword, newPassword, confirmPassword });
-
-      // Silent re-login for a fresh token that no longer carries the flag.
+      await authApi.changePassword({ currentPassword, newPassword });
       try {
-        const res = await authApi.login({
-          tenant_slug: tenantSlug ?? "",
-          identifier: user?.username ?? user?.email ?? "",
-          password: newPassword,
-        });
-        setLogin(res.user, res.session, res.must_change_password);
+        await reLogin(newPassword);
         setDone(true);
-        setTimeout(() => navigate("/dashboard", { replace: true }), 800);
+        setTimeout(() => navigate('/dashboard', { replace: true }), 800);
       } catch {
         clearSession();
-        navigate("/login", { replace: true, state: { notice: "changed" } });
+        navigate('/login', { replace: true, state: { notice: 'changed' } });
       }
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.status === 401) return void setErrors({ currentPassword: "كلمة المرور الحالية غير صحيحة." });
-        if (err.code === "VALIDATION_FAILED" && err.fields) return void setErrors(err.fields as Errors);
+        if (err.code === 'INVALID_CREDENTIALS')
+          return void setErrors({ currentPassword: t('auth.change.currentWrong') });
         if (err.status === 403) {
-          // Should not happen on this page. Log and force a clean re-login.
-          console.error("Unexpected 403 on change-password", err);
+          // Should not happen on this page. Force a clean re-login.
           clearSession();
-          return void navigate("/login", { replace: true });
+          return void navigate('/login', { replace: true });
         }
       }
-      setFormError(getErrorMessage(err, "تعذر تغيير كلمة المرور. حاول مرة أخرى."));
+      setFormError(t('auth.change.failed'));
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <AuthLayout
-      title="غيّر كلمة المرور المؤقتة"
-      subtitle="لأمان حسابك، اختر كلمة مرور جديدة قبل المتابعة."
-    >
+    <AuthLayout title={t('auth.change.title')} subtitle={t('auth.change.subtitle')}>
       {done ? (
-        <Notice tone="success">تم تغيير كلمة المرور. جارٍ الانتقال...</Notice>
+        <Notice tone="success">{t('auth.change.done')}</Notice>
       ) : (
         <form onSubmit={onSubmit} className="space-y-5" noValidate>
           <FormField
-            label="كلمة المرور الحالية"
+            label={t('auth.change.current')}
             type="password"
             icon={<LockIcon />}
             required
@@ -101,7 +116,7 @@ export default function ChangePasswordPage() {
             error={errors.currentPassword}
           />
           <FormField
-            label="كلمة المرور الجديدة"
+            label={t('auth.change.new')}
             type="password"
             icon={<LockIcon />}
             required
@@ -109,10 +124,10 @@ export default function ChangePasswordPage() {
             value={newPassword}
             onChange={(e) => setNew(e.target.value)}
             error={errors.newPassword}
-            help="8 أحرف على الأقل."
+            help={t('auth.password.help')}
           />
           <FormField
-            label="تأكيد كلمة المرور الجديدة"
+            label={t('auth.change.confirm')}
             type="password"
             icon={<LockIcon />}
             required
@@ -122,13 +137,17 @@ export default function ChangePasswordPage() {
             error={errors.confirmPassword}
           />
           <FormError message={formError} />
-          <SubmitButton label="حفظ كلمة المرور" loadingLabel="جارٍ الحفظ..." loading={submitting} />
+          <SubmitButton
+            label={t('auth.change.submit')}
+            loadingLabel={t('auth.change.submitting')}
+            loading={submitting}
+          />
           <button
             type="button"
             className="btn-link mx-auto block text-sm"
-            onClick={() => authApi.logout().then(() => navigate("/login", { replace: true }))}
+            onClick={() => authApi.logout().then(() => navigate('/login', { replace: true }))}
           >
-            تسجيل الخروج
+            {t('common.logout')}
           </button>
         </form>
       )}

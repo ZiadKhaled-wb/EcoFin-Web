@@ -1,90 +1,121 @@
-import { useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import AuthLayout from "@/components/auth/AuthLayout";
-import FormField from "@/components/ui/FormField";
-import { LockIcon } from "@/components/ui/Icons";
-import FormError from "@/components/ui/FormError";
-import SubmitButton from "@/components/ui/SubmitButton";
-import { supabase } from "@/lib/supabase"; // deliberate: see lib/supabase.ts
-import { validateNewPassword } from "@/lib/validation";
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthLayout from '@/components/auth/AuthLayout';
+import FormField from '@/components/ui/FormField';
+import { LockIcon } from '@/components/ui/Icons';
+import FormError from '@/components/ui/FormError';
+import SubmitButton from '@/components/ui/SubmitButton';
+import { t } from '@/i18n';
+import { ApiError } from '@/lib/api';
+import { supabase } from '@/lib/supabase'; // deliberate: see lib/supabase.ts
+import { authApi } from '@/services/authApi';
+import { validateNewPassword } from './authErrors';
 
-type Status = "checking" | "ready" | "invalid";
+type Status = 'checking' | 'ready' | 'invalid';
+
+/** Drops the in-memory recovery session so it never lingers. */
+const dropRecoverySession = () => supabase.auth.signOut({ scope: 'local' }).catch(() => undefined);
 
 /**
- * Landing page of the Supabase recovery email (#access_token=...&type=recovery).
- * Uses the Supabase client directly, NOT our backend. Deliberate exception.
+ * Landing page of the emailed recovery link (#access_token=...&type=recovery).
+ * The Supabase client only reads the recovery token from the URL; the password itself is
+ * changed through our backend (`POST /api/auth/reset-password { token, newPassword }`).
  */
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
-  const [status, setStatus] = useState<Status>("checking");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
+  const [status, setStatus] = useState<Status>('checking');
+  const recoveryToken = useRef<string | null>(null);
+  const pendingSignOut = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [errors, setErrors] = useState<{ password?: string; confirm?: string }>({});
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") setStatus("ready");
+    // React StrictMode re-runs effects at once: a sign-out queued by the cleanup is cancelled.
+    clearTimeout(pendingSignOut.current);
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' && session) {
+        recoveryToken.current = session.access_token;
+        setStatus('ready');
+      }
     });
     // getSession resolves after Supabase has processed the URL fragment.
     // No token / expired token / error params => no session => invalid.
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setStatus((prev) => (session ? "ready" : prev === "ready" ? prev : "invalid"));
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        recoveryToken.current ??= session.access_token;
+        setStatus('ready');
+      } else {
+        setStatus((prev) => (prev === 'ready' ? prev : 'invalid'));
+        void dropRecoverySession();
+      }
     });
-    return () => data.subscription.unsubscribe();
+    return () => {
+      data.subscription.unsubscribe();
+      pendingSignOut.current = setTimeout(() => void dropRecoverySession(), 0);
+    };
   }, []);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setFormError("");
+    setFormError('');
     const v = validateNewPassword(password, confirm);
     setErrors(v);
-    if (v.password || v.confirm) return;
+    const token = recoveryToken.current;
+    if (v.password || v.confirm || !token) return;
 
     setSubmitting(true);
-    const { error } = await supabase.auth.updateUser({ password });
-    if (error) {
-      setFormError("تعذر تحديث كلمة المرور. اطلب رابطًا جديدًا وحاول مرة أخرى.");
+    try {
+      await authApi.resetPassword({ token, newPassword: password });
+    } catch (err) {
+      if (err instanceof ApiError && ['TOKEN_EXPIRED', 'TOKEN_INVALID'].includes(err.code)) {
+        setStatus('invalid');
+        void dropRecoverySession();
+      } else {
+        setFormError(t('auth.reset.failed'));
+      }
       setSubmitting(false);
       return;
     }
-    await supabase.auth.signOut();
-    navigate("/login", { replace: true, state: { notice: "reset" } });
+    // Drop the in-memory recovery session; it must never outlive this page.
+    await dropRecoverySession();
+    navigate('/login', { replace: true, state: { notice: 'reset' } });
   };
 
   return (
     <AuthLayout
-      title="كلمة مرور جديدة"
-      subtitle="اختر كلمة مرور جديدة لحسابك."
-      loading={status === "checking"}
-      loadingLabel="جارٍ التحقق من الرابط..."
+      title={t('auth.reset.title')}
+      subtitle={t('auth.reset.subtitle')}
+      loading={status === 'checking'}
+      loadingLabel={t('auth.reset.checking')}
       terminalError={
-        status === "invalid"
+        status === 'invalid'
           ? {
-              message: "انتهت صلاحية هذا الرابط أو أنه غير صالح. اطلب رابطًا جديدًا.",
-              actionLabel: "طلب رابط جديد",
-              onAction: () => navigate("/forgot-password", { replace: true }),
+              message: t('auth.reset.invalidLink'),
+              actionLabel: t('auth.reset.requestNew'),
+              onAction: () => navigate('/forgot-password', { replace: true }),
             }
           : undefined
       }
     >
       <form onSubmit={onSubmit} className="space-y-5" noValidate>
         <FormField
-          label="كلمة المرور الجديدة"
+          label={t('auth.reset.newPassword')}
           type="password"
-            icon={<LockIcon />}
+          icon={<LockIcon />}
           required
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           error={errors.password}
-          help="8 أحرف على الأقل."
+          help={t('auth.password.help')}
         />
         <FormField
-          label="تأكيد كلمة المرور"
+          label={t('auth.reset.confirm')}
           type="password"
-            icon={<LockIcon />}
+          icon={<LockIcon />}
           required
           autoComplete="new-password"
           value={confirm}
@@ -92,9 +123,15 @@ export default function ResetPasswordPage() {
           error={errors.confirm}
         />
         <FormError message={formError} />
-        <SubmitButton label="حفظ كلمة المرور" loadingLabel="جارٍ الحفظ..." loading={submitting} />
+        <SubmitButton
+          label={t('auth.reset.submit')}
+          loadingLabel={t('auth.reset.submitting')}
+          loading={submitting}
+        />
         <p className="text-center text-sm">
-          <Link to="/login" className="btn-link">العودة إلى تسجيل الدخول</Link>
+          <Link to="/login" className="btn-link">
+            {t('common.backToLogin')}
+          </Link>
         </p>
       </form>
     </AuthLayout>

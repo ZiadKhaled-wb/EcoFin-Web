@@ -1,0 +1,19 @@
+{
+  "dashboard": "لوحة التحكم",
+  "sales": "المبيعات",
+  "pos": "نقطة البيع",
+  "orders": "الطلبات",
+  "invoices": "الفواتير",
+  "inventory": "المخزون",
+  "products": "المنتجات",
+  "categories": "التصنيفات",
+  "stock": "حركة المخزون",
+  "warehouses": "المخازن",
+  "purchasing": "المشتريات",
+  "customers": "العملاء",
+  "suppliers": "الموردون",
+  "employees": "الموظفون",
+  "accounting": "الحسابات",
+  "reports": "التقارير",
+  "settings": "الإعدادات"
+}

@@ -1,28 +1,28 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { DirectionProvider } from "@radix-ui/react-direction";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "@fontsource/ibm-plex-sans-arabic/400.css";
-import "@fontsource/ibm-plex-sans-arabic/500.css";
-import "@fontsource/ibm-plex-sans-arabic/600.css";
-import "@fontsource/ibm-plex-sans-arabic/700.css";
-import "@fontsource/ibm-plex-mono/500.css";
-import "./index.css";
-import App from "./App";
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { QueryClientProvider } from '@tanstack/react-query';
+import '@fontsource/ibm-plex-sans-arabic/400.css';
+import '@fontsource/ibm-plex-sans-arabic/500.css';
+import '@fontsource/ibm-plex-sans-arabic/600.css';
+import '@fontsource/ibm-plex-sans-arabic/700.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import './index.css';
+import App from './App';
+import LanguageProvider from '@/i18n/LanguageProvider';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import { Toaster } from '@/components/ui/Toast';
+import { queryClient } from '@/lib/queryClient';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: 1, refetchOnWindowFocus: false, staleTime: 30_000 },
-  },
-});
-
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {/* Radix needs to know the page is RTL (menu placement, arrow keys). */}
-    <DirectionProvider dir="rtl">
+    {/* Sets the Radix direction and <html lang dir>; the language switch remounts the tree. */}
+    <LanguageProvider>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+        <Toaster />
       </QueryClientProvider>
-    </DirectionProvider>
+    </LanguageProvider>
   </StrictMode>,
 );

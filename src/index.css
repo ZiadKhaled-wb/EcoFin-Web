@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ==========================================================================
    EcoFin Pro — design tokens + component classes.
@@ -7,8 +7,8 @@
    ========================================================================== */
 
 @theme {
-  --font-sans: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+  --font-sans: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
 
   /* Neutrals: cool, slightly green (never pure grey) */
   --color-ink: #12201e;
@@ -83,7 +83,7 @@
     cursor: not-allowed;
   }
   /* We render our own clear button in SearchInput */
-  input[type="search"]::-webkit-search-cancel-button {
+  input[type='search']::-webkit-search-cancel-button {
     appearance: none;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -188,7 +188,7 @@
   .check-input:checked + .check-box svg {
     opacity: 1;
   }
-  .check-input[aria-invalid="true"] + .check-box {
+  .check-input[aria-invalid='true'] + .check-box {
     @apply border-danger-600;
   }
   .switch-track {
@@ -210,7 +210,7 @@
     @apply mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-line-strong bg-surface transition-colors;
   }
   .radio-dot::after {
-    content: "";
+    content: '';
     @apply size-2.5 rounded-full bg-brand-600;
     transform: scale(0);
     transition: transform var(--duration-fast) var(--ease-standard);
@@ -285,20 +285,52 @@
 }
 
 /* ---- Overlay motion (open/close only; reduced-motion handled globally) ---- */
-@keyframes ds-fade-in { from { opacity: 0; } }
-@keyframes ds-fade-out { to { opacity: 0; } }
-@keyframes ds-slide-in { from { transform: translateX(var(--slide-from)); } }
-@keyframes ds-slide-out { to { transform: translateX(var(--slide-from)); } }
+@keyframes ds-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ds-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes ds-slide-in {
+  from {
+    transform: translateX(var(--slide-from));
+  }
+}
+@keyframes ds-slide-out {
+  to {
+    transform: translateX(var(--slide-from));
+  }
+}
 
-.drawer-overlay[data-state="open"] { animation: ds-fade-in var(--duration-base) var(--ease-standard); }
-.drawer-overlay[data-state="closed"] { animation: ds-fade-out var(--duration-fast) var(--ease-standard); }
-.drawer-panel[data-state="open"] { animation: ds-slide-in var(--duration-base) var(--ease-standard); }
-.drawer-panel[data-state="closed"] { animation: ds-slide-out var(--duration-fast) var(--ease-standard); }
+.drawer-overlay[data-state='open'] {
+  animation: ds-fade-in var(--duration-base) var(--ease-standard);
+}
+.drawer-overlay[data-state='closed'] {
+  animation: ds-fade-out var(--duration-fast) var(--ease-standard);
+}
+.drawer-panel[data-state='open'] {
+  animation: ds-slide-in var(--duration-base) var(--ease-standard);
+}
+.drawer-panel[data-state='closed'] {
+  animation: ds-slide-out var(--duration-fast) var(--ease-standard);
+}
 /* "start" is the right edge in RTL, so the slide origin flips with direction */
-.drawer-start { --slide-from: -100%; }
-[dir="rtl"] .drawer-start { --slide-from: 100%; }
-.drawer-end { --slide-from: 100%; }
-[dir="rtl"] .drawer-end { --slide-from: -100%; }
+.drawer-start {
+  --slide-from: -100%;
+}
+[dir='rtl'] .drawer-start {
+  --slide-from: 100%;
+}
+.drawer-end {
+  --slide-from: 100%;
+}
+[dir='rtl'] .drawer-end {
+  --slide-from: -100%;
+}
 
 @layer components {
   /* ---- Sidebar ---- */

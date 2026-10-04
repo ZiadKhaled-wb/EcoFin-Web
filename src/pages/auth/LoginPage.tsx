@@ -1,85 +1,106 @@
-import { useState, type FormEvent } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import AuthLayout from "@/components/auth/AuthLayout";
-import TenantSlugField from "@/components/auth/TenantSlugField";
-import FormField from "@/components/ui/FormField";
-import FormError from "@/components/ui/FormError";
-import Notice from "@/components/ui/Notice";
-import SubmitButton from "@/components/ui/SubmitButton";
-import { LockIcon, UserIcon } from "@/components/ui/Icons";
-import { ApiError, getErrorMessage } from "@/lib/api";
-import { rateLimitMessage, useCountdown } from "@/hooks/useCountdown";
-import { useTenantSlug } from "@/hooks/useTenantSlug";
-import { authApi } from "@/services/authApi";
-import { useAuthStore } from "@/store/authStore";
+import { useState, type FormEvent } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import AuthLayout from '@/components/auth/AuthLayout';
+import TenantSlugField from '@/components/auth/TenantSlugField';
+import FormField from '@/components/ui/FormField';
+import FormError from '@/components/ui/FormError';
+import Notice from '@/components/ui/Notice';
+import SubmitButton from '@/components/ui/SubmitButton';
+import { LockIcon, UserIcon } from '@/components/ui/Icons';
+import { useCountdown } from '@/hooks/useCountdown';
+import { useTenantSlug } from '@/hooks/useTenantSlug';
+import { t, type TranslationKey } from '@/i18n';
+import { ApiError } from '@/lib/api';
+import { authApi, buildLoginBody } from '@/services/authApi';
+import { useAuthStore } from '@/store/authStore';
+import { loginErrorMessage } from './authErrors';
 
-const NOTICES: Record<string, string> = {
-  activated: "تم تفعيل المنشأة. سجّل الدخول للمتابعة.",
-  reset: "تم تغيير كلمة المرور. سجّل الدخول بكلمة المرور الجديدة.",
-  changed: "تم تغيير كلمة المرور. سجّل الدخول من جديد.",
+const NOTICES: Record<string, TranslationKey> = {
+  reset: 'auth.notice.reset',
+  changed: 'auth.notice.changed',
 };
-
-// D8: every 401 is the same message. Never branch on the backend's wording.
-const GENERIC_CREDENTIALS_ERROR = "بيانات الدخول غير صحيحة.";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const notice = NOTICES[(location.state as { notice?: string } | null)?.notice ?? ""];
+  const noticeKey = NOTICES[(location.state as { notice?: string } | null)?.notice ?? ''];
 
   const tenant = useTenantSlug();
   const setLogin = useAuthStore((s) => s.setLogin);
-  const setTenantSlug = useAuthStore((s) => s.setTenantSlug);
 
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [shopError, setShopError] = useState('');
   const [loading, setLoading] = useState(false);
   const { seconds, start } = useCountdown();
 
+  // An email names the login on its own; a username is only unique inside one shop.
+  const needsShop = identifier.trim() !== '' && !identifier.includes('@');
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
+    setShopError('');
+
+    const parsed = buildLoginBody({
+      identifier,
+      password,
+      ...(needsShop ? { tenantSlug: tenant.slug } : {}),
+    });
+    if (!parsed.success) {
+      const missingShop = needsShop && tenant.slug === '';
+      if (missingShop) setShopError(t('auth.errors.shopRequired'));
+      else setError(t('auth.errors.identifierInvalid'));
+      if (missingShop) tenant.unlock();
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await authApi.login({
-        tenant_slug: tenant.slug,
-        identifier: identifier.trim(),
-        password, // never trimmed (ADR-0004 D9)
+      const res = await authApi.login(parsed.data);
+      setLogin(res, {
+        identifier: parsed.data.identifier,
+        tenantSlug: parsed.data.tenantSlug,
       });
-      setTenantSlug(tenant.slug);
-      setLogin(res.user, res.session, res.must_change_password);
-      // must_change_password blocks everything else.
-      navigate(res.must_change_password ? "/change-password" : "/dashboard", { replace: true });
+      const { orgId, mustChangePassword } = useAuthStore.getState();
+      navigate(!orgId ? '/select-shop' : mustChangePassword ? '/change-password' : '/dashboard', {
+        replace: true,
+      });
     } catch (err) {
-      if (err instanceof ApiError && err.status === 429) start(err.retryAfter ?? 60);
-      else if (err instanceof ApiError && err.status === 401) setError(GENERIC_CREDENTIALS_ERROR);
-      else setError(getErrorMessage(err, "تعذر تسجيل الدخول. حاول مرة أخرى."));
+      if (err instanceof ApiError && err.status === 429 && err.retryAfter) start(err.retryAfter);
+      else setError(loginErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <AuthLayout title="تسجيل الدخول" subtitle="أدخل بياناتك للمتابعة">
-      <form onSubmit={onSubmit} className="space-y-5">
-        {notice && <Notice tone="success">{notice}</Notice>}
-
-        <TenantSlugField {...tenant} onChange={tenant.setSlug} onUnlock={tenant.unlock} />
+    <AuthLayout title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}>
+      <form onSubmit={onSubmit} className="space-y-5" noValidate>
+        {noticeKey && <Notice tone="success">{t(noticeKey)}</Notice>}
 
         <FormField
-          label="اسم المستخدم أو البريد الإلكتروني"
+          label={t('auth.login.identifier')}
           ltr
           required
           icon={<UserIcon />}
           invalid={!!error}
-          placeholder="username or email"
+          placeholder={t('auth.login.identifierPlaceholder')}
           autoComplete="username"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
         />
+        {needsShop && (
+          <TenantSlugField
+            {...tenant}
+            error={shopError}
+            onChange={tenant.setSlug}
+            onUnlock={tenant.unlock}
+          />
+        )}
         <FormField
-          label="كلمة المرور"
+          label={t('auth.login.password')}
           type="password"
           required
           icon={<LockIcon />}
@@ -90,20 +111,19 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <FormError message={seconds > 0 ? rateLimitMessage(seconds) : error} />
+        <FormError message={seconds > 0 ? t('auth.errors.rateLimited', { seconds }) : error} />
         <SubmitButton
-          label="تسجيل الدخول"
-          loadingLabel="جارٍ الدخول..."
+          label={t('auth.login.submit')}
+          loadingLabel={t('auth.login.submitting')}
           loading={loading}
           disabled={seconds > 0}
         />
 
         <p className="text-center text-sm">
-          <span className="text-ink-mute">نسيت كلمة المرور؟ </span>
-          <Link to="/forgot-password" className="btn-link">استعادة كلمة المرور</Link>
-        </p>
-        <p className="text-center text-sm text-ink-mute">
-          لم تفعّل منشأتك بعد؟ <Link to="/activate" className="btn-link">فعّل الكود</Link>
+          <span className="text-ink-mute">{t('auth.login.forgotPrompt')} </span>
+          <Link to="/forgot-password" className="btn-link">
+            {t('auth.login.forgotLink')}
+          </Link>
         </p>
       </form>
     </AuthLayout>

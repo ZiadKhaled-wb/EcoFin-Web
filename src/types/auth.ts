@@ -1,60 +1,43 @@
-export type Role =
-  | "OWNER"
-  | "OPS_MANAGER"
-  | "ACCOUNTANT"
-  | "CASHIER"
-  | "COLLECTOR"
-  | "WAREHOUSE_MANAGER"
-  | "HR_MANAGER"
-  | "LAWYER"
-  | "EMPLOYEE"
-  | "SUPER_ADMIN"; // platform users only; not a tenant role (ADR-0004 D6)
+import type { EmployeeRole } from '@ecotech/contracts';
+import { t } from '@/i18n';
 
+/** API shapes come from `@ecotech/contracts`. Only UI-side types live here. */
+export type Role = EmployeeRole;
+
+/** Translated at read time so a language switch is picked up. */
 export const ROLE_LABELS: Record<Role, string> = {
-  OWNER: "المالك",
-  OPS_MANAGER: "مدير العمليات",
-  ACCOUNTANT: "محاسب",
-  CASHIER: "كاشير",
-  COLLECTOR: "محصّل",
-  WAREHOUSE_MANAGER: "أمين المخزن",
-  HR_MANAGER: "مدير الموارد البشرية",
-  LAWYER: "محامي",
-  EMPLOYEE: "موظف",
-  SUPER_ADMIN: "مدير المنصة",
+  get OWNER() {
+    return t('auth.role.OWNER');
+  },
+  get BRANCH_MANAGER() {
+    return t('auth.role.BRANCH_MANAGER');
+  },
+  get CASHIER() {
+    return t('auth.role.CASHIER');
+  },
+  get WAREHOUSE() {
+    return t('auth.role.WAREHOUSE');
+  },
+  get COLLECTOR() {
+    return t('auth.role.COLLECTOR');
+  },
+  get ACCOUNTANT() {
+    return t('auth.role.ACCOUNTANT');
+  },
+  get LAWYER() {
+    return t('auth.role.LAWYER');
+  },
 };
 
+/** The signed-in user as the shell sees it (built from the login response). */
 export interface AuthUser {
   id: string;
-  personId: string;
   email: string | null;
+  /** Set when the user signed in with a username. */
   username: string | null;
+  /** Role in the active shop. */
   role: Role;
-  branchId: string | null;
-  orgId: string | null;
+  /** Permission keys. Filled by F09 (`GET /api/me/permissions`); empty until then. */
   permissions: string[];
-  isSuperAdmin: boolean;
-  must_change_password: boolean;
-}
-
-export interface Session {
-  access_token: string;
-  refresh_token: string;
-}
-
-export interface LoginResponse {
-  user: AuthUser;
-  session: Session;
-  must_change_password: boolean;
-}
-
-export interface CheckLicenseResponse {
-  is_used: boolean;
-  plan_key: string;
-  org_name: string;
-}
-
-export interface ActivateWorkspaceResponse {
-  tenant_slug: string;
-  tenant_name: string;
-  org_id: string;
+  mustChangePassword: boolean;
 }

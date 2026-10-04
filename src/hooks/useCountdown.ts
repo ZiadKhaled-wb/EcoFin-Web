@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 /** Drives the rate-limit state: call start(retryAfterSeconds) on a 429. */
 export function useCountdown() {
@@ -12,6 +12,3 @@ export function useCountdown() {
 
   return { seconds, start: setSeconds };
 }
-
-export const rateLimitMessage = (seconds: number) =>
-  `محاولات كثيرة. يمكنك المحاولة مرة أخرى بعد ${seconds} ثانية.`;

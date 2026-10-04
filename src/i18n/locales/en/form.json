@@ -1,0 +1,14 @@
+{
+  "errors": {
+    "required": "This field is required.",
+    "invalid": "The value is not valid.",
+    "invalidEmail": "Enter a valid email address.",
+    "tooShort": "Must be at least {min} characters.",
+    "tooLong": "Must be at most {max} characters.",
+    "tooSmall": "The value must be at least {min}.",
+    "tooBig": "The value must be at most {max}.",
+    "tooFewItems": "Choose at least {min}.",
+    "tooManyItems": "Choose at most {max}.",
+    "invalidChoice": "Choose a value from the list."
+  }
+}

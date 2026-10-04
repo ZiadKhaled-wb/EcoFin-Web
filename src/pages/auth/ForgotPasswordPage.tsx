@@ -1,37 +1,53 @@
-import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import AuthLayout from "@/components/auth/AuthLayout";
-import TenantSlugField from "@/components/auth/TenantSlugField";
-import FormField from "@/components/ui/FormField";
-import FormError from "@/components/ui/FormError";
-import SubmitButton from "@/components/ui/SubmitButton";
-import { CheckCircleIcon, UserIcon } from "@/components/ui/Icons";
-import { ApiError } from "@/lib/api";
-import { rateLimitMessage, useCountdown } from "@/hooks/useCountdown";
-import { useTenantSlug } from "@/hooks/useTenantSlug";
-import { authApi } from "@/services/authApi";
+import { useState, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthLayout from '@/components/auth/AuthLayout';
+import TenantSlugField from '@/components/auth/TenantSlugField';
+import FormField from '@/components/ui/FormField';
+import FormError from '@/components/ui/FormError';
+import SubmitButton from '@/components/ui/SubmitButton';
+import { CheckCircleIcon, UserIcon } from '@/components/ui/Icons';
+import { useTenantSlug } from '@/hooks/useTenantSlug';
+import { t } from '@/i18n';
+import { ApiError } from '@/lib/api';
+import { authApi, buildForgotBody } from '@/services/authApi';
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
   const tenant = useTenantSlug();
-  const [identifier, setIdentifier] = useState("");
-  const [error, setError] = useState("");
+  const [identifier, setIdentifier] = useState('');
+  const [error, setError] = useState('');
+  const [shopError, setShopError] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { seconds, start } = useCountdown();
+
+  const needsShop = identifier.trim() !== '' && !identifier.includes('@');
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError("");
+    setError('');
+    setShopError('');
+
+    const parsed = buildForgotBody({
+      identifier,
+      ...(needsShop ? { tenantSlug: tenant.slug } : {}),
+    });
+    if (!parsed.success) {
+      if (needsShop && tenant.slug === '') {
+        setShopError(t('auth.errors.shopRequired'));
+        tenant.unlock();
+      } else setError(t('auth.errors.identifierInvalid'));
+      return;
+    }
+
     setLoading(true);
     try {
-      await authApi.forgotPassword({ tenant_slug: tenant.slug, identifier: identifier.trim() });
+      await authApi.forgotPassword(parsed.data);
       setSent(true);
     } catch (err) {
-      // Uniformity contract: the backend answers 200 for every input.
-      // The only branches allowed here are rate-limit and transport failure.
-      if (err instanceof ApiError && err.status === 429) start(err.retryAfter ?? 60);
-      else setError("تعذر إرسال الطلب. حاول مرة أخرى بعد قليل.");
+      // Same answer for success and failure, so the page never reveals whether an account
+      // exists. Only "the server never answered" is shown as a retryable error.
+      if (err instanceof ApiError && err.status === 0) setError(t('auth.forgot.failed'));
+      else setSent(true);
     } finally {
       setLoading(false);
     }
@@ -39,24 +55,21 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <AuthLayout title="استعادة كلمة المرور">
+      <AuthLayout title={t('auth.forgot.title')}>
         <div className="space-y-4">
-          {/* One message, no variations, no resend that could reveal timing. */}
           <div
             role="status"
             className="notice notice-success flex flex-col items-center gap-2 px-5 py-5 text-center"
           >
             <CheckCircleIcon width={28} height={28} />
-            <p className="text-base font-medium">
-              إذا كان هناك حساب مطابق، فقد أرسلنا رابط إعادة تعيين كلمة المرور.
-            </p>
-            <p className="text-xs text-ink-mute">تحقق من صندوق الوارد والبريد المزعج</p>
+            <p className="text-base font-medium">{t('auth.forgot.sent')}</p>
+            <p className="text-xs text-ink-mute">{t('auth.forgot.sentHint')}</p>
           </div>
           <SubmitButton
             type="button"
             variant="secondary"
-            label="العودة لتسجيل الدخول"
-            onClick={() => navigate("/login")}
+            label={t('common.backToLogin')}
+            onClick={() => navigate('/login')}
           />
         </div>
       </AuthLayout>
@@ -64,30 +77,38 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <AuthLayout title="استعادة كلمة المرور" subtitle="سنرسل رابط إعادة التعيين إلى بريد الحساب">
-      <form onSubmit={onSubmit} className="space-y-5">
-        <TenantSlugField {...tenant} onChange={tenant.setSlug} onUnlock={tenant.unlock} />
+    <AuthLayout title={t('auth.forgot.title')} subtitle={t('auth.forgot.subtitle')}>
+      <form onSubmit={onSubmit} className="space-y-5" noValidate>
         <FormField
-          label="اسم المستخدم أو البريد الإلكتروني"
+          label={t('auth.login.identifier')}
           ltr
           required
           icon={<UserIcon />}
           invalid={!!error}
-          placeholder="username or email"
+          placeholder={t('auth.login.identifierPlaceholder')}
           autoComplete="username"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
         />
-        <FormError message={seconds > 0 ? rateLimitMessage(seconds) : error} />
+        {needsShop && (
+          <TenantSlugField
+            {...tenant}
+            error={shopError}
+            onChange={tenant.setSlug}
+            onUnlock={tenant.unlock}
+          />
+        )}
+        <FormError message={error} />
         <SubmitButton
-          label="إرسال رابط الاستعادة"
-          loadingLabel="جارٍ الإرسال..."
+          label={t('auth.forgot.submit')}
+          loadingLabel={t('auth.forgot.submitting')}
           loading={loading}
-          disabled={seconds > 0}
         />
         <p className="text-center text-sm">
-          <span className="text-ink-mute">تذكرت كلمة المرور؟ </span>
-          <Link to="/login" className="btn-link">تسجيل الدخول</Link>
+          <span className="text-ink-mute">{t('auth.forgot.remember')} </span>
+          <Link to="/login" className="btn-link">
+            {t('auth.login.title')}
+          </Link>
         </p>
       </form>
     </AuthLayout>
