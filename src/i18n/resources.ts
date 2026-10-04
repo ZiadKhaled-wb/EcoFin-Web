@@ -1,3 +1,4 @@
+import arAudit from './locales/ar/audit.json';
 import arAuth from './locales/ar/auth.json';
 import arCommon from './locales/ar/common.json';
 import arErrors from './locales/ar/errors.json';
@@ -7,6 +8,7 @@ import arSample from './locales/ar/sample.json';
 import arShell from './locales/ar/shell.json';
 import arTable from './locales/ar/table.json';
 import arUi from './locales/ar/ui.json';
+import enAudit from './locales/en/audit.json';
 import enAuth from './locales/en/auth.json';
 import enCommon from './locales/en/common.json';
 import enErrors from './locales/en/errors.json';
@@ -28,6 +30,7 @@ export const ar = {
   form: arForm,
   table: arTable,
   sample: arSample,
+  audit: arAudit,
 };
 
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
@@ -42,6 +45,7 @@ export const en: SameShape<typeof ar> = {
   form: enForm,
   table: enTable,
   sample: enSample,
+  audit: enAudit,
 };
 
 type Leaves<T, P extends string = ''> = {

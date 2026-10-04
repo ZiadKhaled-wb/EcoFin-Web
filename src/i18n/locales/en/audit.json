@@ -1,0 +1,59 @@
+{
+  "title": "Audit log",
+  "description": "Who did what in your shop, newest first.",
+  "caption": "Audit log entries",
+  "filters": {
+    "label": "Filters",
+    "from": "From",
+    "to": "To",
+    "action": "Action",
+    "entityType": "Record type",
+    "branch": "Branch",
+    "all": "All",
+    "clear": "Clear filters",
+    "person": "Person: {name}",
+    "clearPerson": "Show everyone"
+  },
+  "columns": {
+    "time": "Time",
+    "action": "Action",
+    "actor": "By",
+    "record": "Record",
+    "branch": "Branch",
+    "ip": "IP address",
+    "details": "Details"
+  },
+  "actions": {
+    "auth_login": "Signed in",
+    "auth_logout": "Signed out",
+    "auth_password_change": "Changed password",
+    "employee_permission_set": "Changed a permission",
+    "employee_branches_set": "Changed branches"
+  },
+  "entityTypes": {
+    "employee": "Employee"
+  },
+  "system": "System",
+  "filterByPerson": "Show only {name}",
+  "openDetails": "Details",
+  "empty": {
+    "title": "No entries",
+    "description": "Nothing matches these filters. Change or clear them."
+  },
+  "detail": {
+    "title": "Entry details",
+    "time": "Time",
+    "action": "Action",
+    "actor": "By",
+    "record": "Record",
+    "branch": "Branch",
+    "ip": "IP address",
+    "device": "Device",
+    "userAgent": "Browser or app",
+    "requestId": "Request id",
+    "reason": "Reason",
+    "before": "Before",
+    "after": "After",
+    "none": "—"
+  }
+}
