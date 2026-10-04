@@ -26,6 +26,7 @@
     "submit": "Save",
     "success": "Saved successfully."
   },
+  "manageAccess": "Manage access",
   "dialog": {
     "open": "Open dialog",
     "title": "Confirm the action",
