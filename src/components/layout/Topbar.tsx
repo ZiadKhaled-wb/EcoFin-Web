@@ -29,22 +29,29 @@ export default function Topbar({
   const name = user?.username ?? user?.email ?? '';
 
   return (
-    <header className="sticky top-0 z-(--z-sticky) flex h-16 items-center gap-3 border-b border-line bg-surface px-4 sm:px-6">
+    <header className="sticky top-0 z-(--z-sticky) flex h-16 items-center gap-2 border-b border-line bg-surface px-4 sm:px-6">
       <IconButton
-        className="lg:hidden"
+        className="shrink-0 lg:hidden"
         label={t('shell.openMenu')}
         icon={<MenuIcon />}
         aria-expanded={menuOpen}
         aria-haspopup="dialog"
         onClick={onMenuClick}
       />
-      <Wordmark size="md" className="lg:hidden" />
+      <Wordmark size="md" className="shrink-0 lg:hidden" />
 
-      <div className="ms-auto flex items-center gap-2 sm:gap-3">
-        <BranchSwitcher />
+      <div className="ms-auto flex min-w-0 items-center gap-2 sm:gap-3">
+        {/* Below md the branch switcher lives in the menu drawer (AppShell), so the bar fits 360 px. */}
+        <div className="hidden md:block">
+          <BranchSwitcher />
+        </div>
         <LanguageSwitch />
         {tenantSlug && (
-          <span dir="ltr" className="hidden font-mono text-xs text-ink-mute sm:inline">
+          // No room for the shop code next to the branch switcher until the sidebar takes the menu (lg).
+          <span
+            dir="ltr"
+            className="hidden whitespace-nowrap font-mono text-xs text-ink-mute sm:inline md:hidden lg:inline"
+          >
             {tenantSlug}
           </span>
         )}
@@ -62,7 +69,7 @@ export default function Topbar({
                 {name.charAt(0) || t('shell.unknownUser')}
               </span>
               <span className="hidden max-w-40 truncate text-sm font-medium sm:inline">{name}</span>
-              <ChevronDownIcon size={16} className="text-ink-mute" />
+              <ChevronDownIcon size={16} className="hidden text-ink-mute sm:block" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

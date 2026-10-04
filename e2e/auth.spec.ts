@@ -91,13 +91,14 @@ test.describe('auth flows', () => {
       accessToken: 'garbage.invalid.token',
       expiresAt: new Date(Date.now() + 60 * 60_000).toISOString(),
     });
-    await page.reload();
-    await expect(page).toHaveURL(/\/dashboard/);
-
+    // Count from the reload on: the shell's own GET /api/auth/me on load (F09) is the first call
+    // to meet the garbage token, so the single refresh can happen before the calls below.
     let refreshCalls = 0;
     page.on('request', (r) => {
       if (r.url().endsWith('/api/auth/refresh')) refreshCalls += 1;
     });
+    await page.reload();
+    await expect(page).toHaveURL(/\/dashboard/);
 
     // Two parallel calls through the app's own axios client (same module instance in dev).
     const statuses = await page.evaluate(async () => {

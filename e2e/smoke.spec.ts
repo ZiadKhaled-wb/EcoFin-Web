@@ -10,8 +10,9 @@ test.describe('login page smoke', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
   });
 
-  // The language switch does not exist yet (i18n is F09). Enable and set the language here once it does.
-  test.fixme('English renders left-to-right', async ({ page }) => {
+  // The login page has no switch of its own; the choice made in the shell (F09) is remembered.
+  test('English renders left-to-right', async ({ page }) => {
+    await page.addInitScript(() => window.localStorage.setItem('ecofin-lang', 'en'));
     await page.goto('/login');
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
