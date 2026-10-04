@@ -12,6 +12,7 @@ import { useZodForm } from '@/components/ui/useZodForm';
 import PageContainer from '@/components/ui/PageContainer';
 import { notify } from '@/components/ui/notify';
 import SubmitButton from '@/components/ui/SubmitButton';
+import Can from '@/features/me/Can';
 import { formatMoney } from '@/lib/format';
 import { t } from '@/i18n';
 import { useLanguage } from '@/i18n/useLanguage';
@@ -81,7 +82,15 @@ export default function SamplePage() {
       <PageHeader
         title={t('sample.title')}
         description={t('sample.description')}
-        actions={<Button onClick={() => setDialogOpen(true)}>{t('sample.dialog.open')}</Button>}
+        actions={
+          <div className="flex flex-wrap gap-2">
+            {/* F06: shown only to employees holding employee.manage (the pattern for action buttons). */}
+            <Can permission="employee.manage">
+              <Button variant="secondary">{t('sample.manageAccess')}</Button>
+            </Can>
+            <Button onClick={() => setDialogOpen(true)}>{t('sample.dialog.open')}</Button>
+          </div>
+        }
       />
 
       <div className="space-y-8">
