@@ -345,9 +345,12 @@
   .menu-content {
     @apply min-w-56 rounded-panel border border-line bg-surface p-1.5 shadow-overlay;
     z-index: var(--z-popover);
+    /* Never wider than the screen: a long branch or shop name wraps instead (360 px phones). */
+    max-width: min(24rem, calc(100vw - 1rem));
   }
   .menu-item {
-    @apply flex min-h-11 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-sm font-medium text-ink outline-none;
+    @apply flex min-h-11 cursor-pointer select-none items-center gap-3 rounded-control px-3 py-2 text-sm font-medium text-ink outline-none;
+    overflow-wrap: anywhere;
   }
   .menu-item[data-highlighted] {
     @apply bg-brand-50 text-brand-800;

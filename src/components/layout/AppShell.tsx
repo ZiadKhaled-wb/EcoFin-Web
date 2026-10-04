@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import Drawer from '@/components/ui/Drawer';
+import BranchSwitcher from '@/components/layout/BranchSwitcher';
 import Wordmark from '@/components/ui/Wordmark';
 import SidebarNav from '@/components/layout/SidebarNav';
 import Topbar from '@/components/layout/Topbar';
@@ -52,6 +53,10 @@ export default function AppShell() {
       </div>
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title={t('shell.menu')}>
+        {/* Below md the top bar has no room for the branch switcher (see Topbar). */}
+        <div className="border-b border-line px-4 pb-4 md:hidden">
+          <BranchSwitcher />
+        </div>
         <SidebarNav items={items} onNavigate={() => setDrawerOpen(false)} />
       </Drawer>
     </div>

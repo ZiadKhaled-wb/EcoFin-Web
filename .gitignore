@@ -8,3 +8,7 @@ dist
 .env.*
 !.env.example
 opencode.jsonc
+
+# Playwright output
+test-results/
+playwright-report/

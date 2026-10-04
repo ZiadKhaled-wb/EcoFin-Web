@@ -14,6 +14,7 @@ export function DropdownMenuContent({
   className,
   sideOffset = 8,
   align = 'end',
+  collisionPadding = 8,
   ...props
 }: ComponentProps<typeof Menu.Content>) {
   return (
@@ -21,6 +22,7 @@ export function DropdownMenuContent({
       <Menu.Content
         sideOffset={sideOffset}
         align={align}
+        collisionPadding={collisionPadding}
         className={cn('menu-content', className)}
         {...props}
       />
