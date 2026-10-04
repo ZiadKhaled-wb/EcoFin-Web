@@ -1,4 +1,8 @@
-import type { AuthMeResponse, MePermissionsResponse, PermissionKey } from '@ecotech/contracts';
+import type {
+  AuthMeResponse,
+  MePermissionsResponse,
+  PermissionKey,
+} from '@ziadkhaled-wb/contracts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 import type { ReactElement } from 'react';

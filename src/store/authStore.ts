@@ -3,7 +3,7 @@ import type {
   AuthSelectShopResponse,
   AuthSession,
   ShopMembership,
-} from '@ecotech/contracts';
+} from '@ziadkhaled-wb/contracts';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { queryClient } from '@/lib/queryClient';

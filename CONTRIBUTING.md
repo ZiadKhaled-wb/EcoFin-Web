@@ -33,7 +33,7 @@ Browser tests live in `e2e/` (Playwright) and run only with `RUN_E2E=1`
 - TypeScript strict, ESLint and Prettier (`.prettierrc.json`, same as the server). Line endings are LF (`.gitattributes`).
 - Write the test first. No `@ts-ignore`, no `any`, no disabled lint rules, no skipped tests to get green.
 - No hard-coded UI text. Every screen must work in Arabic (RTL) and English.
-- API shapes come from the shared contracts package, never defined locally (`@ecotech/contracts`, source in `EcoFin-API/packages/contracts`, published to GitHub Packages; `.npmrc` reads `NPM_TOKEN`). Until the first publish this branch installs a vendored tarball from `vendor/` (see `vendor/README.md`).
+- API shapes come from the shared contracts package, never defined locally (`@ziadkhaled-wb/contracts`, source in `EcoFin-API/packages/contracts`, published to GitHub Packages; `.npmrc` reads `NPM_TOKEN`). Installing it needs a classic GitHub token with only `read:packages` in `NPM_TOKEN` (PowerShell: `$env:NPM_TOKEN="ghp_..."; npm ci`). Never commit the token.
 
 ## Pull requests
 

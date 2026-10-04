@@ -18,6 +18,9 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+        env:
+          # read:packages token for @ziadkhaled-wb/contracts on GitHub Packages (.npmrc reads it)
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run format:check

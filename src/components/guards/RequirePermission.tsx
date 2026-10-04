@@ -1,4 +1,4 @@
-import type { PermissionKey } from '@ecotech/contracts';
+import type { PermissionKey } from '@ziadkhaled-wb/contracts';
 import type { ReactNode } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import ErrorState from '@/components/ui/ErrorState';

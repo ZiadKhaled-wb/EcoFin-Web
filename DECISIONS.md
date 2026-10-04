@@ -5,7 +5,7 @@ Decisions taken during Sprint 1 that the docs don't already settle. Newest last.
 ## Sprint 1 (3 Oct 2026)
 
 ### D1. Contracts package lives in a third repo `EcoFin-Contracts/` (decided by the team)
-- Package `@ecotech/contracts`, built with `tsc`, version `0.1.0`, used as `"@ecotech/contracts": "file:../EcoFin-Contracts"` **for now**.
+- Package `@ziadkhaled-wb/contracts`, built with `tsc`, version `0.1.0`, used as `"@ziadkhaled-wb/contracts": "file:../EcoFin-Contracts"` **for now**.
 - **Before merging Sprint 1 to `main`:** create the GitHub repo `EcoFin-Contracts`, push it, tag `v0.1.0`, and switch this repo to `"github:<owner>/EcoFin-Contracts#v0.1.0"`. Until then GitHub CI can't install this repo.
 
 ### D4. Worktrees are created by the master with `git worktree add`, as siblings of the repos (`EcoFine/wt-<agent>`), so `file:../EcoFin-Contracts` resolves the same way everywhere.
@@ -28,9 +28,14 @@ Client tasks write Playwright tests that are skipped unless `RUN_E2E=1`. Nobody 
 F09 builds `usePermissions()` + `<RequirePermission>`; F06 adds `useCan`, `<Can>`, `useBranchAccess` on top.
 
 ### D26. No third repo: contracts live in `EcoFin-API/packages/contracts` (supersedes D1 and §4; user decision, 4 Oct)
-- `EcoFin-API` is an npm workspace (`packages/*`). `@ecotech/contracts` (same name, version `0.1.0`) lives in `packages/contracts`, and the API uses it through the workspace, so nothing outside the repo is needed to build, test or deploy the API.
+- `EcoFin-API` is an npm workspace (`packages/*`). `@ziadkhaled-wb/contracts` (same name, version `0.1.0`) lives in `packages/contracts`, and the API uses it through the workspace, so nothing outside the repo is needed to build, test or deploy the API.
 - It is published privately to **GitHub Packages** by a CI workflow on tags `contracts-v*` (`publishConfig.registry = https://npm.pkg.github.com`, auth through `NPM_TOKEN`).
-- `EcoFin-Web` depends on `"@ecotech/contracts": "0.1.0"` from GitHub Packages (`.npmrc` with `${NPM_TOKEN}`). **Until the first publish**, `integration/sprint-1` only uses a local copy. That is a **blocker before `main`**.
+- `EcoFin-Web` depends on `"@ziadkhaled-wb/contracts": "0.1.0"` from GitHub Packages (`.npmrc` with `${NPM_TOKEN}`). **Until the first publish**, `integration/sprint-1` only uses a local copy. That is a **blocker before `main`**.
 - No file may reference a `../` path outside its repo. No Dockerfile changes.
 - GitHub Packages requires the npm scope to equal the owning GitHub user/org: publishing `@ecotech/*` needs a GitHub org `ecotech` (or a scope rename). See the run report.
 - The old `EcoFin-Contracts` folder is deleted after the move; its history is kept inside `EcoFin-API`.
+
+### D28. Contracts come from GitHub Packages as `@ziadkhaled-wb/contracts` (user decision, 4 Oct; full text in EcoFin-API `DECISIONS.md`)
+- The scope must equal the repo owner (`ZiadKhaled-wb`), so `@ecotech/contracts` was renamed. Version `0.1.0` is published from EcoFin-API (tag `contracts-v0.1.0`).
+- This repo installs the fixed version through `.npmrc` (`${NPM_TOKEN}`): a classic token with only `read:packages` in Vercel (`NPM_TOKEN`), in the Actions secrets (`NPM_TOKEN`, used by CI) and in each developer's environment. The vendored tarball is gone.
+- New contract version: publish it from EcoFin-API, then bump `@ziadkhaled-wb/contracts` here and run `npm install`.

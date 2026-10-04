@@ -35,7 +35,7 @@ declare module '@tanstack/react-table' {
 
 /**
  * Server-driven mode. `page`, `pageSize` and `total` are the contract's paginated response
- * (`paginated()` in @ecotech/contracts). Pass `sorting`/`onSortingChange` and
+ * (`paginated()` in @ziadkhaled-wb/contracts). Pass `sorting`/`onSortingChange` and
  * `search`/`onSearchChange` too when the server sorts and searches.
  */
 export interface ServerMode {

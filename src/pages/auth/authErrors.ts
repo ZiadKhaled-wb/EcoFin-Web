@@ -1,4 +1,4 @@
-import { Password } from '@ecotech/contracts';
+import { Password } from '@ziadkhaled-wb/contracts';
 import { ApiError } from '@/lib/api';
 import { t, type TranslationKey } from '@/i18n';
 

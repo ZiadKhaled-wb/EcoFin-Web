@@ -3,7 +3,7 @@ import type {
   AuthSelectShopResponse,
   AuthSession,
   ShopMembership,
-} from '@ecotech/contracts';
+} from '@ziadkhaled-wb/contracts';
 import { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 
 export const ORG_A = '11111111-1111-4111-8111-111111111111';

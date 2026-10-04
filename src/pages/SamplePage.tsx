@@ -1,4 +1,4 @@
-import { AuthChangePasswordBody } from '@ecotech/contracts';
+import { AuthChangePasswordBody } from '@ziadkhaled-wb/contracts';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/layout/PageHeader';

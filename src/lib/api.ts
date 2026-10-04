@@ -1,4 +1,4 @@
-import { AuthRefreshResponse, type ErrorCode } from '@ecotech/contracts';
+import { AuthRefreshResponse, type ErrorCode } from '@ziadkhaled-wb/contracts';
 import axios, { AxiosError } from 'axios';
 import { t } from '@/i18n';
 import { useAuthStore } from '@/store/authStore';
