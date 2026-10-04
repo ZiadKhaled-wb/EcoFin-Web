@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
       // and VITE_API_URL can stay empty.
       proxy: {
         '/api': {
-          target: env.VITE_DEV_API_TARGET || 'http://localhost:3000',
+          target: env.VITE_DEV_API_TARGET || 'http://localhost:3001',
           changeOrigin: true,
         },
       },
