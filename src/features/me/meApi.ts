@@ -1,4 +1,4 @@
-import { AuthMeResponse, MePermissionsResponse } from '@ecotech/contracts';
+import { AuthMeResponse, MePermissionsResponse } from '@ziadkhaled-wb/contracts';
 import { api, ApiError } from '@/lib/api';
 
 /** A reply that does not match the contract is an error, never trusted data. */

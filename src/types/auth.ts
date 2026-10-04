@@ -1,7 +1,7 @@
-import type { EmployeeRole } from '@ecotech/contracts';
+import type { EmployeeRole } from '@ziadkhaled-wb/contracts';
 import { t } from '@/i18n';
 
-/** API shapes come from `@ecotech/contracts`. Only UI-side types live here. */
+/** API shapes come from `@ziadkhaled-wb/contracts`. Only UI-side types live here. */
 export type Role = EmployeeRole;
 
 /** Translated at read time so a language switch is picked up. */

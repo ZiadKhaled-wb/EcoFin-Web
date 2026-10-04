@@ -10,7 +10,7 @@ import {
   type AuthResetPasswordBody,
   type AuthResetPasswordResponse,
   type AuthSelectShopBody,
-} from '@ecotech/contracts';
+} from '@ziadkhaled-wb/contracts';
 import { api, ApiError } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 

@@ -1,4 +1,4 @@
-import { TenantSlug } from '@ecotech/contracts';
+import { TenantSlug } from '@ziadkhaled-wb/contracts';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
