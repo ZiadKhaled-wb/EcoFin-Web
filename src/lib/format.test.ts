@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { EGP_LABEL } from '@ziadkhaled-wb/contracts';
+import { t } from '@/i18n';
 import {
   formatBusinessDate,
   formatDate,
@@ -29,6 +31,16 @@ describe('formatMoney (decimal string in, string out)', () => {
   it('handles negatives and zero', () => {
     expect(formatMoney('-0.5', 'en')).toBe('-0.50 EGP');
     expect(formatMoney('0', 'ar')).toBe('0.00 ج.م');
+  });
+  it('rounds half-up to 2 decimals (shared F12 rule)', () => {
+    expect(formatMoney('1.005', 'en')).toBe('1.01 EGP');
+    // ICU puts a left-to-right mark before an Arabic-locale minus so it stays readable in RTL text
+    expect(formatMoney('-2.345', 'ar')).toBe('‎-2.35 ج.م');
+  });
+  it('uses the same currency label as the i18n files (MoneyInput suffix)', () => {
+    for (const lang of ['ar', 'en'] as const) {
+      expect(EGP_LABEL[lang]).toBe(t('common.currency', undefined, lang));
+    }
   });
 });
 
