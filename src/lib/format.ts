@@ -1,4 +1,5 @@
-import { getLanguage, t, type Language } from '@/i18n';
+import { formatEgp } from '@ziadkhaled-wb/contracts';
+import { getLanguage, type Language } from '@/i18n';
 
 // Latin digits (0-9) in both languages (design.md section 4), with the locale's separators.
 const LOCALE: Record<Language, string> = { ar: 'ar-EG-u-nu-latn', en: 'en-US' };
@@ -30,11 +31,10 @@ export function formatNumber(
 
 /**
  * Money from the contract's decimal string: "1250" -> "1,250.00 ج.م" (currency after, design.md).
- * The input stays a string, so there is no float rounding. Returns a string.
+ * The shared F12 rule (contracts `formatEgp`, D31): rounded half-up to 2 decimals, never via a float.
  */
 export function formatMoney(value: string, lang: Language = getLanguage()): string {
-  const amount = formatNumber(value, lang, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return `${amount} ${t('common.currency', undefined, lang)}`;
+  return formatEgp(value, lang);
 }
 
 function toDate(value: string | Date): Date {
