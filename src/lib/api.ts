@@ -163,6 +163,11 @@ api.interceptors.response.use(
       !original._retried
     ) {
       original._retried = true;
+      // Sent with a token that has been replaced since (another call's refresh finished before
+      // this 401 came back): retry with the current token instead of refreshing again.
+      const current = useAuthStore.getState().accessToken;
+      const sentWith = String(original.headers.Authorization ?? '');
+      if (current && sentWith !== `Bearer ${current}`) return api(original);
       const token = await refreshAccessToken();
       if (token) return api(original);
     }

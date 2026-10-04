@@ -87,6 +87,32 @@ describe('401 handling', () => {
     expect(calls.filter((c) => c === `Bearer ${refreshed.accessToken}`)).toHaveLength(3);
   });
 
+  it('a 401 that lands after the refresh finished retries with the new token, no 2nd refresh', async () => {
+    // Two calls leave with the old token; the first 401 refreshes; the second 401 only comes back
+    // once that refresh is done (a slow endpoint). It must reuse the new token, not refresh again.
+    const refreshed = session('new');
+    const post = vi.spyOn(axios, 'post').mockResolvedValue({ data: refreshed });
+    let releaseSlow: () => void = () => undefined;
+    const slowGate = new Promise<void>((resolve) => {
+      releaseSlow = resolve;
+    });
+    api.defaults.adapter = async (config) => {
+      const auth = String(config.headers.Authorization);
+      if (auth === 'Bearer old') {
+        if (config.url === '/api/slow') await slowGate;
+        throw httpError(config, 401, 'TOKEN_EXPIRED');
+      }
+      return httpOk(config, { ok: config.url });
+    };
+
+    const fast = api.get('/api/fast');
+    const slow = api.get('/api/slow');
+    expect((await fast).data).toEqual({ ok: '/api/fast' });
+    releaseSlow();
+    expect((await slow).data).toEqual({ ok: '/api/slow' });
+    expect(post).toHaveBeenCalledTimes(1);
+  });
+
   it('keeps the session when the refresh gets no answer (offline, timeout, 5xx)', async () => {
     const post = vi.spyOn(axios, 'post').mockRejectedValue(networkError());
     api.defaults.adapter = async (config) => {
