@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import GuestOnly from '@/components/guards/GuestOnly';
 import RequireAuth from '@/components/guards/RequireAuth';
+import RequireNavItem from '@/components/guards/RequireNavItem';
 import RequirePermission from '@/components/guards/RequirePermission';
 import RequirePasswordChanged from '@/components/guards/RequirePasswordChanged';
 import RequireShop from '@/components/guards/RequireShop';
@@ -67,7 +68,15 @@ export default function App() {
                   {navLeaves()
                     .filter((i) => i.to && !REAL_ROUTES.has(i.to))
                     .map((i) => (
-                      <Route key={i.id} path={i.to} element={<ModulePlaceholderPage />} />
+                      <Route
+                        key={i.id}
+                        path={i.to}
+                        element={
+                          <RequireNavItem item={i}>
+                            <ModulePlaceholderPage />
+                          </RequireNavItem>
+                        }
+                      />
                     ))}
                 </Route>
               </Route>
