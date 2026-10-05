@@ -1,5 +1,8 @@
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+const captureApiError = vi.hoisted(() => vi.fn());
+vi.mock('@/lib/monitoring', () => ({ captureApiError }));
+
 import { api, ApiError } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import {
@@ -163,5 +166,40 @@ describe('401 handling', () => {
     expect(err).toBeInstanceOf(ApiError);
     expect(err).toMatchObject({ status: 429, code: 'TOO_MANY_LOGIN_ATTEMPTS', retryAfter: 30 });
     expect((err as ApiError).message).not.toContain('raw server text');
+  });
+});
+
+describe('error tracking (Q02)', () => {
+  beforeEach(() => captureApiError.mockReset());
+
+  it('a 5xx is reported with the API request id, method and path (no query string sent on)', async () => {
+    api.defaults.adapter = async (config) => {
+      const err = httpError(config, 500, 'INTERNAL');
+      (err.response!.data as { error: { requestId?: string } }).error.requestId = 'req-web-1';
+      throw err;
+    };
+    signedIn('tok');
+    const err = await api.post('/api/things?x=1', {}).catch((e: unknown) => e);
+    expect(err).toMatchObject({ status: 500, code: 'INTERNAL', requestId: 'req-web-1' });
+    expect(captureApiError).toHaveBeenCalledWith(err, {
+      status: 500,
+      code: 'INTERNAL',
+      requestId: 'req-web-1',
+      method: 'post',
+      path: '/api/things?x=1',
+    });
+  });
+
+  it('client errors and network errors are not reported', async () => {
+    api.defaults.adapter = async (config) => {
+      throw httpError(config, 409, 'OUT_OF_STOCK');
+    };
+    signedIn('tok');
+    await api.get('/api/a').catch(() => undefined);
+    api.defaults.adapter = async (config) => {
+      throw Object.assign(networkError(), { config });
+    };
+    await api.get('/api/a').catch(() => undefined);
+    expect(captureApiError).not.toHaveBeenCalled();
   });
 });

@@ -1,6 +1,7 @@
 import { AuthRefreshResponse, type ErrorCode } from '@ziadkhaled-wb/contracts';
 import axios, { AxiosError } from 'axios';
 import { t } from '@/i18n';
+import { captureApiError } from '@/lib/monitoring';
 import { useAuthStore } from '@/store/authStore';
 
 declare module 'axios' {
@@ -27,6 +28,8 @@ export class ApiError extends Error {
   fields?: Record<string, string>;
   /** Raw server text. For logs only, never for the UI. */
   serverMessage?: string;
+  /** The API's request id (`error.requestId`): the key to its log line and Sentry event. */
+  requestId?: string;
 
   constructor(
     status: number,
@@ -50,12 +53,18 @@ const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 
 /** Contract error body: `{ error: { code, message, details? } }`. */
-function readErrorBody(data: unknown): { code?: string; message?: string; details?: unknown } {
+function readErrorBody(data: unknown): {
+  code?: string;
+  message?: string;
+  details?: unknown;
+  requestId?: string;
+} {
   const body = isRecord(data) && isRecord(data.error) ? data.error : {};
   return {
     code: typeof body.code === 'string' ? body.code : undefined,
     message: typeof body.message === 'string' ? body.message : undefined,
     details: body.details,
+    requestId: typeof body.requestId === 'string' ? body.requestId : undefined,
   };
 }
 
@@ -82,7 +91,7 @@ export function toApiError(error: AxiosError<unknown>): ApiError {
   if (!res) return new ApiError(0, 'NETWORK_ERROR', t('errors.network'));
   const body = readErrorBody(res.data);
   const retryHeader = Number.parseInt(String(res.headers?.['retry-after'] ?? ''), 10);
-  return new ApiError(
+  const apiError = new ApiError(
     res.status,
     (body.code as ApiErrorCode | undefined) ?? 'UNKNOWN',
     t('errors.unknown'),
@@ -90,6 +99,8 @@ export function toApiError(error: AxiosError<unknown>): ApiError {
     extractFields(body.details),
     body.message,
   );
+  apiError.requestId = body.requestId;
+  return apiError;
 }
 
 export const api = axios.create({
@@ -170,6 +181,17 @@ api.interceptors.response.use(
       if (current && sentWith !== `Bearer ${current}`) return api(original);
       const token = await refreshAccessToken();
       if (token) return api(original);
+    }
+
+    // Q02: a server failure goes to the error tracker with the API's request id.
+    if (apiError.status >= 500) {
+      captureApiError(apiError, {
+        status: apiError.status,
+        code: apiError.code,
+        requestId: apiError.requestId,
+        method: original?.method,
+        path: original?.url,
+      });
     }
 
     // 403 MUST_CHANGE_PASSWORD -> client state is stale; guards redirect.
