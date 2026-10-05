@@ -122,4 +122,54 @@ describe('monitoring (Q02)', () => {
       '[email] [national-id] [phone] Bearer [token] [jwt]',
     );
   });
+
+  it('masks tokens in URLs (the reset link fragment)', async () => {
+    const { maskText } = await load();
+    expect(maskText('at /reset-password#access_token=abc123&refresh_token=r9x&type=recovery')).toBe(
+      'at /reset-password#access_token=[redacted]&refresh_token=[redacted]&type=recovery',
+    );
+  });
+
+  it('drops console arguments and scrubs breadcrumb data', async () => {
+    const { cleanBreadcrumb } = await load();
+    const crumb = cleanBreadcrumb({
+      category: 'console',
+      message: 'failed for a@b.co',
+      data: { arguments: [{ nationalId: '29001011234567' }], logger: 'console' },
+    });
+    expect(crumb).toEqual({
+      category: 'console',
+      message: 'failed for [email]',
+      data: { logger: 'console' },
+    });
+    expect(
+      cleanBreadcrumb({
+        category: 'navigation',
+        data: { from: '/a?x=1', to: '/reset-password#access_token=t' },
+      }).data,
+    ).toEqual({ from: '/a', to: '/reset-password' });
+  });
+
+  it('beforeSend scrubs breadcrumbs, extras, contexts and tags too', async () => {
+    const m = await load();
+    m.initMonitoring(env({ VITE_SENTRY_DSN: 'https://k@o1.ingest.sentry.io/3' }));
+    await m.monitoringReady();
+    const { beforeSend } = sentry.init.mock.calls[0]?.[0] as {
+      beforeSend: (e: Record<string, unknown>) => Record<string, unknown>;
+    };
+    const out = beforeSend({
+      breadcrumbs: [
+        { category: 'console', message: 'x 01012345678', data: { arguments: ['secret'] } },
+      ],
+      extra: { password: 'p', note: 'mail a@b.co' },
+      contexts: { react: { componentStack: 'at Page' }, form: { nationalId: '29001011234567' } },
+      tags: { requestId: 'req-1' },
+    });
+    expect(out).toEqual({
+      breadcrumbs: [{ category: 'console', message: 'x [phone]', data: {} }],
+      extra: { password: '[Redacted]', note: 'mail [email]' },
+      contexts: { react: { componentStack: 'at Page' }, form: { nationalId: '[Redacted]' } },
+      tags: { requestId: 'req-1' },
+    });
+  });
 });

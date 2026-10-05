@@ -16,10 +16,58 @@ const MASKS: [RegExp, string][] = [
   [/(?<!\d)(\+?20|0)1[0125]\d{8}(?!\d)/g, '[phone]'],
   [/Bearer\s+[\w.~+/=-]+/gi, 'Bearer [token]'],
   [/eyJ[\w-]+\.[\w-]+\.[\w-]+/g, '[jwt]'],
+  // Tokens and codes in URLs, e.g. the password-reset link's fragment (#access_token=...&refresh_token=...).
+  [/\b(access_token|refresh_token|token|code|password)=[^&\s#"']+/gi, '$1=[redacted]'],
 ];
+
+/** Keys whose values never leave the browser, whatever they hold. */
+const SENSITIVE_KEYS = new Set([
+  'password',
+  'newpassword',
+  'currentpassword',
+  'confirmpassword',
+  'token',
+  'accesstoken',
+  'refreshtoken',
+  'access_token',
+  'refresh_token',
+  'authorization',
+  'cookie',
+  'nationalid',
+  'national_id',
+  'apikey',
+]);
 
 export function maskText(text: string): string {
   return MASKS.reduce((acc, [pattern, replacement]) => acc.replace(pattern, replacement), text);
+}
+
+/** Masks every string and redacts sensitive keys, at any depth (bounded). */
+export function scrub(value: unknown, depth = 0): unknown {
+  if (typeof value === 'string') return maskText(value);
+  if (value === null || typeof value !== 'object' || depth > 6) return value;
+  if (Array.isArray(value)) return value.map((v) => scrub(v, depth + 1));
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    out[k] = SENSITIVE_KEYS.has(k.toLowerCase()) ? '[Redacted]' : scrub(v, depth + 1);
+  }
+  return out;
+}
+
+type Crumb = { category?: string; message?: string; data?: Record<string, unknown> };
+
+/** URLs without query or fragment; console arguments dropped (they can hold whole objects). */
+export function cleanBreadcrumb<T extends Crumb>(crumb: T): T {
+  if (crumb.data) {
+    const data = { ...crumb.data };
+    for (const key of ['url', 'to', 'from']) {
+      if (typeof data[key] === 'string') data[key] = withoutQuery(data[key]);
+    }
+    if (crumb.category === 'console') delete data.arguments;
+    crumb.data = scrub(data) as Record<string, unknown>;
+  }
+  if (crumb.message) crumb.message = maskText(crumb.message);
+  return crumb;
 }
 
 /** `https://x/api/y?email=a@b` -> `https://x/api/y` (queries can carry personal data). */
@@ -72,14 +120,7 @@ function initSdk(
       urlQueryParams: false,
     },
     maxBreadcrumbs: 30,
-    beforeBreadcrumb(crumb) {
-      const data = crumb.data as Record<string, unknown> | undefined;
-      if (data && typeof data.url === 'string') data.url = withoutQuery(data.url);
-      if (data && typeof data.to === 'string') data.to = withoutQuery(data.to);
-      if (data && typeof data.from === 'string') data.from = withoutQuery(data.from);
-      if (crumb.message) crumb.message = maskText(crumb.message);
-      return crumb;
-    },
+    beforeBreadcrumb: (crumb) => cleanBreadcrumb(crumb),
     beforeSend(event) {
       delete event.user;
       if (event.request) {
@@ -93,6 +134,11 @@ function initSdk(
       for (const ex of event.exception?.values ?? []) {
         if (ex.value) ex.value = maskText(ex.value);
       }
+      // Everything else that can carry text is scrubbed again on the way out.
+      if (event.breadcrumbs) event.breadcrumbs = event.breadcrumbs.map((b) => cleanBreadcrumb(b));
+      if (event.extra) event.extra = scrub(event.extra) as typeof event.extra;
+      if (event.contexts) event.contexts = scrub(event.contexts) as typeof event.contexts;
+      if (event.tags) event.tags = scrub(event.tags) as typeof event.tags;
       return event;
     },
   });
