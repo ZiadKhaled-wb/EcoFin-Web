@@ -148,7 +148,8 @@ export const NAV: NavItem[] = [
   { id: 'settings', labelKey: 'nav.settings', icon: SettingsIcon, to: '/settings', roles: [OWNER] },
 ];
 
-function canSee(item: NavItem, user: AuthUser): boolean {
+/** The one visibility rule: the menu (filterNav) and the route guard (RequireNavItem) both use it. */
+export function canSee(item: NavItem, user: AuthUser): boolean {
   if (!item.roles && !item.permission) return true;
   return !!(
     item.roles?.includes(user.role) ||
