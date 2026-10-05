@@ -26,3 +26,116 @@ jobs:
       - run: npm run format:check
       - run: npm test
       - run: npm run build
+
+  # EC-144: the Playwright e2e suite (RUN_E2E=1) against a real local stack: Supabase built from the
+  # API repo's migrations and dev seed, the API on :3001, the Vite dev server on :5173 (started by
+  # playwright.config.ts). Local Supabase only: no remote database, local demo keys only.
+  # Needs secret API_REPO_TOKEN: a fine-grained token with "Contents: read-only" on
+  # ZiadKhaled-wb/EcoFin-API (the API repo is private).
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ZiadKhaled-wb/EcoFin-API
+          ref: main
+          path: api
+          token: ${{ secrets.API_REPO_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            api/package-lock.json
+
+      - name: Install web dependencies
+        run: npm ci
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install and build the API
+        working-directory: api
+        run: |
+          npm ci
+          npm run build
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.119.0
+
+      # Auth, PostgREST, Kong, Storage and Mailpit are needed (login, reset email, files).
+      - name: Start local Supabase (migrations + dev seed)
+        working-directory: api
+        run: |
+          supabase start -x studio,postgres-meta,imgproxy,edge-runtime,logflare,vector,supavisor,realtime
+          supabase db reset
+
+      - name: Local Supabase keys
+        working-directory: api
+        run: |
+          status=$(supabase status -o json)
+          field() { node -e 'console.log(JSON.parse(process.argv[1])[process.argv[2]])' "$status" "$1"; }
+          {
+            echo "SUPABASE_URL=$(field API_URL)"
+            echo "SUPABASE_ANON_KEY=$(field ANON_KEY)"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$(field SERVICE_ROLE_KEY)"
+          } >> "$GITHUB_ENV"
+
+      - name: Start the API on :3001
+        working-directory: api
+        env:
+          NODE_ENV: development
+          PORT: '3001'
+          FRONTEND_URL: http://localhost:5173
+          LOG_LEVEL: warn
+        run: |
+          nohup npm start > "$RUNNER_TEMP/api.log" 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:3001/health; then exit 0; fi
+            sleep 1
+          done
+          echo "API did not become healthy"; cat "$RUNNER_TEMP/api.log"; exit 1
+
+      - name: Install the Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      # Logins: the API repo's dev seed (docs/testing/int-1/LOGINS.md), local-only password.
+      - name: e2e (RUN_E2E=1)
+        env:
+          RUN_E2E: '1'
+          VITE_API_URL: ''
+          VITE_DEV_API_TARGET: http://localhost:3001
+          VITE_SUPABASE_URL: ${{ env.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ env.SUPABASE_ANON_KEY }}
+          E2E_API_URL: http://localhost:3001
+          E2E_MAILPIT_URL: http://127.0.0.1:54324
+          E2E_OWNER_EMAIL: owner.one@ecotech.test
+          E2E_OWNER_PASSWORD: LocalDev-Only-2026!
+          E2E_CASHIER_EMAIL: cashier.one@ecotech.test
+          E2E_CASHIER_PASSWORD: LocalDev-Only-2026!
+          E2E_MULTI_EMAIL: multi.shop@ecotech.test
+          E2E_MULTI_PASSWORD: LocalDev-Only-2026!
+          E2E_MULTI_SHOP_NAME: Dev Shop Two
+          E2E_RESET_EMAIL: owner.two@ecotech.test
+          E2E_RESET_PASSWORD: LocalDev-Only-2026!
+        run: npx playwright test --reporter=list
+
+      - name: Upload test results and API log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results
+          path: |
+            test-results/
+            ${{ runner.temp }}/api.log
+          retention-days: 7
+
+      - name: Stop Supabase
+        if: always()
+        working-directory: api
+        run: supabase stop --no-backup
