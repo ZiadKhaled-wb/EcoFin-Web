@@ -3,6 +3,7 @@ import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
 import { AlertIcon } from '@/components/ui/Icons';
 import { t } from '@/i18n';
+import { captureRenderError } from '@/lib/monitoring';
 
 /** Catches render errors below it so one broken page never blanks the whole app. */
 export default class ErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -13,8 +14,9 @@ export default class ErrorBoundary extends Component<{ children: ReactNode }, { 
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    // Logs only. The user sees a translated message, never the technical text.
+    // The user sees a translated message, never the technical text; the error tracker gets it (Q02).
     console.error(error, info.componentStack);
+    captureRenderError(error, info.componentStack);
   }
 
   render() {

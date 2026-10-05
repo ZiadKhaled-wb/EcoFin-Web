@@ -12,6 +12,10 @@ import LanguageProvider from '@/i18n/LanguageProvider';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import { Toaster } from '@/components/ui/Toast';
 import { queryClient } from '@/lib/queryClient';
+import { initMonitoring } from '@/lib/monitoring';
+
+// Q02: error tracking first, so errors during the first render are reported too.
+initMonitoring();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
