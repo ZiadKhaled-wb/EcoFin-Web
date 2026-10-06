@@ -18,6 +18,8 @@ const shop = {
   owner_full_name: 'Owner',
   owner_email: 'owner@example.com',
   owner_invite_status: 'accepted' as const,
+  subscription_end: null,
+  subscription_state: 'no_end' as const,
 };
 const renderAdmin = (page: React.ReactNode) =>
   render(

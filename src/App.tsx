@@ -20,6 +20,7 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import AdminShopsPage from '@/pages/admin/AdminShopsPage';
 import CreateShopPage from '@/pages/admin/CreateShopPage';
 import InviteAcceptPage from '@/pages/auth/InviteAcceptPage';
+import SubscriptionPage from '@/pages/admin/SubscriptionPage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
@@ -54,6 +55,7 @@ export default function App() {
               <Route element={<AdminLayout />}>
                 <Route path="/admin" element={<AdminShopsPage />} />
                 <Route path="/admin/shops/new" element={<CreateShopPage />} />
+                <Route path="/admin/shops/:id" element={<SubscriptionPage />} />
               </Route>
             </Route>
             {/* A login with several shops picks one here (no shop is active yet) */}

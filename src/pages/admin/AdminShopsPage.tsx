@@ -60,13 +60,33 @@ export default function AdminShopsPage() {
     }
   };
   const columns: ColumnDef<AdminShop, unknown>[] = [
-    { accessorKey: 'name', header: t('shops.fields.name') },
+    {
+      accessorKey: 'name',
+      header: t('shops.fields.name'),
+      cell: ({ row }) => (
+        <Link className="btn-link" to={`/admin/shops/${row.original.id}`}>
+          {row.original.name}
+        </Link>
+      ),
+    },
     {
       accessorKey: 'tenant_slug',
       header: t('shops.fields.slug'),
       cell: ({ row }) => <span dir="ltr">{row.original.tenant_slug}</span>,
     },
     { accessorKey: 'plan_key', header: t('shops.fields.plan') },
+    {
+      id: 'subscription',
+      header: t('subscriptions.title'),
+      cell: ({ row }) => (
+        <div>
+          <Badge tone={row.original.subscription_state === 'expired' ? 'danger' : 'neutral'}>
+            {t(`subscriptions.states.${row.original.subscription_state}`)}
+          </Badge>
+          {row.original.subscription_end && <p>{row.original.subscription_end}</p>}
+        </div>
+      ),
+    },
     {
       accessorKey: 'status',
       header: t('shops.fields.status'),

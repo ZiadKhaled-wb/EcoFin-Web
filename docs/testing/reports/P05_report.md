@@ -1,0 +1,22 @@
+## Changed files in this repo
+
+- docs/testing/reports/P05_report.md
+- package.json
+- package-lock.json
+- src/App.tsx
+- src/components/layout/AppShell.tsx
+- src/features/subscription/SubscriptionBanner.test.tsx
+- src/features/subscription/SubscriptionBanner.tsx
+- src/i18n/locales/ar/subscriptions.json
+- src/i18n/locales/en/subscriptions.json
+- src/i18n/resources.ts
+- src/lib/api.ts
+- src/lib/subscriptionErrors.test.ts
+- src/lib/subscriptionErrors.ts
+- src/pages/admin/AdminShopsPage.tsx
+- src/pages/admin/ShopAdmin.test.tsx
+- src/pages/admin/SubscriptionPage.test.tsx
+- src/pages/admin/SubscriptionPage.tsx
+- src/services/subscriptionApi.ts
+- vendor/ziadkhaled-wb-contracts-0.5.0.tgz
+- vendor/ziadkhaled-wb-contracts-0.6.0.tgz

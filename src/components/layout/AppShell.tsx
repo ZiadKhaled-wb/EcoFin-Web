@@ -10,6 +10,7 @@ import { NAV, filterNav } from '@/config/navigation';
 import { usePermissions } from '@/features/me/usePermissions';
 import { t } from '@/i18n';
 import { useAuthStore } from '@/store/authStore';
+import SubscriptionBanner from '@/features/subscription/SubscriptionBanner';
 
 /**
  * Signed-in frame: sidebar (lg+) or drawer (mobile), topbar, and the page outlet.
@@ -46,6 +47,7 @@ export default function AppShell() {
       <div className="flex min-w-0 flex-col">
         <Topbar onMenuClick={() => setDrawerOpen(true)} menuOpen={drawerOpen} />
         <main id="main" className="flex-1">
+          <SubscriptionBanner />
           <ErrorBoundary>
             <Outlet />
           </ErrorBoundary>
