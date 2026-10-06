@@ -22,6 +22,8 @@ import Drawer from '@/components/ui/Drawer';
 import FormField from '@/components/ui/FormField';
 import FormError from '@/components/ui/FormError';
 import Select from '@/components/ui/Select';
+import Can from '@/features/me/Can';
+import { useSetEmployeeActive } from '@/features/employees/useSetEmployeeActive';
 import { notify } from '@/components/ui/notify';
 import { staffApi } from '@/services/staffApi';
 import { branchApi } from '@/services/branchApi';
@@ -71,6 +73,9 @@ export default function EmployeesPage() {
   const [selected, setSelected] = useState<PermissionKey[]>([...ROLE_DEFAULT_PERMISSIONS.CASHIER]);
   const [target, setTarget] = useState<EmployeeRow | null>(null);
   const [reason, setReason] = useState('');
+  const [reasonTouched, setReasonTouched] = useState(false);
+  const [reasonRejected, setReasonRejected] = useState(false);
+  const setActive = useSetEmployeeActive();
   const [link, setLink] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -114,6 +119,48 @@ export default function EmployeesPage() {
     } finally {
       setBusy(false);
     }
+  }
+  const cleanReason = reason.trim();
+  const reasonError =
+    (reasonTouched && (cleanReason.length < 3 || cleanReason.length > 500)) || reasonRejected
+      ? t('employees.reasonInvalid')
+      : undefined;
+  function openActive(row: EmployeeRow) {
+    setTarget(row);
+    setReason('');
+    setReasonTouched(false);
+    setReasonRejected(false);
+    setError('');
+  }
+  function activeFailure(e: unknown) {
+    const code = e instanceof ApiError ? e.code : undefined;
+    // ACCOUNT_DISABLED ends the session and PLAN_LIMIT_REACHED shows its toast, both in the
+    // API client.
+    if (code === 'ACCOUNT_DISABLED' || code === 'PLAN_LIMIT_REACHED') return;
+    if (code === 'VALIDATION_FAILED') setReasonRejected(true);
+    else if (code === 'FORBIDDEN') notify.error(t('employees.activeErrors.forbidden'));
+    else if (code === 'NOT_FOUND') {
+      notify.error(t('employees.activeErrors.notFound'));
+      setTarget(null);
+      void cache.invalidateQueries({ queryKey: ['employees', org] });
+    } else notify.error(t('errors.unknown'));
+  }
+  function confirmActive() {
+    if (!target) return;
+    setReasonTouched(true);
+    setReasonRejected(false);
+    if (cleanReason.length < 3 || cleanReason.length > 500) return;
+    const wasActive = target.is_active;
+    setActive.mutate(
+      { employeeId: target.id, active: !wasActive, reason: cleanReason },
+      {
+        onSuccess: () => {
+          setTarget(null);
+          notify.success(t(wasActive ? 'employees.deactivated' : 'employees.reactivated'));
+        },
+        onError: activeFailure,
+      },
+    );
   }
   function edit(row: EmployeeRow) {
     setEditing(row);
@@ -239,18 +286,16 @@ export default function EmployeesPage() {
             <Button size="sm" disabled={busy} onClick={() => edit(row.original)}>
               {t('employees.edit')}
             </Button>
-            <Button
-              size="sm"
-              disabled={busy}
-              variant={row.original.is_active ? 'danger' : 'secondary'}
-              onClick={() => {
-                setTarget(row.original);
-                setReason('');
-                setError('');
-              }}
-            >
-              {t(row.original.is_active ? 'employees.deactivate' : 'employees.reactivate')}
-            </Button>
+            <Can permission="employee.manage">
+              <Button
+                size="sm"
+                disabled={busy || setActive.isPending}
+                variant={row.original.is_active ? 'danger' : 'secondary'}
+                onClick={() => openActive(row.original)}
+              >
+                {t(row.original.is_active ? 'employees.deactivate' : 'employees.reactivate')}
+              </Button>
+            </Can>
             {row.original.is_active &&
               (row.original.invite_status === 'accepted' ? (
                 <Button size="sm" disabled={busy} onClick={() => void delivery(row.original, true)}>
@@ -438,6 +483,7 @@ export default function EmployeesPage() {
         loading={query.isPending}
         error={query.isError}
         getRowId={(r) => r.id}
+        rowClassName={(r) => (r.is_active ? undefined : 'text-ink-mute')}
         caption={t('employees.title')}
         server={{ page, pageSize: 50, total: query.data?.total ?? 0, onPageChange: setPage }}
       />
@@ -522,39 +568,46 @@ export default function EmployeesPage() {
             >
               {t('employees.savePermission')}
             </Button>
+            <Can permission="employee.manage">
+              <Button
+                variant={editing.is_active ? 'danger' : 'secondary'}
+                disabled={busy || setActive.isPending}
+                onClick={() => {
+                  setOpen(false);
+                  openActive(editing);
+                }}
+              >
+                {t(editing.is_active ? 'employees.deactivate' : 'employees.reactivate')}
+              </Button>
+            </Can>
           </div>
         )}
       </Drawer>
       <Dialog
         open={!!target}
         onOpenChange={(value) => {
-          if (!value && !busy) setTarget(null);
+          if (!value && !setActive.isPending) setTarget(null);
         }}
-        title={t(target?.is_active ? 'employees.deactivate' : 'employees.reactivate')}
+        title={t(target?.is_active ? 'employees.deactivateTitle' : 'employees.reactivateTitle')}
       >
         <form
           className="space-y-4"
+          noValidate
           onSubmit={(e) => {
             e.preventDefault();
-            if (target)
-              void run(async () => {
-                await staffApi.active(target.id, {
-                  active: !target.is_active,
-                  ...(reason.trim() ? { reason: reason.trim() } : {}),
-                });
-                setTarget(null);
-              });
+            confirmActive();
           }}
         >
           <p>{target?.full_name}</p>
           <FormField
             label={t('employees.reason')}
             value={reason}
-            required={!!target?.is_active}
+            required
+            error={reasonError}
+            onBlur={() => setReasonTouched(true)}
             onChange={(e) => setReason(e.target.value)}
           />
-          <FormError message={error} />
-          <Button type="submit" disabled={busy || (!!target?.is_active && !reason.trim())}>
+          <Button type="submit" disabled={setActive.isPending}>
             {t('employees.confirm')}
           </Button>
         </form>

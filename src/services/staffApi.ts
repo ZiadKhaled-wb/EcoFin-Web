@@ -1,8 +1,8 @@
 import {
+  EmployeeActiveSet,
   EmployeesResponse,
   EmployeeCreateResponse,
   EmployeeUpdateResponse,
-  EmployeeActiveResponse,
   EmployeeInviteResponse,
   EmployeeResetResponse,
   PasswordResetLookupResponse,
@@ -11,7 +11,7 @@ import {
   EmployeeBranchesAssignResponse,
   type EmployeeCreateBody,
   type EmployeeUpdateBody,
-  type EmployeeActiveBody,
+  type EmployeeActiveSetBody,
   type EmployeesQuery,
   type EmployeePermissionOverrideBody,
   type EmployeeBranchesAssignBody,
@@ -25,8 +25,10 @@ export const staffApi = {
     EmployeeCreateResponse.parse((await api.post('/api/employees', body)).data),
   update: async (id: string, body: EmployeeUpdateBody) =>
     EmployeeUpdateResponse.parse((await api.patch(`/api/employees/${id}`, body)).data),
-  active: async (id: string, body: EmployeeActiveBody) =>
-    EmployeeActiveResponse.parse((await api.put(`/api/employees/${id}/active`, body)).data),
+  setEmployeeActive: async (employeeId: string, body: EmployeeActiveSetBody) =>
+    EmployeeActiveSet.response.parse(
+      (await api.put(`/api/employees/${employeeId}/active`, body)).data,
+    ),
   invite: async (id: string) =>
     EmployeeInviteResponse.parse((await api.post(`/api/employees/${id}/invite`)).data),
   reset: async (id: string) =>

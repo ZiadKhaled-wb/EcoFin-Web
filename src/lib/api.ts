@@ -142,7 +142,10 @@ async function doRefresh(): Promise<string | null> {
     // Only a server rejection (4xx) ends the session. A network error, a timeout or a 5xx
     // keeps it: the next request or timer tick tries again.
     const status = axios.isAxiosError(err) ? err.response?.status : undefined;
-    if (status !== undefined && status >= 400 && status < 500) clearSession();
+    if (status !== undefined && status >= 400 && status < 500) {
+      const code = axios.isAxiosError(err) ? readErrorBody(err.response?.data).code : undefined;
+      clearSession(status === 403 && code === 'ACCOUNT_DISABLED' ? 'account_disabled' : undefined);
+    }
     return null;
   }
 }
@@ -195,6 +198,18 @@ api.interceptors.response.use(
         method: original?.method,
         path: original?.url,
       });
+    }
+
+    // EC-145: a deactivated employee is refused on the next request. End the session locally
+    // (no logout call: the account can't use the API) and let the route guard show the login
+    // page with the reason. Login itself is skipAuth: its ACCOUNT_DISABLED is shown inline.
+    if (
+      apiError.status === 403 &&
+      apiError.code === 'ACCOUNT_DISABLED' &&
+      original &&
+      !original.skipAuth
+    ) {
+      useAuthStore.getState().clearSession('account_disabled');
     }
 
     // 403 MUST_CHANGE_PASSWORD -> client state is stale; guards redirect.

@@ -29,6 +29,8 @@ interface AuthState {
   shops: ShopMembership[];
   mustChangePassword: boolean;
   isSuperAdmin: boolean;
+  /** Why the session was ended by the server (shown once on the login page). */
+  endedReason: 'account_disabled' | null;
   /** Public shop identifier. Survives logout on purpose (returning users). */
   tenantSlug: string | null;
 
@@ -38,7 +40,8 @@ interface AuthState {
   setSession: (session: AuthSession) => void;
   flagMustChangePassword: () => void;
   setTenantSlug: (slug: string) => void;
-  clearSession: () => void;
+  /** Ends the session locally. `reason` is shown on the login page. */
+  clearSession: (reason?: 'account_disabled') => void;
 }
 
 const EMPTY_SESSION = {
@@ -51,6 +54,7 @@ const EMPTY_SESSION = {
   shops: [] as ShopMembership[],
   mustChangePassword: false,
   isSuperAdmin: false,
+  endedReason: null,
 };
 
 const buildUser = (account: Account, shop: ShopMembership, mustChange: boolean): AuthUser => ({
@@ -94,6 +98,7 @@ export const useAuthStore = create<AuthState>()(
           orgId: active?.orgId ?? null,
           user: active ? buildUser(account, active, res.mustChangePassword) : null,
           mustChangePassword: res.mustChangePassword,
+          endedReason: null,
           ...(active ? { tenantSlug: active.tenantSlug } : {}),
         });
       },
@@ -129,9 +134,9 @@ export const useAuthStore = create<AuthState>()(
 
       setTenantSlug: (tenantSlug) => set({ tenantSlug }),
 
-      clearSession: () => {
+      clearSession: (reason) => {
         queryClient.clear();
-        set({ ...EMPTY_SESSION });
+        set({ ...EMPTY_SESSION, endedReason: reason ?? null });
       },
     }),
     {
