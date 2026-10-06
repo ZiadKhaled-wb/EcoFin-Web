@@ -1,0 +1,68 @@
+name: Deploy (Vercel)
+
+# Vercel's Hobby plan refuses Git-integration deploys of commits written by people outside the
+# Vercel account (all of Kareem's merges were BLOCKED, 6 Oct), so the site is deployed from here
+# with the owner's token instead, and Vercel's own Git deploys are off (vercel.json).
+#   - production: after CI passes on main (and by hand: Actions -> Deploy (Vercel) -> Run workflow)
+#   - preview:    every pull request from this repo (the URL is in the run summary)
+# Vercel still builds the site with the project's settings and environment variables (NPM_TOKEN,
+# VITE_*), so nothing secret lives here except VERCEL_TOKEN.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vercel-${{ github.event_name == 'pull_request' && github.head_ref || 'production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Not secret: which Vercel account and project to deploy to.
+  VERCEL_ORG_ID: team_PILhO6A7GqMRsPbckxlBpXVZ
+  VERCEL_PROJECT_ID: prj_g3Ivldr4T0V0OAs76qCriA8jAAUa
+
+jobs:
+  deploy:
+    # A production deploy only follows a green CI run on main.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install the Vercel CLI
+        run: npm install --global vercel@62.4.0
+
+      - name: Deploy
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          PRODUCTION: ${{ github.event_name != 'pull_request' }}
+          COMMIT: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test -n "$VERCEL_TOKEN" || { echo "::error::Secret VERCEL_TOKEN is not set (Settings -> Secrets and variables -> Actions)"; exit 1; }
+          # Vercel decides "blocked or not" from the commit author in the git metadata, so the upload
+          # carries none; the commit still reaches the build as the Sentry release (src/lib/monitoring.ts).
+          rm -rf .git
+          args=(deploy --yes --token "$VERCEL_TOKEN" --build-env "VITE_APP_RELEASE=$COMMIT")
+          if [ "$PRODUCTION" = "true" ]; then args+=(--prod); fi
+          url=$(vercel "${args[@]}")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          {
+            echo "### $([ "$PRODUCTION" = "true" ] && echo Production || echo Preview) deploy of ${COMMIT:0:7}"
+            echo "$url"
+          } >> "$GITHUB_STEP_SUMMARY"

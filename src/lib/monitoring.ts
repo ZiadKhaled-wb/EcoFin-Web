@@ -81,7 +81,8 @@ let sdk: Promise<typeof SentrySdk> | undefined;
 export function initMonitoring(env: ImportMetaEnv = import.meta.env): boolean {
   const dsn = env.VITE_SENTRY_DSN as string | undefined;
   if (!dsn) return false;
-  const release = env.VITE_VERCEL_GIT_COMMIT_SHA as string | undefined;
+  // The deploy workflow passes the commit as VITE_APP_RELEASE (.github/workflows/deploy.yml).
+  const release = (env.VITE_APP_RELEASE ?? env.VITE_VERCEL_GIT_COMMIT_SHA) as string | undefined;
   sdk = import('@sentry/react').then((Sentry) => {
     initSdk(Sentry, dsn, env, release);
     return Sentry;
