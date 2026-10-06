@@ -12,6 +12,7 @@ const info = {
   shop_name: 'Test Shop',
   full_name: 'Test Owner',
   email: 'owner@example.com',
+  login: 'owner@example.com',
   account_exists: false,
 };
 beforeEach(() => {

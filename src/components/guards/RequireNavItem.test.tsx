@@ -19,7 +19,7 @@ const routes = (
   <Routes>
     <Route path="/login" element={<p>login page</p>} />
     <Route element={<RequireAuth />}>
-      {['/settings', '/employees', '/customers'].map((to) => (
+      {['/settings', '/settings/employees', '/customers'].map((to) => (
         <Route
           key={to}
           path={to}
@@ -43,7 +43,7 @@ afterEach(async () => {
 describe('RequireNavItem (INT-1: typing a menu URL follows the menu rule)', () => {
   it.each([
     ['ar', '/settings'],
-    ['en', '/employees'],
+    ['en', '/settings/employees'],
   ] as const)('a cashier typing %s %s gets the 403 page, not the module', async (lang, route) => {
     signIn('CASHIER');
     vi.mocked(meApi.permissions).mockResolvedValue(permissionsFixture(['sale.create']));

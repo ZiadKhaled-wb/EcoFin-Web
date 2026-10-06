@@ -1,3 +1,5 @@
+import EmployeesPage from '@/pages/settings/EmployeesPage';
+import SetPasswordPage from '@/pages/auth/SetPasswordPage';
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import GuestOnly from '@/components/guards/GuestOnly';
@@ -31,7 +33,13 @@ const RestrictedSamplePage = lazy(() => import('@/pages/RestrictedSamplePage'));
 const AuditPage = lazy(() => import('@/pages/AuditPage'));
 
 /** Menu items that have a real page (no placeholder route). */
-const REAL_ROUTES = new Set(['/dashboard', '/audit', '/settings/branches']);
+const REAL_ROUTES = new Set([
+  '/dashboard',
+  '/audit',
+  '/settings/branches',
+  '/settings/employees',
+  '/employees',
+]);
 
 export default function App() {
   return (
@@ -48,6 +56,7 @@ export default function App() {
 
           {/* Emailed recovery link landing: reachable regardless of session */}
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/password/set" element={<SetPasswordPage />} />
           <Route path="/invite/accept" element={<InviteAcceptPage />} />
 
           {/* Signed-in */}
@@ -69,6 +78,13 @@ export default function App() {
               <Route element={<RequirePasswordChanged />}>
                 <Route element={<AppShell />}>
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route element={<RequirePermission permission="employee.manage" />}>
+                    <Route path="/settings/employees" element={<EmployeesPage />} />
+                    <Route
+                      path="/employees"
+                      element={<Navigate to="/settings/employees" replace />}
+                    />
+                  </Route>
                   <Route element={<RequirePermission permission="branch.manage" />}>
                     <Route path="/settings/branches" element={<BranchesPage />} />
                   </Route>

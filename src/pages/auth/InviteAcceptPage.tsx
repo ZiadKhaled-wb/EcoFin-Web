@@ -73,9 +73,11 @@ export default function InviteAcceptPage() {
     try {
       const result = await inviteApi.accept({ token: token.current, password });
       useAuthStore.getState().clearSession();
+      useAuthStore.getState().setTenantSlug(result.tenant_slug);
+      token.current = '';
       navigate('/login', {
         replace: true,
-        state: { notice: 'invite', prefillEmail: result.email },
+        state: { notice: 'invite', prefillEmail: person.login },
       });
     } catch (failure) {
       const state = inviteState(failure);
@@ -99,7 +101,7 @@ export default function InviteAcceptPage() {
           <div className="space-y-1">
             <p className="font-bold">{person.full_name}</p>
             <p dir="ltr" className="text-start">
-              {person.email}
+              {person.login}
             </p>
           </div>
           <p>{t(person.account_exists ? 'shops.invite.existing' : 'shops.invite.newAccount')}</p>

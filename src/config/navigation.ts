@@ -7,7 +7,6 @@ import {
   FactoryIcon,
   PackageIcon,
   SettingsIcon,
-  TeamIcon,
   TruckIcon,
   UsersIcon,
   type IconComponent,
@@ -123,13 +122,6 @@ export const NAV: NavItem[] = [
     roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
   },
   {
-    id: 'employees',
-    labelKey: 'nav.employees',
-    icon: TeamIcon,
-    to: '/employees',
-    roles: [OWNER, BRANCH_MANAGER],
-  },
-  {
     id: 'accounting',
     labelKey: 'nav.accounting',
     icon: CalculatorIcon,
@@ -150,6 +142,12 @@ export const NAV: NavItem[] = [
     labelKey: 'nav.settings',
     icon: SettingsIcon,
     children: [
+      {
+        id: 'employees',
+        labelKey: 'employees.title',
+        to: '/settings/employees',
+        permission: 'employee.manage',
+      },
       { id: 'settings-general', labelKey: 'nav.settings', to: '/settings', roles: [OWNER] },
       {
         id: 'branches',
