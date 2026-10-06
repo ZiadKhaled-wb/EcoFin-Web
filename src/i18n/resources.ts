@@ -1,4 +1,6 @@
 import arAudit from './locales/ar/audit.json';
+import arBranches from './locales/ar/branches.json';
+import enBranches from './locales/en/branches.json';
 import arShops from './locales/ar/shops.json';
 import arSubscriptions from './locales/ar/subscriptions.json';
 import enSubscriptions from './locales/en/subscriptions.json';
@@ -25,6 +27,7 @@ import enUi from './locales/en/ui.json';
 
 /** One JSON file per namespace and language. The first segment of a key is its namespace. */
 export const ar = {
+  branches: arBranches,
   common: arCommon,
   errors: arErrors,
   auth: arAuth,
@@ -42,6 +45,7 @@ export const ar = {
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
 type SameShape<T> = { [K in keyof T]: T[K] extends string ? string : SameShape<T[K]> };
 export const en: SameShape<typeof ar> = {
+  branches: enBranches,
   common: enCommon,
   errors: enErrors,
   auth: enAuth,

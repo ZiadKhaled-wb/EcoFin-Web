@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/DropdownMenu';
 import { t } from '@/i18n';
 
-/** Branches come from `GET /api/auth/me`. The choice is client-side (the contract has no branch header). */
+/** Branches come from `GET /api/branches`. The choice is client-side. */
 export default function BranchSwitcher() {
   const { branches, branch, selectBranch, isLoading, isError } = useSelectedBranch();
   if (isLoading || isError || !branch) {
@@ -17,6 +17,7 @@ export default function BranchSwitcher() {
       <span className="type-caption hidden sm:inline">{t('shell.branchesFailed')}</span>
     ) : null;
   }
+  if (branches.length <= 1) return null;
 
   return (
     <DropdownMenu>

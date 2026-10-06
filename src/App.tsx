@@ -21,6 +21,7 @@ import AdminShopsPage from '@/pages/admin/AdminShopsPage';
 import CreateShopPage from '@/pages/admin/CreateShopPage';
 import InviteAcceptPage from '@/pages/auth/InviteAcceptPage';
 import SubscriptionPage from '@/pages/admin/SubscriptionPage';
+import BranchesPage from '@/pages/settings/BranchesPage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
@@ -30,7 +31,7 @@ const RestrictedSamplePage = lazy(() => import('@/pages/RestrictedSamplePage'));
 const AuditPage = lazy(() => import('@/pages/AuditPage'));
 
 /** Menu items that have a real page (no placeholder route). */
-const REAL_ROUTES = new Set(['/dashboard', '/audit']);
+const REAL_ROUTES = new Set(['/dashboard', '/audit', '/settings/branches']);
 
 export default function App() {
   return (
@@ -68,6 +69,9 @@ export default function App() {
               <Route element={<RequirePasswordChanged />}>
                 <Route element={<AppShell />}>
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route element={<RequirePermission permission="branch.manage" />}>
+                    <Route path="/settings/branches" element={<BranchesPage />} />
+                  </Route>
                   {import.meta.env.DEV && <Route path="/sample" element={<SamplePage />} />}
                   {import.meta.env.DEV && (
                     <Route element={<RequirePermission permission="audit.view" />}>
