@@ -8,8 +8,8 @@ import { subscriptionApi } from '@/services/subscriptionApi';
 import { adminApi } from '@/services/shopApi';
 import { ApiError } from '@/lib/api';
 import SubscriptionPage from './SubscriptionPage';
-import type {AdminSubscription} from '@ziadkhaled-wb/contracts';
-const data:AdminSubscription = {
+import type { AdminSubscription } from '@ziadkhaled-wb/contracts';
+const data: AdminSubscription = {
   plan_key: 'retail',
   plan_name: 'Retail',
   plan: {
