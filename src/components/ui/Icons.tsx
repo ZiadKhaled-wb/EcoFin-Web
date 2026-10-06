@@ -34,6 +34,7 @@ import {
   User,
   UserCog,
   Users,
+  Store,
   X,
   type LucideProps,
 } from 'lucide-react';
@@ -90,6 +91,7 @@ export const CalculatorIcon = wrap(Calculator);
 export const ChartIcon = wrap(ChartColumn);
 export const SettingsIcon = wrap(Settings);
 export const LogoutIcon = wrap(LogOut);
+export const StoreIcon = wrap(Store);
 export const BellIcon = wrap(Bell);
 export const PlusIcon = wrap(Plus);
 export const EditIcon = wrap(Pencil);

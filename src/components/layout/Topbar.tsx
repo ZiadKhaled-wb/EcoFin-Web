@@ -1,7 +1,8 @@
 import BranchSwitcher from '@/components/layout/BranchSwitcher';
 import LanguageSwitch from '@/components/layout/LanguageSwitch';
 import { t } from '@/i18n';
-import { ChevronDownIcon, LogoutIcon, MenuIcon } from '@/components/ui/Icons';
+import { useNavigate } from 'react-router-dom';
+import { ChevronDownIcon, LogoutIcon, MenuIcon, StoreIcon } from '@/components/ui/Icons';
 import Badge from '@/components/ui/Badge';
 import IconButton from '@/components/ui/IconButton';
 import Wordmark from '@/components/ui/Wordmark';
@@ -26,6 +27,8 @@ export default function Topbar({
 }) {
   const user = useAuthStore((s) => s.user);
   const tenantSlug = useAuthStore((s) => s.tenantSlug);
+  const shopCount = useAuthStore((s) => s.shops.length);
+  const navigate = useNavigate();
   const name = user?.username ?? user?.email ?? '';
 
   return (
@@ -82,6 +85,13 @@ export default function Topbar({
               )}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            {/* EC-143: a login in several shops switches here (the picker calls select-shop; every
+                query is keyed by the shop, so nothing of the old shop is shown after). */}
+            {shopCount > 1 && (
+              <DropdownMenuItem icon={<StoreIcon />} onSelect={() => navigate('/select-shop')}>
+                {t('shell.switchShop')}
+              </DropdownMenuItem>
+            )}
             {/* Logout clears the session; route guards then redirect to /login. */}
             <DropdownMenuItem
               tone="danger"

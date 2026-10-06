@@ -6,7 +6,8 @@ import AppShell from '@/components/layout/AppShell';
 import { useBranchStore } from '@/features/me/branchStore';
 import { meApi } from '@/features/me/meApi';
 import { setLanguage, t } from '@/i18n';
-import { ORG_A } from '@/test/authFixtures';
+import { useAuthStore } from '@/store/authStore';
+import { ORG_A, shopA, shopB } from '@/test/authFixtures';
 import {
   BRANCH_MAIN,
   BRANCH_TWO,
@@ -114,4 +115,38 @@ describe('language switch', () => {
     expect(window.localStorage.getItem('ecofin-lang')).toBe('en');
     expect(screen.getAllByRole('link', { name: 'Dashboard' }).length).toBeGreaterThan(0);
   });
+});
+
+describe('switch shop (EC-143)', () => {
+  const withPicker = (
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route path="/dashboard" element={<p>dashboard body</p>} />
+      </Route>
+      <Route path="/select-shop" element={<p>shop picker</p>} />
+    </Routes>
+  );
+  const openAccountMenu = async (user: ReturnType<typeof userEvent.setup>) =>
+    user.click(await screen.findByRole('button', { name: t('shell.accountMenu') }));
+
+  it('a login with one shop has no "Switch shop" item', async () => {
+    const user = userEvent.setup();
+    useAuthStore.setState({ shops: [shopA] });
+    await renderApp(withPicker, { lang: 'en', route: '/dashboard' });
+    await openAccountMenu(user);
+    expect(await screen.findByRole('menuitem', { name: t('shell.logout') })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: t('shell.switchShop') })).not.toBeInTheDocument();
+  });
+
+  it.each(['ar', 'en'] as const)(
+    'a login with several shops gets "Switch shop", which opens the picker (%s)',
+    async (lang) => {
+      const user = userEvent.setup();
+      useAuthStore.setState({ shops: [shopA, shopB] });
+      await renderApp(withPicker, { lang, route: '/dashboard' });
+      await openAccountMenu(user);
+      await user.click(await screen.findByRole('menuitem', { name: t('shell.switchShop') }));
+      expect(await screen.findByText('shop picker')).toBeInTheDocument();
+    },
+  );
 });

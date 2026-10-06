@@ -41,5 +41,6 @@
     "title": "Something unexpected happened",
     "description": "This page could not be shown. Reload it and try again.",
     "reload": "Reload the page"
-  }
+  },
+  "switchShop": "Switch shop"
 }
