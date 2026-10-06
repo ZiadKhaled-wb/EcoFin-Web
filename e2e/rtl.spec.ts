@@ -100,12 +100,16 @@ test.describe('RTL: long Arabic text', () => {
     }) => {
       await page.setViewportSize(viewport);
       await useLanguage(page, 'ar');
-      await page.route('**/api/auth/me', async (route) => {
-        const response = await route.fetch();
-        const json = (await response.json()) as { branches?: { name: string }[] };
-        for (const branch of json.branches ?? []) branch.name = LONG_BRANCH;
-        await route.fulfill({ response, json });
-      });
+      // The switcher lists the branches from GET /api/branches (O01); give them all the long name.
+      await page.route(
+        (url) => url.pathname === '/api/branches',
+        async (route) => {
+          const response = await route.fetch();
+          const json = (await response.json()) as { name: string }[];
+          for (const branch of json) branch.name = LONG_BRANCH;
+          await route.fulfill({ response, json });
+        },
+      );
       await login(page, env('E2E_OWNER_EMAIL'), env('E2E_OWNER_PASSWORD'));
       await expect(page).toHaveURL(/\/dashboard/);
 
