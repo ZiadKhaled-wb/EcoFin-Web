@@ -31,6 +31,20 @@ const renderPicker = () =>
   );
 
 describe('ShopPickerPage', () => {
+  it('EC-143: marks the shop you are in when you come back to switch', () => {
+    useAuthStore.setState({ orgId: ORG_B });
+    renderPicker();
+    const current = screen.getByRole('button', { current: true });
+    expect(current).toHaveTextContent('Shop B');
+    expect(current).toHaveTextContent(t('auth.picker.current'));
+    expect(screen.getAllByText(t('auth.picker.current'))).toHaveLength(1);
+  });
+
+  it('no shop is marked current before one is chosen', () => {
+    renderPicker();
+    expect(screen.queryByText(t('auth.picker.current'))).not.toBeInTheDocument();
+  });
+
   it('lists each shop with its name, slug and role', () => {
     renderPicker();
     expect(screen.getByText('Shop A')).toBeInTheDocument();

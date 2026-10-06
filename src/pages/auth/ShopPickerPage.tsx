@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import AuthLayout from '@/components/auth/AuthLayout';
+import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import FormError from '@/components/ui/FormError';
 import { t } from '@/i18n';
@@ -14,6 +15,7 @@ export default function ShopPickerPage() {
   const navigate = useNavigate();
   const shops = useAuthStore((s) => s.shops);
   const isSuperAdmin = useAuthStore((s) => s.isSuperAdmin);
+  const currentOrgId = useAuthStore((s) => s.orgId);
   const setActiveShop = useAuthStore((s) => s.setActiveShop);
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -50,6 +52,7 @@ export default function ShopPickerPage() {
                 disabled={pending !== null}
                 loading={pending === shop.orgId}
                 onClick={() => void choose(shop.orgId)}
+                aria-current={shop.orgId === currentOrgId ? 'true' : undefined}
               >
                 <span className="flex w-full items-center justify-between gap-3">
                   <span className="text-start">
@@ -61,7 +64,12 @@ export default function ShopPickerPage() {
                       </span>
                     </span>
                   </span>
-                  <span className="text-sm text-ink-soft">{ROLE_LABELS[shop.role]}</span>
+                  <span className="flex items-center gap-2 text-sm text-ink-soft">
+                    {shop.orgId === currentOrgId && (
+                      <Badge tone="brand">{t('auth.picker.current')}</Badge>
+                    )}
+                    {ROLE_LABELS[shop.role]}
+                  </span>
                 </span>
               </Button>
             </li>

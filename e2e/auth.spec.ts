@@ -202,6 +202,27 @@ test.describe('auth flows', () => {
     expect((await storedAuth(page))?.orgId).toBeTruthy();
   });
 
+  test('EC-143: a two-shop login switches shop from the account menu', async ({ page }) => {
+    await login(page, env('E2E_MULTI_EMAIL'), env('E2E_MULTI_PASSWORD'));
+    await page.getByRole('button', { name: new RegExp(env('E2E_MULTI_SHOP_NAME')) }).click();
+    await expect(page).toHaveURL(/\/dashboard/);
+    const first = (await storedAuth(page))?.orgId;
+
+    await page.getByRole('button', { name: 'قائمة الحساب' }).click();
+    await page.getByRole('menuitem', { name: 'تبديل المنشأة' }).click();
+    await expect(page).toHaveURL(/\/select-shop/);
+    // The shop you are in is marked; choose the other one.
+    await expect(page.locator('li button[aria-current="true"]')).toContainText(
+      env('E2E_MULTI_SHOP_NAME'),
+    );
+    await page.locator('li button:not([aria-current])').first().click();
+
+    await expect(page).toHaveURL(/\/dashboard/);
+    const second = (await storedAuth(page))?.orgId;
+    expect(second).toBeTruthy();
+    expect(second).not.toBe(first);
+  });
+
   test('the removed activation routes land on the login page', async ({ page }) => {
     for (const path of ['/activate', '/activate-workspace']) {
       await page.goto(path);
