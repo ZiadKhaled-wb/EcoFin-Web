@@ -1,4 +1,12 @@
+import arEmployees from './locales/ar/employees.json';
+import enEmployees from './locales/en/employees.json';
 import arAudit from './locales/ar/audit.json';
+import arBranches from './locales/ar/branches.json';
+import enBranches from './locales/en/branches.json';
+import arShops from './locales/ar/shops.json';
+import arSubscriptions from './locales/ar/subscriptions.json';
+import enSubscriptions from './locales/en/subscriptions.json';
+import enShops from './locales/en/shops.json';
 import arAuth from './locales/ar/auth.json';
 import arCommon from './locales/ar/common.json';
 import arErrors from './locales/ar/errors.json';
@@ -21,6 +29,8 @@ import enUi from './locales/en/ui.json';
 
 /** One JSON file per namespace and language. The first segment of a key is its namespace. */
 export const ar = {
+  employees: arEmployees,
+  branches: arBranches,
   common: arCommon,
   errors: arErrors,
   auth: arAuth,
@@ -31,11 +41,15 @@ export const ar = {
   table: arTable,
   sample: arSample,
   audit: arAudit,
+  shops: arShops,
+  subscriptions: arSubscriptions,
 };
 
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
 type SameShape<T> = { [K in keyof T]: T[K] extends string ? string : SameShape<T[K]> };
 export const en: SameShape<typeof ar> = {
+  employees: enEmployees,
+  branches: enBranches,
   common: enCommon,
   errors: enErrors,
   auth: enAuth,
@@ -46,6 +60,8 @@ export const en: SameShape<typeof ar> = {
   table: enTable,
   sample: enSample,
   audit: enAudit,
+  shops: enShops,
+  subscriptions: enSubscriptions,
 };
 
 type Leaves<T, P extends string = ''> = {

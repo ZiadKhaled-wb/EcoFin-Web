@@ -1,0 +1,32 @@
+{
+  "title": "Branches",
+  "create": "Create branch",
+  "edit": "Edit branch",
+  "save": "Save branch",
+  "deactivate": "Deactivate",
+  "reactivate": "Reactivate",
+  "deactivateAnyway": "Deactivate anyway",
+  "main": "Main branch",
+  "active": "Active",
+  "inactive": "Inactive",
+  "status": "Status",
+  "actions": "Actions",
+  "noVault": "No default vault",
+  "reason": "Reason",
+  "warning": "This branch has unfinished activity. Confirm before deactivating.",
+  "counts": "Open shifts: {shifts} · Stock units: {stock} · Cash balance: {cash}",
+  "codeInvalid": "Use 1–6 uppercase letters or digits for the branch code.",
+  "codeTaken": "This branch code is already used.",
+  "validation": "Check the required fields and their length.",
+  "saved": "Branch saved.",
+  "fields": {
+    "name": "Branch name",
+    "code": "Branch code",
+    "address": "Address",
+    "city": "City",
+    "governorate": "Governorate",
+    "phone": "Phone",
+    "eta_branch_code": "ETA branch code",
+    "vault": "Default vault"
+  }
+}

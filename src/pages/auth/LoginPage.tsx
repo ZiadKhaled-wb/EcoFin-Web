@@ -18,6 +18,7 @@ import { loginErrorMessage } from './authErrors';
 const NOTICES: Record<string, TranslationKey> = {
   reset: 'auth.notice.reset',
   changed: 'auth.notice.changed',
+  invite: 'shops.invite.success',
 };
 
 export default function LoginPage() {
@@ -28,7 +29,9 @@ export default function LoginPage() {
   const tenant = useTenantSlug();
   const setLogin = useAuthStore((s) => s.setLogin);
 
-  const [identifier, setIdentifier] = useState('');
+  const [identifier, setIdentifier] = useState(
+    (location.state as { prefillEmail?: string } | null)?.prefillEmail ?? '',
+  );
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [shopError, setShopError] = useState('');
@@ -63,10 +66,19 @@ export default function LoginPage() {
         identifier: parsed.data.identifier,
         tenantSlug: parsed.data.tenantSlug,
       });
-      const { orgId, mustChangePassword } = useAuthStore.getState();
-      navigate(!orgId ? '/select-shop' : mustChangePassword ? '/change-password' : '/dashboard', {
-        replace: true,
-      });
+      const { orgId, mustChangePassword, isSuperAdmin } = useAuthStore.getState();
+      navigate(
+        isSuperAdmin
+          ? '/admin'
+          : !orgId
+            ? '/select-shop'
+            : mustChangePassword
+              ? '/change-password'
+              : '/dashboard',
+        {
+          replace: true,
+        },
+      );
     } catch (err) {
       if (err instanceof ApiError && err.status === 429 && err.retryAfter) start(err.retryAfter);
       else setError(loginErrorMessage(err));

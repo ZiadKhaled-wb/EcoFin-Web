@@ -3,6 +3,7 @@ import axios, { AxiosError } from 'axios';
 import { t } from '@/i18n';
 import { captureApiError } from '@/lib/monitoring';
 import { useAuthStore } from '@/store/authStore';
+import { showSubscriptionError } from './subscriptionErrors';
 
 declare module 'axios' {
   interface AxiosRequestConfig {
@@ -30,6 +31,7 @@ export class ApiError extends Error {
   serverMessage?: string;
   /** The API's request id (`error.requestId`): the key to its log line and Sentry event. */
   requestId?: string;
+  details?: unknown;
 
   constructor(
     status: number,
@@ -100,6 +102,7 @@ export function toApiError(error: AxiosError<unknown>): ApiError {
     body.message,
   );
   apiError.requestId = body.requestId;
+  apiError.details = body.details;
   return apiError;
 }
 
@@ -199,6 +202,7 @@ api.interceptors.response.use(
       useAuthStore.getState().flagMustChangePassword();
     }
 
+    showSubscriptionError(apiError);
     return Promise.reject(apiError);
   },
 );

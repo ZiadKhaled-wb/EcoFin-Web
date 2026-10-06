@@ -7,7 +7,6 @@ import {
   FactoryIcon,
   PackageIcon,
   SettingsIcon,
-  TeamIcon,
   TruckIcon,
   UsersIcon,
   type IconComponent,
@@ -123,13 +122,6 @@ export const NAV: NavItem[] = [
     roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
   },
   {
-    id: 'employees',
-    labelKey: 'nav.employees',
-    icon: TeamIcon,
-    to: '/employees',
-    roles: [OWNER, BRANCH_MANAGER],
-  },
-  {
     id: 'accounting',
     labelKey: 'nav.accounting',
     icon: CalculatorIcon,
@@ -145,7 +137,26 @@ export const NAV: NavItem[] = [
   },
   // F07: the owner's audit screen; shown to anyone holding audit.view (an F06 override included).
   { id: 'audit', labelKey: 'nav.audit', icon: EyeIcon, to: '/audit', permission: 'audit.view' },
-  { id: 'settings', labelKey: 'nav.settings', icon: SettingsIcon, to: '/settings', roles: [OWNER] },
+  {
+    id: 'settings',
+    labelKey: 'nav.settings',
+    icon: SettingsIcon,
+    children: [
+      {
+        id: 'employees',
+        labelKey: 'employees.title',
+        to: '/settings/employees',
+        permission: 'employee.manage',
+      },
+      { id: 'settings-general', labelKey: 'nav.settings', to: '/settings', roles: [OWNER] },
+      {
+        id: 'branches',
+        labelKey: 'branches.title',
+        to: '/settings/branches',
+        permission: 'branch.manage',
+      },
+    ],
+  },
 ];
 
 /** The one visibility rule: the menu (filterNav) and the route guard (RequireNavItem) both use it. */

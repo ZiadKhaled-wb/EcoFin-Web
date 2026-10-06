@@ -1,12 +1,13 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AppShell from '@/components/layout/AppShell';
 import { useBranchStore } from '@/features/me/branchStore';
 import { meApi } from '@/features/me/meApi';
-import { setLanguage, t } from '@/i18n';
+import { branchApi } from '@/services/branchApi';
 import { useAuthStore } from '@/store/authStore';
+import { setLanguage, t } from '@/i18n';
 import { ORG_A, shopA, shopB } from '@/test/authFixtures';
 import {
   BRANCH_MAIN,
@@ -33,6 +34,9 @@ const shell = (
 );
 
 beforeEach(() => {
+  vi.spyOn(branchApi, 'list').mockResolvedValue(
+    meFixture().branches.map((b) => ({ id: b.id, name: b.name, code: b.code, is_main: b.isMain })),
+  );
   signIn('OWNER');
   vi.mocked(meApi.me).mockResolvedValue(meFixture());
   vi.mocked(meApi.permissions).mockResolvedValue(permissionsFixture(['sale.create']));
@@ -41,6 +45,7 @@ afterEach(async () => {
   signOut();
   useBranchStore.setState({ byOrg: {} });
   vi.clearAllMocks();
+  vi.restoreAllMocks();
   await setLanguage('ar');
   window.localStorage.clear();
 });
@@ -75,7 +80,37 @@ describe('AppShell menu (small screens)', () => {
 });
 
 describe('branch switcher', () => {
-  it('lists the branches from me and changes the selection', async () => {
+  it('hides with one branch', async () => {
+    vi.mocked(branchApi.list).mockResolvedValue([
+      { id: BRANCH_MAIN, name: 'Main branch', code: 'MAIN', is_main: true },
+    ]);
+    await renderApp(shell, { lang: 'en', route: '/dashboard' });
+    await waitFor(() => expect(branchApi.list).toHaveBeenCalled());
+    expect(screen.queryByRole('button', { name: /Branch:/ })).not.toBeInTheDocument();
+  });
+  it('resets the displayed choice on shop switch', async () => {
+    const user = userEvent.setup();
+    await renderApp(shell, { lang: 'en', route: '/dashboard' });
+    await user.click(await screen.findByRole('button', { name: 'Branch: Main branch' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Second branch' }));
+    vi.mocked(branchApi.list).mockResolvedValue([
+      {
+        id: 'a0100000-0000-4000-8000-000000000001',
+        name: 'Other main',
+        code: 'MAIN',
+        is_main: true,
+      },
+      {
+        id: 'a0100000-0000-4000-8000-000000000002',
+        name: 'Other second',
+        code: 'B2',
+        is_main: false,
+      },
+    ]);
+    act(() => useAuthStore.setState({ orgId: 'a0100000-0000-4000-8000-000000000003' }));
+    expect(await screen.findByRole('button', { name: 'Branch: Other main' })).toBeInTheDocument();
+  });
+  it('lists active branches from the branch endpoint and changes the selection', async () => {
     const user = userEvent.setup();
     await renderApp(shell, { lang: 'en', route: '/dashboard' });
 

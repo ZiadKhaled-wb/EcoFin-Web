@@ -13,6 +13,7 @@ export function loginErrorMessage(err: unknown): string {
     TENANT_NOT_FOUND: 'auth.errors.invalidCredentials',
     ACCOUNT_DISABLED: 'auth.errors.accountDisabled',
     SHOP_INACTIVE: 'auth.errors.shopInactive',
+    ORG_SUSPENDED: 'auth.errors.shopInactive',
     SUBSCRIPTION_EXPIRED: 'auth.errors.subscriptionExpired',
     TOO_MANY_LOGIN_ATTEMPTS: 'auth.errors.tooManyAttempts',
     NETWORK_ERROR: 'errors.network',
@@ -26,7 +27,8 @@ export function selectShopErrorMessage(err: unknown): string {
   if (err instanceof ApiError) {
     if (err.code === 'NETWORK_ERROR') return t('errors.network');
     if (err.code === 'SHOP_NOT_ALLOWED') return t('auth.errors.shopNotAllowed');
-    if (err.code === 'SHOP_INACTIVE') return t('auth.errors.shopInactive');
+    if (err.code === 'SHOP_INACTIVE' || err.code === 'ORG_SUSPENDED')
+      return t('auth.errors.shopInactive');
     if (err.code === 'SUBSCRIPTION_EXPIRED') return t('auth.errors.subscriptionExpired');
   }
   return t('auth.errors.selectShopFailed');

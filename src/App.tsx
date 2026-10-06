@@ -1,3 +1,5 @@
+import EmployeesPage from '@/pages/settings/EmployeesPage';
+import SetPasswordPage from '@/pages/auth/SetPasswordPage';
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import GuestOnly from '@/components/guards/GuestOnly';
@@ -15,6 +17,13 @@ import AppShell from '@/components/layout/AppShell';
 import { navLeaves } from '@/config/navigation';
 import DashboardPage from '@/pages/DashboardPage';
 import ModulePlaceholderPage from '@/pages/ModulePlaceholderPage';
+import RequireSuperAdmin from '@/components/guards/RequireSuperAdmin';
+import AdminLayout from '@/components/layout/AdminLayout';
+import AdminShopsPage from '@/pages/admin/AdminShopsPage';
+import CreateShopPage from '@/pages/admin/CreateShopPage';
+import InviteAcceptPage from '@/pages/auth/InviteAcceptPage';
+import SubscriptionPage from '@/pages/admin/SubscriptionPage';
+import BranchesPage from '@/pages/settings/BranchesPage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
@@ -24,7 +33,13 @@ const RestrictedSamplePage = lazy(() => import('@/pages/RestrictedSamplePage'));
 const AuditPage = lazy(() => import('@/pages/AuditPage'));
 
 /** Menu items that have a real page (no placeholder route). */
-const REAL_ROUTES = new Set(['/dashboard', '/audit']);
+const REAL_ROUTES = new Set([
+  '/dashboard',
+  '/audit',
+  '/settings/branches',
+  '/settings/employees',
+  '/employees',
+]);
 
 export default function App() {
   return (
@@ -41,9 +56,18 @@ export default function App() {
 
           {/* Emailed recovery link landing: reachable regardless of session */}
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/password/set" element={<SetPasswordPage />} />
+          <Route path="/invite/accept" element={<InviteAcceptPage />} />
 
           {/* Signed-in */}
           <Route element={<RequireAuth />}>
+            <Route element={<RequireSuperAdmin />}>
+              <Route element={<AdminLayout />}>
+                <Route path="/admin" element={<AdminShopsPage />} />
+                <Route path="/admin/shops/new" element={<CreateShopPage />} />
+                <Route path="/admin/shops/:id" element={<SubscriptionPage />} />
+              </Route>
+            </Route>
             {/* A login with several shops picks one here (no shop is active yet) */}
             <Route path="/select-shop" element={<ShopPickerPage />} />
 
@@ -54,6 +78,16 @@ export default function App() {
               <Route element={<RequirePasswordChanged />}>
                 <Route element={<AppShell />}>
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route element={<RequirePermission permission="employee.manage" />}>
+                    <Route path="/settings/employees" element={<EmployeesPage />} />
+                    <Route
+                      path="/employees"
+                      element={<Navigate to="/settings/employees" replace />}
+                    />
+                  </Route>
+                  <Route element={<RequirePermission permission="branch.manage" />}>
+                    <Route path="/settings/branches" element={<BranchesPage />} />
+                  </Route>
                   {import.meta.env.DEV && <Route path="/sample" element={<SamplePage />} />}
                   {import.meta.env.DEV && (
                     <Route element={<RequirePermission permission="audit.view" />}>
