@@ -1,4 +1,6 @@
 import arAudit from './locales/ar/audit.json';
+import arShops from './locales/ar/shops.json';
+import enShops from './locales/en/shops.json';
 import arAuth from './locales/ar/auth.json';
 import arCommon from './locales/ar/common.json';
 import arErrors from './locales/ar/errors.json';
@@ -31,6 +33,7 @@ export const ar = {
   table: arTable,
   sample: arSample,
   audit: arAudit,
+  shops: arShops,
 };
 
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
@@ -46,6 +49,7 @@ export const en: SameShape<typeof ar> = {
   table: enTable,
   sample: enSample,
   audit: enAudit,
+  shops: enShops,
 };
 
 type Leaves<T, P extends string = ''> = {

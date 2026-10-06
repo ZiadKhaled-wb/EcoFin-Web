@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import AuthLayout from '@/components/auth/AuthLayout';
 import Button from '@/components/ui/Button';
 import FormError from '@/components/ui/FormError';
@@ -13,6 +13,7 @@ import { selectShopErrorMessage } from './authErrors';
 export default function ShopPickerPage() {
   const navigate = useNavigate();
   const shops = useAuthStore((s) => s.shops);
+  const isSuperAdmin = useAuthStore((s) => s.isSuperAdmin);
   const setActiveShop = useAuthStore((s) => s.setActiveShop);
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -34,6 +35,7 @@ export default function ShopPickerPage() {
   };
 
   const logout = () => authApi.logout().then(() => navigate('/login', { replace: true }));
+  if (isSuperAdmin) return <Navigate to="/admin" replace />;
 
   return (
     <AuthLayout title={t('auth.picker.title')} subtitle={t('auth.picker.subtitle')}>

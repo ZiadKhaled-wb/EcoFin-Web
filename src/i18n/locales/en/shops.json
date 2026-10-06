@@ -1,0 +1,73 @@
+{
+  "title": "Shops",
+  "admin": "Platform administration",
+  "newTitle": "Create shop",
+  "create": "Create shop",
+  "creating": "Creating shop…",
+  "back": "Back to shops",
+  "created": "Shop created; owner invite sent.",
+  "emailFailed": "Shop created; email failed. Use Resend invite.",
+  "resend": "Resend invite",
+  "resent": "Invitation resent.",
+  "resendFailed": "Invitation saved; email failed. Try Resend invite.",
+  "suspend": "Suspend",
+  "reactivate": "Reactivate",
+  "confirmSuspend": "Confirm suspension",
+  "suspendTitle": "Suspend {name}?",
+  "suspendDescription": "The owner and employees will lose access until you reactivate this shop.",
+  "updated": "Shop status updated.",
+  "allStatuses": "All statuses",
+  "validation": "Enter a valid value.",
+  "choosePlan": "Choose a plan",
+  "actions": "Actions",
+  "owner": "Owner",
+  "inviteStatus": "Invitation",
+  "createdAt": "Created",
+  "empty": "No shops found",
+  "emptyHint": "Create a shop or change the search filters.",
+  "fields": {
+    "name": "Shop name",
+    "slug": "Shop slug",
+    "plan": "Plan",
+    "ownerName": "Owner full name",
+    "email": "Owner email",
+    "phone": "Owner phone",
+    "branch": "Main branch name (optional)",
+    "status": "Status",
+    "reason": "Reason"
+  },
+  "status": {
+    "active": "Active",
+    "suspended": "Suspended",
+    "expired": "Expired",
+    "closed": "Closed"
+  },
+  "inviteStatusLabels": {
+    "accepted": "Accepted",
+    "pending": "Pending",
+    "expired": "Expired",
+    "none": "No invitation"
+  },
+  "errors": {
+    "slugTaken": "This shop slug is already in use.",
+    "slugInvalid": "Use a valid, non-reserved shop slug.",
+    "planMissing": "This plan is unavailable. Choose another plan.",
+    "ownerActive": "The owner has already accepted an invitation.",
+    "notFound": "This shop was not found.",
+    "notActive": "Reactivate the shop before resending its invitation.",
+    "reasonRequired": "Enter a reason for this change."
+  },
+  "invite": {
+    "title": "Accept invitation",
+    "checking": "Checking invitation…",
+    "password": "Password",
+    "confirm": "Confirm password",
+    "existing": "Enter the password of your existing account.",
+    "newAccount": "Set your own password to join this shop.",
+    "accept": "Accept invitation",
+    "accepting": "Accepting invitation…",
+    "invalid": "This link is invalid or already used. Ask support for a new invite.",
+    "expired": "This link has expired. Ask support for a new invite.",
+    "success": "Invitation accepted. Sign in to your shop."
+  }
+}

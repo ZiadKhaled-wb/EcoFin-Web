@@ -28,6 +28,7 @@ interface AuthState {
   /** Every shop this login belongs to (picker list). */
   shops: ShopMembership[];
   mustChangePassword: boolean;
+  isSuperAdmin: boolean;
   /** Public shop identifier. Survives logout on purpose (returning users). */
   tenantSlug: string | null;
 
@@ -49,6 +50,7 @@ const EMPTY_SESSION = {
   orgId: null,
   shops: [] as ShopMembership[],
   mustChangePassword: false,
+  isSuperAdmin: false,
 };
 
 const buildUser = (account: Account, shop: ShopMembership, mustChange: boolean): AuthUser => ({
@@ -88,6 +90,7 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: res.refreshToken,
           expiresAt: res.expiresAt,
           shops: res.shops,
+          isSuperAdmin: res.is_super_admin === true,
           orgId: active?.orgId ?? null,
           user: active ? buildUser(account, active, res.mustChangePassword) : null,
           mustChangePassword: res.mustChangePassword,

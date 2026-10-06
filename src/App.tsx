@@ -15,6 +15,11 @@ import AppShell from '@/components/layout/AppShell';
 import { navLeaves } from '@/config/navigation';
 import DashboardPage from '@/pages/DashboardPage';
 import ModulePlaceholderPage from '@/pages/ModulePlaceholderPage';
+import RequireSuperAdmin from '@/components/guards/RequireSuperAdmin';
+import AdminLayout from '@/components/layout/AdminLayout';
+import AdminShopsPage from '@/pages/admin/AdminShopsPage';
+import CreateShopPage from '@/pages/admin/CreateShopPage';
+import InviteAcceptPage from '@/pages/auth/InviteAcceptPage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
@@ -41,9 +46,16 @@ export default function App() {
 
           {/* Emailed recovery link landing: reachable regardless of session */}
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/invite/accept" element={<InviteAcceptPage />} />
 
           {/* Signed-in */}
           <Route element={<RequireAuth />}>
+            <Route element={<RequireSuperAdmin />}>
+              <Route element={<AdminLayout />}>
+                <Route path="/admin" element={<AdminShopsPage />} />
+                <Route path="/admin/shops/new" element={<CreateShopPage />} />
+              </Route>
+            </Route>
             {/* A login with several shops picks one here (no shop is active yet) */}
             <Route path="/select-shop" element={<ShopPickerPage />} />
 
