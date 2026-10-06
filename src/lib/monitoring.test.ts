@@ -46,7 +46,7 @@ describe('monitoring (Q02)', () => {
         env({
           VITE_SENTRY_DSN: 'https://k@o1.ingest.sentry.io/3',
           VITE_SENTRY_ENVIRONMENT: 'development',
-          VITE_VERCEL_GIT_COMMIT_SHA: 'abcdef1234567890',
+          VITE_APP_RELEASE: 'abcdef1234567890',
         }),
       ),
     ).toBe(true);
