@@ -3,6 +3,8 @@ import enEmployees from './locales/en/employees.json';
 import arAudit from './locales/ar/audit.json';
 import arBranches from './locales/ar/branches.json';
 import enBranches from './locales/en/branches.json';
+import arSettings from './locales/ar/settings.json';
+import enSettings from './locales/en/settings.json';
 import arShops from './locales/ar/shops.json';
 import arSubscriptions from './locales/ar/subscriptions.json';
 import enSubscriptions from './locales/en/subscriptions.json';
@@ -31,6 +33,7 @@ import enUi from './locales/en/ui.json';
 export const ar = {
   employees: arEmployees,
   branches: arBranches,
+  settings: arSettings,
   common: arCommon,
   errors: arErrors,
   auth: arAuth,
@@ -50,6 +53,7 @@ type SameShape<T> = { [K in keyof T]: T[K] extends string ? string : SameShape<T
 export const en: SameShape<typeof ar> = {
   employees: enEmployees,
   branches: enBranches,
+  settings: enSettings,
   common: enCommon,
   errors: enErrors,
   auth: enAuth,

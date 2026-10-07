@@ -1,0 +1,170 @@
+{
+  "title": "إعدادات المحل",
+  "description": "القواعد التي يعمل بها محلك. يقرؤها النظام في كل بيع وإيصال وعقد تقسيط.",
+  "save": "حفظ التغييرات",
+  "saved": "تم حفظ الإعدادات.",
+  "nothingChanged": "لا يوجد ما يُحفظ في هذا القسم.",
+  "optional": "اختياري",
+  "tabs": {
+    "general": "بيانات المحل",
+    "receipt": "الإيصالات",
+    "tax": "الضريبة",
+    "sales": "ضوابط البيع",
+    "installments": "شروط التقسيط",
+    "credit": "شروط الائتمان",
+    "legal": "الشؤون القانونية",
+    "inventory": "تنبيهات المخزون"
+  },
+  "general": {
+    "name": "اسم المحل",
+    "address": "العنوان",
+    "phone": "الهاتف",
+    "timezone": "المنطقة الزمنية",
+    "language": "اللغة الافتراضية",
+    "languages": { "ar": "العربية", "en": "الإنجليزية" },
+    "taxNo": "رقم التسجيل الضريبي",
+    "themeColor": "لون الواجهة",
+    "themeColorHelp": "كود سداسي مثل #2563EB.",
+    "currency": "العملة",
+    "currencyHelp": "يبيع إيكوفين بالجنيه المصري فقط.",
+    "logo": "الشعار",
+    "logoSet": "تم تعيين شعار.",
+    "logoNone": "لا يوجد شعار بعد.",
+    "uploadLogo": "رفع الشعار",
+    "removeLogo": "إزالة الشعار",
+    "logoUploaded": "تم رفع الشعار. احفظ لاستخدامه."
+  },
+  "receipt": {
+    "header": "رأس الإيصال",
+    "footer": "تذييل الإيصال",
+    "width": "عرض الورق",
+    "width58": "٥٨ مم",
+    "width80": "٨٠ مم",
+    "fields": "يظهر على الإيصال",
+    "fieldNames": {
+      "logo": "الشعار",
+      "address": "عنوان المحل",
+      "phone": "هاتف المحل",
+      "tax_registration_no": "رقم التسجيل الضريبي",
+      "branch": "اسم الفرع",
+      "cashier": "اسم الكاشير",
+      "customer": "اسم العميل"
+    }
+  },
+  "tax": {
+    "pricesIncludeVat": "الأسعار شاملة الضريبة",
+    "pricesIncludeVatHelp": "مفعّل: سعر الرف يشمل ضريبة القيمة المضافة. غير مفعّل: تُضاف الضريبة عند الدفع.",
+    "defaultTaxClass": "فئة الضريبة الافتراضية للأصناف الجديدة",
+    "noTaxClasses": "لا توجد فئات ضريبية بعد. تُضاف مع محرك الضريبة.",
+    "none": "بدون"
+  },
+  "sales": {
+    "discountCaps": "أقصى خصم لكل دور",
+    "discountCapsHelp": "المالك بلا حد. الدور المتروك على ٠ لا يمنح خصمًا إلا بموافقة.",
+    "roles": {
+      "BRANCH_MANAGER": "مدير الفرع",
+      "CASHIER": "الكاشير",
+      "WAREHOUSE": "المخزن",
+      "COLLECTOR": "المحصّل",
+      "ACCOUNTANT": "المحاسب",
+      "LAWYER": "المحامي"
+    },
+    "returnDays": "مدة الاسترجاع (أيام)",
+    "purchaseThreshold": "المشتريات فوق هذا المبلغ تحتاج موافقة",
+    "purchaseThresholdHelp": "اتركه فارغًا لعدم طلب موافقة.",
+    "collectorCommission": "عمولة المحصّل",
+    "allowNegativeBank": "السماح للحسابات البنكية بالسالب",
+    "allowNegativeBankHelp": "الخزن والأدراج والمحافظ لا تنزل تحت الصفر أبدًا."
+  },
+  "credit": {
+    "minScore": "الحد الأدنى لتقييم الائتمان للشراء بالتقسيط",
+    "minScoreHelp": "من ٠ إلى ١٠٠.",
+    "limitMultiple": "سقف الائتمان الافتراضي (مضاعف الدخل الشهري)",
+    "limitMultipleHelp": "اتركه فارغًا لتحديد سقف كل عميل يدويًا.",
+    "weights": "أوزان تقييم الائتمان",
+    "weightsHelp": "وزن كل عامل في التقييم. يجب أن يكون الإجمالي ١٠٠.",
+    "weightsTotal": "الإجمالي: {total} / ١٠٠",
+    "factor": {
+      "guarantors": "الضامنون",
+      "income": "الدخل",
+      "residence": "السكن",
+      "identity": "الهوية"
+    }
+  },
+  "legal": {
+    "referralDays": "أيام التأخير قبل تحويل العقد للشؤون القانونية",
+    "referralHelp": "لكل نظام سداد.",
+    "banDays": "فترة حظر العميل المتعثر (أيام)",
+    "warningInterval": "الأيام بين رسائل الإنذار"
+  },
+  "inventory": {
+    "globalMinStock": "تنبيه نقص المخزون (قطعة)",
+    "globalMinStockHelp": "يُستخدم للأصناف التي ليس لها حد أدنى خاص."
+  },
+  "policy": {
+    "intro": "كل تغيير يُنشئ إصدارًا جديدًا. العقود الموقّعة تحتفظ بالإصدار الذي أُبرمت به.",
+    "current": "الإصدار الحالي: {version}، منذ {date}.",
+    "none": "لا توجد سياسة تقسيط بعد.",
+    "publish": "نشر إصدار جديد",
+    "published": "تم نشر الإصدار {version}.",
+    "unchanged": "هذه هي الشروط الحالية؛ لم يُنشأ إصدار جديد.",
+    "history": "الإصدارات السابقة",
+    "historyRow": "الإصدار {version} · {date} · حتى {months} شهرًا",
+    "downPayment": "المقدم",
+    "minDown": "الحد الأدنى للمقدم (٪)",
+    "maxDown": "الحد الأقصى للمقدم (٪)",
+    "maxDownHelp": "اتركه فارغًا لعدم وضع حد أقصى.",
+    "duration": "المدة والمبالغ",
+    "maxMonths": "أقصى عدد شهور",
+    "minSale": "أقل مبلغ للبيع بالتقسيط",
+    "minInstallment": "الحد الأدنى للقسط (أي نظام)",
+    "roundingStep": "تقريب القسط إلى",
+    "frequencies": "أنظمة السداد المسموحة",
+    "frequency": { "monthly": "شهري", "weekly": "أسبوعي", "daily": "يومي" },
+    "perFrequency": "قواعد كل نظام سداد",
+    "minInstallmentFor": "الحد الأدنى للقسط ({frequency})",
+    "downPaymentRule": "المقدم ({frequency})",
+    "rules": {
+      "percent": "النسبة الدنيا فقط",
+      "one_installment": "قسط واحد مقدم",
+      "installment_per_day_of_month": "قسط عن كل يوم مضى من الشهر"
+    },
+    "amountTiers": "أقصى عدد شهور حسب قيمة البيع",
+    "amountTiersHelp": "البيع الأعلى من آخر مبلغ يستخدم أقصى عدد شهور.",
+    "upToAmount": "بيع حتى",
+    "tierMaxMonths": "أقصى عدد شهور",
+    "markupTiers": "نسبة الزيادة حسب المدة",
+    "markupHelp": "آخر صف يجب أن يغطي أقصى عدد شهور.",
+    "upToMonths": "حتى (شهور)",
+    "markupPct": "نسبة الزيادة (٪)",
+    "addTier": "إضافة صف",
+    "removeTier": "حذف الصف",
+    "lateFees": "غرامات التأخير والسداد المبكر",
+    "lateFeeType": "غرامة التأخير",
+    "lateFeeTypes": { "none": "بدون", "fixed": "مبلغ ثابت", "percent": "نسبة من القسط" },
+    "lateFeeValue": "قيمة الغرامة",
+    "lateFeeCap": "الحد الأقصى للغرامة",
+    "lateFeeRecurring": "تُحتسب مرة أخرى عن كل فترة تأخير",
+    "graceDays": "أيام السماح",
+    "earlySettlement": "السداد المبكر",
+    "earlyRules": {
+      "no_discount": "بدون خصم",
+      "waive_future_profit": "إسقاط الأرباح المستقبلية",
+      "percent_of_future_profit": "خصم نسبة من الأرباح المستقبلية"
+    },
+    "earlyPct": "نسبة الخصم (٪) من الأرباح المستقبلية",
+    "guarantorAbove": "يلزم ضامن فوق",
+    "surveyAbove": "يلزم استعلام ميداني فوق",
+    "moduleMissing": "باقتك لا تشمل التقسيط."
+  },
+  "errors": {
+    "SETTINGS_INVALID": "إحدى القيم غير مسموحة. راجع حقول هذا القسم.",
+    "POLICY_INVALID": "هذه الشروط لا تتوافق معًا. راجع الشرائح وقواعد كل نظام سداد.",
+    "TAX_CLASS_NOT_FOUND": "فئة الضريبة هذه لم تعد موجودة.",
+    "FILE_NOT_FOUND": "ملف الشعار غير موجود. ارفعه مرة أخرى.",
+    "NAME_REQUIRED": "أدخل اسم المحل.",
+    "MODULE_NOT_IN_PLAN": "باقتك لا تشمل التقسيط.",
+    "validation": "راجع القيم المميزة.",
+    "weightsSum": "يجب أن يكون مجموع الأوزان ١٠٠."
+  }
+}

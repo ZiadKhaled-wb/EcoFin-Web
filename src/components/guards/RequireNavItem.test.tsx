@@ -59,9 +59,9 @@ describe('RequireNavItem (INT-1: typing a menu URL follows the menu rule)', () =
     expect(await screen.findByText('module page')).toBeInTheDocument();
   });
 
-  it('the owner opens an owner-only item', async () => {
+  it('the owner (who holds every key) opens a permission item', async () => {
     signIn('OWNER');
-    vi.mocked(meApi.permissions).mockResolvedValue(permissionsFixture([]));
+    vi.mocked(meApi.permissions).mockResolvedValue(permissionsFixture(['org.settings_manage']));
     await renderApp(routes, { lang: 'en', route: '/settings' });
     expect(await screen.findByText('module page')).toBeInTheDocument();
   });

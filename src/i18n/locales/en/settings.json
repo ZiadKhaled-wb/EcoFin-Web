@@ -1,0 +1,174 @@
+{
+  "title": "Shop settings",
+  "description": "The rules your shop runs by. The system reads them on every sale, receipt and installment contract.",
+  "save": "Save changes",
+  "saved": "Settings saved.",
+  "nothingChanged": "Nothing to save on this tab.",
+  "optional": "Optional",
+  "tabs": {
+    "general": "Shop profile",
+    "receipt": "Receipts",
+    "tax": "Tax",
+    "sales": "Sales controls",
+    "installments": "Installment terms",
+    "credit": "Credit terms",
+    "legal": "Legal",
+    "inventory": "Inventory alerts"
+  },
+  "general": {
+    "name": "Shop name",
+    "address": "Address",
+    "phone": "Phone",
+    "timezone": "Time zone",
+    "language": "Default language",
+    "languages": { "ar": "Arabic", "en": "English" },
+    "taxNo": "VAT registration number",
+    "themeColor": "Theme colour",
+    "themeColorHelp": "A hex code such as #2563EB.",
+    "currency": "Currency",
+    "currencyHelp": "EcoFin sells in Egyptian pounds only.",
+    "logo": "Logo",
+    "logoSet": "A logo is set.",
+    "logoNone": "No logo yet.",
+    "uploadLogo": "Upload logo",
+    "removeLogo": "Remove logo",
+    "logoUploaded": "Logo uploaded. Save to use it."
+  },
+  "receipt": {
+    "header": "Receipt header",
+    "footer": "Receipt footer",
+    "width": "Paper width",
+    "width58": "58 mm",
+    "width80": "80 mm",
+    "fields": "Show on the receipt",
+    "fieldNames": {
+      "logo": "Logo",
+      "address": "Shop address",
+      "phone": "Shop phone",
+      "tax_registration_no": "VAT registration number",
+      "branch": "Branch name",
+      "cashier": "Cashier name",
+      "customer": "Customer name"
+    }
+  },
+  "tax": {
+    "pricesIncludeVat": "Prices include VAT",
+    "pricesIncludeVatHelp": "On: the price on the shelf already includes VAT. Off: VAT is added at checkout.",
+    "defaultTaxClass": "Default tax class for new products",
+    "noTaxClasses": "No tax classes yet. They are added with the VAT engine.",
+    "none": "None"
+  },
+  "sales": {
+    "discountCaps": "Maximum discount per role",
+    "discountCapsHelp": "The owner has no limit. A role left at 0 can't give a discount without approval.",
+    "roles": {
+      "BRANCH_MANAGER": "Branch manager",
+      "CASHIER": "Cashier",
+      "WAREHOUSE": "Warehouse",
+      "COLLECTOR": "Collector",
+      "ACCOUNTANT": "Accountant",
+      "LAWYER": "Lawyer"
+    },
+    "returnDays": "Return period (days)",
+    "purchaseThreshold": "Purchases above this need approval",
+    "purchaseThresholdHelp": "Leave empty for no approval.",
+    "collectorCommission": "Collector commission",
+    "allowNegativeBank": "Allow bank accounts to go below zero",
+    "allowNegativeBankHelp": "Safes, drawers and wallets never go below zero."
+  },
+  "credit": {
+    "minScore": "Minimum credit score to buy on installments",
+    "minScoreHelp": "From 0 to 100.",
+    "limitMultiple": "Default credit limit (times monthly income)",
+    "limitMultipleHelp": "Leave empty to set each customer's limit by hand.",
+    "weights": "Credit score weights",
+    "weightsHelp": "How much each factor counts. The total must be 100.",
+    "weightsTotal": "Total: {total} / 100",
+    "factor": {
+      "guarantors": "Guarantors",
+      "income": "Income",
+      "residence": "Residence",
+      "identity": "Identity"
+    }
+  },
+  "legal": {
+    "referralDays": "Days overdue before a contract goes to legal",
+    "referralHelp": "Per installment frequency.",
+    "banDays": "Ban period for a defaulted customer (days)",
+    "warningInterval": "Days between overdue warnings"
+  },
+  "inventory": {
+    "globalMinStock": "Low-stock alert (units)",
+    "globalMinStockHelp": "Used for products that have no minimum of their own."
+  },
+  "policy": {
+    "intro": "Each change creates a new version. Contracts already signed keep the version they were made with.",
+    "current": "Current version: {version}, since {date}.",
+    "none": "No installment policy yet.",
+    "publish": "Publish new version",
+    "published": "Version {version} published.",
+    "unchanged": "These are the current terms; no new version was made.",
+    "history": "Earlier versions",
+    "historyRow": "Version {version} · {date} · up to {months} months",
+    "downPayment": "Down payment",
+    "minDown": "Minimum down payment (%)",
+    "maxDown": "Maximum down payment (%)",
+    "maxDownHelp": "Leave empty for no maximum.",
+    "duration": "Duration and amounts",
+    "maxMonths": "Maximum months",
+    "minSale": "Smallest sale on installments",
+    "minInstallment": "Minimum installment (any frequency)",
+    "roundingStep": "Round installments to",
+    "frequencies": "Allowed frequencies",
+    "frequency": { "monthly": "Monthly", "weekly": "Weekly", "daily": "Daily" },
+    "perFrequency": "Rules per frequency",
+    "minInstallmentFor": "Minimum installment ({frequency})",
+    "downPaymentRule": "Down payment ({frequency})",
+    "rules": {
+      "percent": "Minimum % only",
+      "one_installment": "One installment up front",
+      "installment_per_day_of_month": "One installment per day of the month so far"
+    },
+    "amountTiers": "Maximum months by sale amount",
+    "amountTiersHelp": "A sale above the last amount uses the maximum months.",
+    "upToAmount": "Sale up to",
+    "tierMaxMonths": "Maximum months",
+    "markupTiers": "Markup by duration",
+    "markupHelp": "The last row must cover the maximum months.",
+    "upToMonths": "Up to (months)",
+    "markupPct": "Markup (%)",
+    "addTier": "Add row",
+    "removeTier": "Remove row",
+    "lateFees": "Late fees and settlement",
+    "lateFeeType": "Late fee",
+    "lateFeeTypes": {
+      "none": "None",
+      "fixed": "Fixed amount",
+      "percent": "Percent of the installment"
+    },
+    "lateFeeValue": "Late fee value",
+    "lateFeeCap": "Late fee cap",
+    "lateFeeRecurring": "Charge again every overdue period",
+    "graceDays": "Grace days",
+    "earlySettlement": "Early settlement",
+    "earlyRules": {
+      "no_discount": "No discount",
+      "waive_future_profit": "Waive future profit",
+      "percent_of_future_profit": "Discount a percent of future profit"
+    },
+    "earlyPct": "Discount (%) of future profit",
+    "guarantorAbove": "Guarantor required above",
+    "surveyAbove": "Field survey required above",
+    "moduleMissing": "Your plan doesn't include installments."
+  },
+  "errors": {
+    "SETTINGS_INVALID": "One of the values isn't allowed. Check the fields on this tab.",
+    "POLICY_INVALID": "These terms don't fit together. Check the tiers and the per-frequency rules.",
+    "TAX_CLASS_NOT_FOUND": "That tax class no longer exists.",
+    "FILE_NOT_FOUND": "The logo file wasn't found. Upload it again.",
+    "NAME_REQUIRED": "Enter the shop name.",
+    "MODULE_NOT_IN_PLAN": "Your plan doesn't include installments.",
+    "validation": "Check the highlighted values.",
+    "weightsSum": "The weights must add up to 100."
+  }
+}
