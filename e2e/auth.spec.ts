@@ -202,26 +202,46 @@ test.describe('auth flows', () => {
     expect((await storedAuth(page))?.orgId).toBeTruthy();
   });
 
-  test('EC-143: a two-shop login switches shop from the account menu', async ({ page }) => {
-    await login(page, env('E2E_MULTI_EMAIL'), env('E2E_MULTI_PASSWORD'));
-    await page.getByRole('button', { name: new RegExp(env('E2E_MULTI_SHOP_NAME')) }).click();
-    await expect(page).toHaveURL(/\/dashboard/);
-    const first = (await storedAuth(page))?.orgId;
+  // EC-139 / EC-143: from the account menu, in both languages; the shop on screen changes.
+  for (const [lang, menu, item] of [
+    ['ar', 'قائمة الحساب', 'تبديل المنشأة'],
+    ['en', 'Account menu', 'Switch shop'],
+  ] as const) {
+    test(`EC-139: a two-shop login switches shop from the account menu (${lang})`, async ({
+      page,
+    }) => {
+      await login(page, env('E2E_MULTI_EMAIL'), env('E2E_MULTI_PASSWORD'));
+      await page.getByRole('button', { name: new RegExp(env('E2E_MULTI_SHOP_NAME')) }).click();
+      await expect(page).toHaveURL(/\/dashboard/);
+      if (lang === 'en') {
+        await page.getByRole('button', { name: 'English' }).click();
+        await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+      }
+      const first = await storedAuth(page);
+      const firstSlug = first?.tenantSlug ?? '';
+      expect(firstSlug).toBeTruthy();
+      await expect(page.getByText(firstSlug, { exact: true })).toBeVisible();
 
-    await page.getByRole('button', { name: 'قائمة الحساب' }).click();
-    await page.getByRole('menuitem', { name: 'تبديل المنشأة' }).click();
-    await expect(page).toHaveURL(/\/select-shop/);
-    // The shop you are in is marked; choose the other one.
-    await expect(page.locator('li button[aria-current="true"]')).toContainText(
-      env('E2E_MULTI_SHOP_NAME'),
-    );
-    await page.locator('li button:not([aria-current])').first().click();
+      await page.getByRole('button', { name: menu }).click();
+      await page.getByRole('menuitem', { name: item }).click();
+      await expect(page).toHaveURL(/\/select-shop/);
+      // The shop you are in is marked; choose the other one.
+      await expect(page.locator('li button[aria-current="true"]')).toContainText(
+        env('E2E_MULTI_SHOP_NAME'),
+      );
+      await page.locator('li button:not([aria-current])').first().click();
 
-    await expect(page).toHaveURL(/\/dashboard/);
-    const second = (await storedAuth(page))?.orgId;
-    expect(second).toBeTruthy();
-    expect(second).not.toBe(first);
-  });
+      await expect(page).toHaveURL(/\/dashboard/);
+      const second = await storedAuth(page);
+      expect(second?.orgId).toBeTruthy();
+      expect(second?.orgId).not.toBe(first?.orgId);
+      // What the user sees follows: the other shop's code is shown, the first one is gone.
+      const secondSlug = second?.tenantSlug ?? '';
+      expect(secondSlug).not.toBe(firstSlug);
+      await expect(page.getByText(secondSlug, { exact: true })).toBeVisible();
+      await expect(page.getByText(firstSlug, { exact: true })).toHaveCount(0);
+    });
+  }
 
   test('the removed activation routes land on the login page', async ({ page }) => {
     for (const path of ['/activate', '/activate-workspace']) {
