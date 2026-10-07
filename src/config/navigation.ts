@@ -148,7 +148,12 @@ export const NAV: NavItem[] = [
         to: '/settings/employees',
         permission: 'employee.manage',
       },
-      { id: 'settings-general', labelKey: 'nav.settings', to: '/settings', roles: [OWNER] },
+      {
+        id: 'settings-general',
+        labelKey: 'settings.title',
+        to: '/settings',
+        permission: 'org.settings_manage',
+      },
       {
         id: 'branches',
         labelKey: 'branches.title',
