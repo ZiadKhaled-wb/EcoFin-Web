@@ -3,8 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { InstallmentPolicy, ShopSettings } from '@ziadkhaled-wb/contracts';
 import { settingsApi } from '@/services/settingsApi';
+import { taxClassesApi } from '@/services/taxClassesApi';
 import { ApiError } from '@/lib/api';
-import { renderApp, signIn, signOut } from '@/test/renderApp';
+import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
+import { meApi } from '@/features/me/meApi';
 import { t } from '@/i18n';
 import SettingsPage from './SettingsPage';
 import { tabChanges, toForm, weightsTotal } from './settingsForm';
@@ -76,6 +78,9 @@ const settings: ShopSettings = {
   customer_ban_days: 180,
   overdue_warning_interval_days: 10,
   global_min_stock: 3,
+  installment_markup_vat: 'not_taxed',
+  delivery_fee_tax_class_id: null,
+  deposit_vat_timing: 'on_delivery',
   updated_at: '2026-10-07T09:00:00Z',
   updated_by: null,
   my_discount: { cap_pct: 100, above_cap_allowed: true },
@@ -205,5 +210,89 @@ describe('P03 settings page', () => {
     expect(
       await screen.findByText(t('settings.policy.published', { version: 2 })),
     ).toBeInTheDocument();
+  });
+});
+
+describe('T01 tax tab', () => {
+  const standard = {
+    id: 'a0400000-0000-4000-8000-000000000001',
+    name: 'VAT 14%',
+    kind: 'standard' as const,
+    rate: '14.00',
+    eta_tax_type: 'T1',
+    eta_subtype: 'V009',
+    archived_at: null,
+    updated_at: '2026-10-07T09:00:00Z',
+  };
+  beforeEach(() => {
+    signIn();
+    vi.spyOn(settingsApi, 'get').mockResolvedValue({
+      ...settings,
+      default_tax_class_id: standard.id,
+      delivery_fee_tax_class_id: standard.id,
+      tax_class_options: [
+        { id: standard.id, name: standard.name, kind: 'standard', rate: '14.00' },
+      ],
+    });
+    vi.spyOn(taxClassesApi, 'list').mockResolvedValue([standard]);
+    vi.spyOn(meApi, 'permissions').mockResolvedValue(
+      permissionsFixture(['catalog.manage', 'org.settings_manage']),
+    );
+  });
+  afterEach(() => {
+    signOut();
+    vi.restoreAllMocks();
+  });
+
+  it('saves only the accountant setting that changed', async () => {
+    const update = vi.spyOn(settingsApi, 'update').mockResolvedValue({
+      ...settings,
+      installment_markup_vat: 'taxed',
+      updated_at: '2026-10-07T10:00:00Z',
+    });
+    await renderApp(<SettingsPage />, { lang: 'en' });
+    const u = userEvent.setup();
+    await u.click(screen.getByRole('tab', { name: t('settings.tabs.tax') }));
+    await u.click(await screen.findByLabelText(t('settings.tax.markupVatOptions.taxed')));
+    await u.click(screen.getByRole('button', { name: t('settings.save') }));
+    expect(update).toHaveBeenCalledWith({ installment_markup_vat: 'taxed' });
+  });
+
+  it('lists the classes and adds one; zero-rated classes get 0%', async () => {
+    const create = vi.spyOn(taxClassesApi, 'create').mockResolvedValue({
+      ...standard,
+      id: 'a0400000-0000-4000-8000-000000000002',
+      name: 'Exports',
+      kind: 'zero',
+      rate: '0.00',
+    });
+    await renderApp(<SettingsPage />, { lang: 'ar' });
+    const u = userEvent.setup();
+    await u.click(screen.getByRole('tab', { name: t('settings.tabs.tax') }));
+    expect(await screen.findByText('VAT 14%')).toBeInTheDocument();
+    await u.click(screen.getByRole('button', { name: t('settings.taxClasses.add') }));
+    await u.type(screen.getByLabelText(t('settings.taxClasses.name')), 'Exports');
+    await u.selectOptions(screen.getByLabelText(t('settings.taxClasses.kind')), 'zero');
+    await u.clear(screen.getByLabelText(t('settings.taxClasses.etaSubtype')));
+    await u.type(screen.getByLabelText(t('settings.taxClasses.etaSubtype')), 'V001');
+    await u.click(screen.getByRole('button', { name: t('settings.taxClasses.save') }));
+    expect(create).toHaveBeenCalledWith({
+      name: 'Exports',
+      kind: 'zero',
+      rate: '0',
+      eta_tax_type: 'T1',
+      eta_subtype: 'V001',
+    });
+  });
+
+  it('explains why a class in use cannot be archived', async () => {
+    vi.spyOn(taxClassesApi, 'archive').mockRejectedValue(
+      new ApiError(409, 'TAX_CLASS_IN_USE', 'Tax class in use.'),
+    );
+    await renderApp(<SettingsPage />, { lang: 'en' });
+    const u = userEvent.setup();
+    await u.click(screen.getByRole('tab', { name: t('settings.tabs.tax') }));
+    await u.click(await screen.findByRole('button', { name: t('settings.taxClasses.archive') }));
+    expect(await screen.findByText(t('settings.taxClasses.inUse'))).toBeInTheDocument();
   });
 });

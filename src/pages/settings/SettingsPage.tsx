@@ -33,6 +33,7 @@ import { useAuthStore } from '@/store/authStore';
 import { cn } from '@/lib/cn';
 import { t } from '@/i18n';
 import InstallmentPolicyTab from './InstallmentPolicyTab';
+import TaxClassesSection from './TaxClassesSection';
 import {
   SETTINGS_TABS,
   settingsError,
@@ -107,7 +108,10 @@ export default function SettingsPage() {
           />
         ) : (
           // Remounts with fresh inputs after a save (updated_at changes).
-          <FieldsTab key={`${tab}-${query.data.updated_at}`} tab={tab} saved={query.data} />
+          <div className="space-y-6">
+            <FieldsTab key={`${tab}-${query.data.updated_at}`} tab={tab} saved={query.data} />
+            {tab === 'tax' && <TaxClassesSection />}
+          </div>
         )}
       </div>
     </PageContainer>
@@ -389,10 +393,48 @@ function TaxFields({ form, set, saved }: FieldProps & { saved: ShopSettings }) {
         help={saved.tax_class_options.length === 0 ? t('settings.tax.noTaxClasses') : undefined}
         options={saved.tax_class_options.map((c) => ({
           value: c.id,
-          label: `${c.name} (${c.rate}%)`,
+          label: `${c.name} (${Number(c.rate)}%)`,
         }))}
         onChange={(e) => set('default_tax_class_id', e.target.value)}
       />
+      <fieldset className="space-y-3 border-t border-line pt-4">
+        <legend className="type-label">{t('settings.tax.accountant')}</legend>
+        <p className="type-caption">{t('settings.tax.accountantHelp')}</p>
+        <RadioGroup
+          label={t('settings.tax.markupVat')}
+          name="markup-vat"
+          orientation="horizontal"
+          value={form.installment_markup_vat}
+          options={(['not_taxed', 'taxed'] as const).map((v) => ({
+            value: v,
+            label: t(`settings.tax.markupVatOptions.${v}`),
+          }))}
+          onChange={(v) => set('installment_markup_vat', v === 'taxed' ? 'taxed' : 'not_taxed')}
+        />
+        <Select
+          label={t('settings.tax.deliveryFeeClass')}
+          value={form.delivery_fee_tax_class_id}
+          placeholder={t('settings.tax.none')}
+          options={saved.tax_class_options.map((c) => ({
+            value: c.id,
+            label: `${c.name} (${Number(c.rate)}%)`,
+          }))}
+          onChange={(e) => set('delivery_fee_tax_class_id', e.target.value)}
+        />
+        <RadioGroup
+          label={t('settings.tax.depositTiming')}
+          name="deposit-timing"
+          orientation="horizontal"
+          value={form.deposit_vat_timing}
+          options={(['on_delivery', 'on_deposit'] as const).map((v) => ({
+            value: v,
+            label: t(`settings.tax.depositTimingOptions.${v}`),
+          }))}
+          onChange={(v) =>
+            set('deposit_vat_timing', v === 'on_deposit' ? 'on_deposit' : 'on_delivery')
+          }
+        />
+      </fieldset>
     </>
   );
 }

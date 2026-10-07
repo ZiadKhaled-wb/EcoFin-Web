@@ -58,6 +58,9 @@ export interface SettingsForm {
   customer_ban_days: string;
   overdue_warning_interval_days: string;
   global_min_stock: string;
+  installment_markup_vat: 'not_taxed' | 'taxed';
+  delivery_fee_tax_class_id: string;
+  deposit_vat_timing: 'on_delivery' | 'on_deposit';
 }
 
 export const TAB_FIELDS: Record<FieldTab, readonly (keyof SettingsForm)[]> = {
@@ -72,7 +75,13 @@ export const TAB_FIELDS: Record<FieldTab, readonly (keyof SettingsForm)[]> = {
     'theme_color',
   ],
   receipt: ['receipt_header', 'receipt_footer', 'receipt_width_mm', 'receipt_fields'],
-  tax: ['prices_include_vat', 'default_tax_class_id'],
+  tax: [
+    'prices_include_vat',
+    'default_tax_class_id',
+    'installment_markup_vat',
+    'delivery_fee_tax_class_id',
+    'deposit_vat_timing',
+  ],
   sales: [
     'discount_caps',
     'return_policy_days',
@@ -118,6 +127,9 @@ export function toForm(s: ShopSettings): SettingsForm {
     customer_ban_days: str(s.customer_ban_days),
     overdue_warning_interval_days: str(s.overdue_warning_interval_days),
     global_min_stock: str(s.global_min_stock),
+    installment_markup_vat: s.installment_markup_vat,
+    delivery_fee_tax_class_id: s.delivery_fee_tax_class_id ?? '',
+    deposit_vat_timing: s.deposit_vat_timing,
   };
 }
 
@@ -138,7 +150,8 @@ function apiValue(form: SettingsForm, key: keyof SettingsForm): unknown {
     case 'name':
       return form.name.trim();
     case 'default_tax_class_id':
-      return form.default_tax_class_id || null;
+    case 'delivery_fee_tax_class_id':
+      return form[key] || null;
     case 'receipt_width_mm':
       return Number(form.receipt_width_mm);
     case 'discount_caps':
