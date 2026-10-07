@@ -21,7 +21,10 @@
     "phone": "Phone",
     "timezone": "Time zone",
     "language": "Default language",
-    "languages": { "ar": "Arabic", "en": "English" },
+    "languages": {
+      "ar": "Arabic",
+      "en": "English"
+    },
     "taxNo": "VAT registration number",
     "themeColor": "Theme colour",
     "themeColorHelp": "A hex code such as #2563EB.",
@@ -56,7 +59,20 @@
     "pricesIncludeVatHelp": "On: the price on the shelf already includes VAT. Off: VAT is added at checkout.",
     "defaultTaxClass": "Default tax class for new products",
     "noTaxClasses": "No tax classes yet. They are added with the VAT engine.",
-    "none": "None"
+    "none": "None",
+    "accountant": "VAT rules to confirm with your accountant",
+    "accountantHelp": "These defaults follow common practice. Change them if your accountant says otherwise.",
+    "markupVat": "VAT on installment markup",
+    "markupVatOptions": {
+      "not_taxed": "Not taxed again",
+      "taxed": "Taxed at the product's rate"
+    },
+    "deliveryFeeClass": "Tax class for delivery fees",
+    "depositTiming": "When an order deposit is taxed",
+    "depositTimingOptions": {
+      "on_delivery": "When the goods are delivered",
+      "on_deposit": "When the deposit is paid"
+    }
   },
   "sales": {
     "discountCaps": "Maximum discount per role",
@@ -120,7 +136,11 @@
     "minInstallment": "Minimum installment (any frequency)",
     "roundingStep": "Round installments to",
     "frequencies": "Allowed frequencies",
-    "frequency": { "monthly": "Monthly", "weekly": "Weekly", "daily": "Daily" },
+    "frequency": {
+      "monthly": "Monthly",
+      "weekly": "Weekly",
+      "daily": "Daily"
+    },
     "perFrequency": "Rules per frequency",
     "minInstallmentFor": "Minimum installment ({frequency})",
     "downPaymentRule": "Down payment ({frequency})",
@@ -170,5 +190,33 @@
     "MODULE_NOT_IN_PLAN": "Your plan doesn't include installments.",
     "validation": "Check the highlighted values.",
     "weightsSum": "The weights must add up to 100."
+  },
+  "taxClasses": {
+    "title": "Tax classes",
+    "description": "Each product has a class. A new rate applies to new documents only; issued receipts keep theirs.",
+    "add": "Add class",
+    "edit": "Edit class",
+    "save": "Save class",
+    "saved": "Tax class saved.",
+    "name": "Name",
+    "kind": "Type",
+    "kinds": {
+      "standard": "Standard",
+      "zero": "Zero-rated",
+      "exempt": "Exempt"
+    },
+    "rate": "Rate",
+    "rateHelp": "A new rate applies to new documents only.",
+    "etaCode": "ETA code",
+    "etaType": "ETA tax type",
+    "etaSubtype": "ETA subtype",
+    "status": "Status",
+    "active": "Active",
+    "archived": "Archived",
+    "actions": "Actions",
+    "archive": "Archive",
+    "restore": "Restore",
+    "nameTaken": "A tax class with this name already exists.",
+    "inUse": "This class is in use (default class, delivery fees or active products), so it can't be archived."
   }
 }
