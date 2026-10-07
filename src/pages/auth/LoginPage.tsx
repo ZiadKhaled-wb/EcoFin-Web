@@ -28,6 +28,7 @@ export default function LoginPage() {
 
   const tenant = useTenantSlug();
   const setLogin = useAuthStore((s) => s.setLogin);
+  const endedReason = useAuthStore((s) => s.endedReason);
 
   const [identifier, setIdentifier] = useState(
     (location.state as { prefillEmail?: string } | null)?.prefillEmail ?? '',
@@ -90,6 +91,9 @@ export default function LoginPage() {
   return (
     <AuthLayout title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}>
       <form onSubmit={onSubmit} className="space-y-5" noValidate>
+        {endedReason === 'account_disabled' && (
+          <Notice tone="error">{t('auth.notice.accountDeactivated')}</Notice>
+        )}
         {noticeKey && <Notice tone="success">{t(noticeKey)}</Notice>}
 
         <FormField

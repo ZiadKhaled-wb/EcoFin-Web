@@ -143,5 +143,14 @@
     "reports": "Reports",
     "data": "Data",
     "legal": "Legal"
+  },
+  "deactivateTitle": "Deactivate employee",
+  "reactivateTitle": "Reactivate employee",
+  "deactivated": "Employee deactivated",
+  "reactivated": "Employee reactivated",
+  "reasonInvalid": "Enter a reason of 3 to 500 characters.",
+  "activeErrors": {
+    "forbidden": "You don't have permission to do this.",
+    "notFound": "This employee wasn't found."
   }
 }

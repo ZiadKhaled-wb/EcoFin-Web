@@ -203,3 +203,29 @@ describe('error tracking (Q02)', () => {
     expect(captureApiError).not.toHaveBeenCalled();
   });
 });
+
+describe('deactivated account (EC-145)', () => {
+  it('a 403 ACCOUNT_DISABLED on an authenticated call ends the session with the reason', async () => {
+    api.defaults.adapter = async (config) => {
+      throw httpError(config, 403, 'ACCOUNT_DISABLED');
+    };
+    signedIn('tok');
+    await expect(api.get('/api/anything')).rejects.toMatchObject({ code: 'ACCOUNT_DISABLED' });
+    const state = useAuthStore.getState();
+    expect(state.accessToken).toBeNull();
+    expect(state.refreshToken).toBeNull();
+    expect(state.endedReason).toBe('account_disabled');
+  });
+
+  it('login (skipAuth) keeps its own inline message and ends no session', async () => {
+    api.defaults.adapter = async (config) => {
+      throw httpError(config, 403, 'ACCOUNT_DISABLED');
+    };
+    signedIn('tok');
+    await expect(api.post('/api/auth/login', {}, { skipAuth: true })).rejects.toBeInstanceOf(
+      ApiError,
+    );
+    expect(useAuthStore.getState().accessToken).toBe('tok');
+    expect(useAuthStore.getState().endedReason).toBeNull();
+  });
+});

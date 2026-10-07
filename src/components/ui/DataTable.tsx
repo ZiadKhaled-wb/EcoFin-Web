@@ -55,6 +55,8 @@ export interface DataTableProps<T> {
   /** Accessible name of the table. */
   caption: string;
   getRowId?: (row: T) => string;
+  /** Extra classes for one row (for example to grey out an inactive record). */
+  rowClassName?: (row: T) => string | undefined;
   loading?: boolean;
   error?: boolean;
   onRetry?: () => void;
@@ -74,6 +76,7 @@ export default function DataTable<T>({
   data,
   caption,
   getRowId,
+  rowClassName,
   loading,
   error,
   onRetry,
@@ -202,7 +205,13 @@ export default function DataTable<T>({
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.id} className="border-b border-line last:border-b-0 hover:bg-paper">
+              <tr
+                key={row.id}
+                className={cn(
+                  'border-b border-line last:border-b-0 hover:bg-paper',
+                  rowClassName?.(row.original),
+                )}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
