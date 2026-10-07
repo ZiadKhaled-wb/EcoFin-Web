@@ -28,6 +28,8 @@ import enSample from './locales/en/sample.json';
 import enShell from './locales/en/shell.json';
 import enTable from './locales/en/table.json';
 import enUi from './locales/en/ui.json';
+import arCategories from './locales/ar/categories.json';
+import enCategories from './locales/en/categories.json';
 
 /** One JSON file per namespace and language. The first segment of a key is its namespace. */
 export const ar = {
@@ -46,6 +48,7 @@ export const ar = {
   audit: arAudit,
   shops: arShops,
   subscriptions: arSubscriptions,
+  categories: arCategories,
 };
 
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
@@ -66,6 +69,7 @@ export const en: SameShape<typeof ar> = {
   audit: enAudit,
   shops: enShops,
   subscriptions: enSubscriptions,
+  categories: enCategories,
 };
 
 type Leaves<T, P extends string = ''> = {
