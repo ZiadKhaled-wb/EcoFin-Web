@@ -38,7 +38,6 @@ export interface SettingsForm {
   timezone: string;
   default_language: 'ar' | 'en';
   logo_file_id: string | null;
-  tax_registration_no: string;
   theme_color: string;
   receipt_header: string;
   receipt_footer: string;
@@ -71,7 +70,6 @@ export const TAB_FIELDS: Record<FieldTab, readonly (keyof SettingsForm)[]> = {
     'timezone',
     'default_language',
     'logo_file_id',
-    'tax_registration_no',
     'theme_color',
   ],
   receipt: ['receipt_header', 'receipt_footer', 'receipt_width_mm', 'receipt_fields'],
@@ -107,7 +105,6 @@ export function toForm(s: ShopSettings): SettingsForm {
     timezone: s.timezone,
     default_language: s.default_language,
     logo_file_id: s.logo_file_id,
-    tax_registration_no: s.tax_registration_no ?? '',
     theme_color: s.theme_color,
     receipt_header: s.receipt_header ?? '',
     receipt_footer: s.receipt_footer ?? '',
@@ -143,7 +140,6 @@ function apiValue(form: SettingsForm, key: keyof SettingsForm): unknown {
   switch (key) {
     case 'address':
     case 'phone':
-    case 'tax_registration_no':
     case 'receipt_header':
     case 'receipt_footer':
       return orNull(form[key]);

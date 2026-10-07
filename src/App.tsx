@@ -26,6 +26,7 @@ import SubscriptionPage from '@/pages/admin/SubscriptionPage';
 import BranchesPage from '@/pages/settings/BranchesPage';
 import SettingsPage from '@/pages/settings/SettingsPage';
 import CategoriesPage from '@/pages/inventory/CategoriesPage';
+import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
@@ -39,6 +40,7 @@ const REAL_ROUTES = new Set([
   '/dashboard',
   '/audit',
   '/settings',
+  '/settings/profile',
   '/settings/branches',
   '/settings/employees',
   '/employees',
@@ -91,6 +93,9 @@ export default function App() {
                   </Route>
                   <Route element={<RequirePermission permission="org.settings_manage" />}>
                     <Route path="/settings" element={<SettingsPage />} />
+                  </Route>
+                  <Route element={<RequirePermission permission="org.profile_manage" />}>
+                    <Route path="/settings/profile" element={<ShopProfilePage />} />
                   </Route>
                   <Route element={<RequirePermission permission="branch.manage" />}>
                     <Route path="/settings/branches" element={<BranchesPage />} />
