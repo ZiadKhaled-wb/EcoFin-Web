@@ -243,13 +243,6 @@ function GeneralFields({ form, set }: FieldProps) {
           maxLength={300}
           onChange={(e) => set('address', e.target.value)}
         />
-        <FormField
-          label={t('settings.general.taxNo')}
-          value={form.tax_registration_no}
-          maxLength={50}
-          ltr
-          onChange={(e) => set('tax_registration_no', e.target.value)}
-        />
         <Select
           label={t('settings.general.timezone')}
           value={form.timezone}

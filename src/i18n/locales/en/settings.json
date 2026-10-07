@@ -1,5 +1,20 @@
 {
   "title": "Shop settings",
+  "profile": {
+    "title": "Legal and financing profile",
+    "description": "Shop legal identifiers and installment financing controls.",
+    "legalName": "Legal seller name",
+    "commercialRegister": "Commercial register number",
+    "taxRegistration": "Tax registration number",
+    "consumerStatus": "Consumer finance legal status (FRA 18/2020)",
+    "consumerStatusHelp": "Owner-entered information only. EcoFin does not determine legal eligibility.",
+    "installments": "Allow new installment contracts",
+    "installmentsHelp": "Turning this off blocks new contracts. Existing contracts can still be serviced.",
+    "financingModel": "Financing model",
+    "inHouse": "In-house financing (V1)",
+    "save": "Save profile",
+    "saved": "Legal and financing profile saved."
+  },
   "description": "The rules your shop runs by. The system reads them on every sale, receipt and installment contract.",
   "save": "Save changes",
   "saved": "Settings saved.",
@@ -188,6 +203,7 @@
     "FILE_NOT_FOUND": "The logo file wasn't found. Upload it again.",
     "NAME_REQUIRED": "Enter the shop name.",
     "MODULE_NOT_IN_PLAN": "Your plan doesn't include installments.",
+    "INSTALLMENTS_DISABLED": "New installment contracts are disabled for this shop.",
     "validation": "Check the highlighted values.",
     "weightsSum": "The weights must add up to 100."
   },

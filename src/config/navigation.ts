@@ -155,6 +155,12 @@ export const NAV: NavItem[] = [
         permission: 'org.settings_manage',
       },
       {
+        id: 'settings-profile',
+        labelKey: 'settings.profile.title',
+        to: '/settings/profile',
+        permission: 'org.profile_manage',
+      },
+      {
         id: 'branches',
         labelKey: 'branches.title',
         to: '/settings/branches',
