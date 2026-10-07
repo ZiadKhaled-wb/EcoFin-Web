@@ -87,6 +87,12 @@ export const NAV: NavItem[] = [
         roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE'],
       },
       {
+        id: 'labels',
+        labelKey: 'nav.labels',
+        to: '/inventory/labels',
+        roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE'],
+      },
+      {
         id: 'stock',
         labelKey: 'nav.stock',
         to: '/inventory/stock',

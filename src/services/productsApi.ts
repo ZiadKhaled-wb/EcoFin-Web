@@ -3,8 +3,10 @@ import {
   FileUrlResponse,
   Product,
   ProductList,
+  ProductUnitList,
   type ProductCreateBody,
   type ProductStatus,
+  type ProductUnitsQuery,
   type ProductUpdateBody,
 } from '@ziadkhaled-wb/contracts';
 import { api } from '@/lib/api';
@@ -24,6 +26,7 @@ export const productKeys = {
   list: (orgId: string | null, params: ProductListParams) =>
     ['products', orgId, 'list', params] as const,
   image: (fileId: string | null) => ['product-image', fileId] as const,
+  units: (orgId: string | null, id: string) => ['products', orgId, 'units', id] as const,
 };
 
 /** C02 products: every employee reads the catalog; changes need catalog.manage. */
@@ -45,6 +48,9 @@ export const productsApi = {
   /** The POS: an active product by exact barcode, then SKU. */
   lookup: async (code: string) =>
     Product.parse((await api.get('/api/products/lookup', { params: { code } })).data),
+  /** C03: the product's serialized units in the caller's branches (in stock by default). */
+  units: async (id: string, status: ProductUnitsQuery['status'] = 'in_stock') =>
+    ProductUnitList.parse((await api.get(`/api/products/${id}/units`, { params: { status } })).data),
   create: async (body: ProductCreateBody) =>
     Product.parse((await api.post('/api/products', body)).data),
   update: async (id: string, body: ProductUpdateBody) =>
