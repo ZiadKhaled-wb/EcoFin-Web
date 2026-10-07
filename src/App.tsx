@@ -26,6 +26,7 @@ import SubscriptionPage from '@/pages/admin/SubscriptionPage';
 import BranchesPage from '@/pages/settings/BranchesPage';
 import SettingsPage from '@/pages/settings/SettingsPage';
 import CategoriesPage from '@/pages/inventory/CategoriesPage';
+import ProductsPage from '@/pages/inventory/ProductsPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 
 // Dev-only living style guide; never reachable in production builds.
@@ -45,6 +46,7 @@ const REAL_ROUTES = new Set([
   '/settings/employees',
   '/employees',
   '/inventory/categories',
+  '/inventory/products',
 ]);
 
 export default function App() {
@@ -101,6 +103,7 @@ export default function App() {
                     <Route path="/settings/branches" element={<BranchesPage />} />
                   </Route>
                   <Route path="/inventory/categories" element={<CategoriesPage />} />
+                  <Route path="/inventory/products" element={<ProductsPage />} />
                   {import.meta.env.DEV && <Route path="/sample" element={<SamplePage />} />}
                   {import.meta.env.DEV && (
                     <Route element={<RequirePermission permission="audit.view" />}>
