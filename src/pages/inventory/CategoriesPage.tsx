@@ -138,7 +138,7 @@ export default function CategoriesPage() {
     },
     {
       id: 'actions',
-      header: '',
+      header: t('categories.actions'),
       cell: ({ row }) => (
         <Can permission="catalog.manage">
           <div className="flex gap-2">

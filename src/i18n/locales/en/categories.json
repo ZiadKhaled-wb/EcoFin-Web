@@ -26,5 +26,6 @@
   "archiveMove": "Archive and move",
   "hasChildren": "Has subcategories, so it can't go under another category.",
   "saved": "Category saved.",
-  "validation": "Enter a category name."
+  "validation": "Enter a category name.",
+  "actions": "Actions"
 }
