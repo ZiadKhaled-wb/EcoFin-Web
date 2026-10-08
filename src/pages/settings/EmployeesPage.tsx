@@ -14,6 +14,7 @@ import {
 import type { ColumnDef } from '@tanstack/react-table';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
+import OnboardingReturnLink from '@/components/layout/OnboardingReturnLink';
 import DataTable from '@/components/ui/DataTable';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -421,6 +422,7 @@ export default function EmployeesPage() {
   );
   return (
     <PageContainer>
+      <OnboardingReturnLink />
       <PageHeader
         title={t('employees.title')}
         actions={

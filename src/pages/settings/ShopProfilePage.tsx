@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ShopProfileUpdateBody } from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
+import OnboardingReturnLink from '@/components/layout/OnboardingReturnLink';
 import Switch from '@/components/ui/Switch';
 import Button from '@/components/ui/Button';
 import { notify } from '@/components/ui/notify';
@@ -68,6 +69,7 @@ export default function ShopProfilePage() {
 
   return (
     <PageContainer>
+      <OnboardingReturnLink />
       <PageHeader
         title={t('settings.profile.title')}
         description={t('settings.profile.description')}

@@ -1,0 +1,58 @@
+{
+  "title": "Set up your shop",
+  "description": "Follow these steps to get your shop ready. You can pause at any time and return to your progress later.",
+  "stepsTitle": "Setup checklist",
+  "progress": "Setup progress",
+  "progressCount": "{done} of {total} complete",
+  "done": "Done",
+  "markDone": "Mark complete",
+  "skipStep": "Skip this step",
+  "skipSetup": "Pause setup",
+  "resumeSetup": "Resume setup",
+  "previous": "Previous",
+  "next": "Next",
+  "finish": "Finish setup",
+  "goToDashboard": "Go to dashboard",
+  "returnToWizard": "Back to setup wizard",
+  "resumeNote": "Your progress is saved on this device. You can come back and continue later.",
+  "completeTitle": "Your setup checklist is complete",
+  "completeDescription": "You can return to settings at any time to make changes.",
+  "vaultNote": "Shop creation provides a main vault. Check that your branch uses the right default vault.",
+  "steps": {
+    "shop": {
+      "title": "Shop details and logo",
+      "description": "Add your shop name, contact details, address, language, timezone, and logo.",
+      "action": "Open shop settings"
+    },
+    "tax": {
+      "title": "Tax registration",
+      "description": "Enter the seller's legal name, commercial registration, and tax registration number.",
+      "action": "Open legal profile"
+    },
+    "branches": {
+      "title": "Branches",
+      "description": "Add the locations where your team will work and confirm their contact details.",
+      "action": "Manage branches"
+    },
+    "vaults": {
+      "title": "Cash vaults",
+      "description": "Check the main vault created for your shop and the default vault assigned to each branch.",
+      "action": "Review branch vaults"
+    },
+    "receipt": {
+      "title": "Receipt settings",
+      "description": "Choose the receipt header, footer, paper width, and the details printed for customers.",
+      "action": "Set up receipts"
+    },
+    "installments": {
+      "title": "Installment policy",
+      "description": "Set the terms your shop will use for installment sales, if this feature is part of your plan.",
+      "action": "Set installment terms"
+    },
+    "employees": {
+      "title": "First employees",
+      "description": "Invite your team and assign each person a role and branch access.",
+      "action": "Manage employees"
+    }
+  }
+}

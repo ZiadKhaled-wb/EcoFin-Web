@@ -68,6 +68,10 @@ export default function LoginPage() {
         tenantSlug: parsed.data.tenantSlug,
       });
       const { orgId, mustChangePassword, isSuperAdmin } = useAuthStore.getState();
+      // P02: right after accepting an invite, go to the setup wizard instead of the dashboard.
+      // Only this fixed value is honoured (no free redirect target from navigation state).
+      const afterInvite =
+        (location.state as { afterLogin?: string } | null)?.afterLogin === 'onboarding';
       navigate(
         isSuperAdmin
           ? '/admin'
@@ -75,7 +79,9 @@ export default function LoginPage() {
             ? '/select-shop'
             : mustChangePassword
               ? '/change-password'
-              : '/dashboard',
+              : afterInvite
+                ? '/onboarding'
+                : '/dashboard',
         {
           replace: true,
         },

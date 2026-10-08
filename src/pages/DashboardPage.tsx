@@ -1,12 +1,20 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import PageHeader from '@/components/layout/PageHeader';
 import Card from '@/components/ui/Card';
 import PageContainer from '@/components/ui/PageContainer';
 import { t } from '@/i18n';
 import { useAuthStore } from '@/store/authStore';
+import { readOnboardingProgress, type OnboardingProgress } from '@/features/onboarding/progress';
 
 /** Placeholder landing page. Replace with real metrics when the reporting module lands. */
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
+  const orgId = useAuthStore((s) => s.orgId);
+  // P02: owners see the setup card until the checklist is finished. A newly invited owner lands
+  // in the wizard right after the first login (InviteAcceptPage → LoginPage); there is no
+  // redirect from here, so an owner on a new device isn't sent away from the dashboard.
+  const [setup] = useState<OnboardingProgress>(() => readOnboardingProgress(orgId));
   return (
     <PageContainer>
       <PageHeader
@@ -19,6 +27,17 @@ export default function DashboardPage() {
       >
         <p className="type-body">{t('shell.dashboard.signedIn')}</p>
       </Card>
+      {user?.role === 'OWNER' && !setup.finished && (
+        <Card
+          title={t(setup.dismissed ? 'onboarding.title' : 'onboarding.stepsTitle')}
+          description={t(setup.dismissed ? 'onboarding.resumeNote' : 'onboarding.description')}
+          className="mt-6"
+        >
+          <Link to="/onboarding" className="btn-primary inline-flex">
+            {t(setup.started ? 'onboarding.resumeSetup' : 'onboarding.title')}
+          </Link>
+        </Card>
+      )}
     </PageContainer>
   );
 }

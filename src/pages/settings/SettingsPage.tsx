@@ -4,6 +4,7 @@
 // "advanced" tab (clear cache, system log) is gone: the audit screen covers the log.
 import { useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import {
   CREDIT_SCORE_FACTORS,
   DISCOUNT_CAP_ROLES,
@@ -13,6 +14,7 @@ import {
 } from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
+import OnboardingReturnLink from '@/components/layout/OnboardingReturnLink';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import FormField from '@/components/ui/FormField';
@@ -49,7 +51,11 @@ const TIMEZONES = ['Africa/Cairo', 'Asia/Riyadh', 'Asia/Dubai', 'Europe/London',
 export default function SettingsPage() {
   const orgId = useAuthStore((s) => s.orgId);
   const query = useQuery({ queryKey: settingsKeys.settings(orgId), queryFn: settingsApi.get });
-  const [tab, setTab] = useState<SettingsTab>('general');
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState<SettingsTab>(() => {
+    const requested = searchParams.get('tab') as SettingsTab | null;
+    return requested && SETTINGS_TABS.includes(requested) ? requested : 'general';
+  });
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   function onTabKey(event: KeyboardEvent, index: number) {
@@ -65,6 +71,7 @@ export default function SettingsPage() {
 
   return (
     <PageContainer>
+      <OnboardingReturnLink />
       <PageHeader title={t('settings.title')} description={t('settings.description')} />
       <div
         role="tablist"
