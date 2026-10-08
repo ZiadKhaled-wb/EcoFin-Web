@@ -77,7 +77,9 @@ export default function InviteAcceptPage() {
       token.current = '';
       navigate('/login', {
         replace: true,
-        state: { notice: 'invite', prefillEmail: person.login },
+        // P02: the first login after the invite opens the setup wizard (owners only; the wizard
+        // sends anyone else to the dashboard).
+        state: { notice: 'invite', prefillEmail: person.login, afterLogin: 'onboarding' },
       });
     } catch (failure) {
       const state = inviteState(failure);

@@ -11,6 +11,7 @@ import {
 import type { ColumnDef } from '@tanstack/react-table';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
+import OnboardingReturnLink from '@/components/layout/OnboardingReturnLink';
 import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
@@ -233,6 +234,7 @@ export default function BranchesPage() {
   ];
   return (
     <PageContainer>
+      <OnboardingReturnLink />
       <PageHeader
         title={t('branches.title')}
         actions={

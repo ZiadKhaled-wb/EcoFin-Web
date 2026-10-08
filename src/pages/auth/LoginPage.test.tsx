@@ -54,6 +54,37 @@ describe('LoginPage', () => {
     expect(useAuthStore.getState().accessToken).toBeTruthy();
   });
 
+  it('P02: the first login after an invite opens the setup wizard', async () => {
+    vi.spyOn(api, 'post').mockResolvedValue({ data: loginResponse() });
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/login', state: { afterLogin: 'onboarding' } }]}>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/onboarding" element={<p>wizard page</p>} />
+          <Route path="/dashboard" element={<p>dashboard page</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    const user = await fill('Owner@Example.com');
+    await user.click(submit());
+    await screen.findByText('wizard page');
+  });
+
+  it('ignores any other after-login target from navigation state', async () => {
+    vi.spyOn(api, 'post').mockResolvedValue({ data: loginResponse() });
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/login', state: { afterLogin: '/audit' } }]}>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/dashboard" element={<p>dashboard page</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    const user = await fill('Owner@Example.com');
+    await user.click(submit());
+    await screen.findByText('dashboard page');
+  });
+
   it('logs in with shop + username: lowercases the username and sends tenantSlug', async () => {
     const post = vi.spyOn(api, 'post').mockResolvedValue({ data: loginResponse() });
     renderLogin();

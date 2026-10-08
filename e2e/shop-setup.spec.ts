@@ -119,8 +119,17 @@ test.describe('INT-2: a fresh shop is set up through the UI', () => {
       await page.getByLabel(t('shops.invite.confirm'), { exact: true }).fill(OWNER_PASSWORD);
       await page.getByRole('button', { name: t('shops.invite.accept') }).click();
       await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
-      await login(page, ownerEmail, OWNER_PASSWORD);
+      // P02: sign in on the page the invite led to; the first login opens the setup wizard.
+      await page.locator('input').first().fill(ownerEmail);
+      await page.locator('input[type=password]').fill(OWNER_PASSWORD);
+      await page.locator('button[type=submit]').click();
+      await expect(page).toHaveURL(/\/onboarding/, { timeout: 15_000 });
+      await expect(page.getByRole('heading', { name: t('onboarding.title') })).toBeVisible();
       await expectDirection(page, lang);
+      // The wizard links to the settings pages, which offer the way back.
+      await page.getByRole('link', { name: t('onboarding.steps.shop.action') }).click();
+      await expect(page).toHaveURL(/\/settings\?tab=general&from=onboarding/);
+      await expect(page.getByRole('link', { name: t('onboarding.returnToWizard') })).toBeVisible();
 
       // P03 settings and P04 legal profile.
       await page.goto('/settings');

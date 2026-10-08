@@ -30,6 +30,7 @@ import ProductsPage from '@/pages/inventory/ProductsPage';
 import LabelsPage from '@/pages/inventory/LabelsPage';
 import StockPage from '@/pages/inventory/StockPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
+import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
@@ -90,6 +91,7 @@ export default function App() {
               <Route element={<RequirePasswordChanged />}>
                 <Route element={<AppShell />}>
                   <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/onboarding" element={<OnboardingWizardPage />} />
                   <Route element={<RequirePermission permission="employee.manage" />}>
                     <Route path="/settings/employees" element={<EmployeesPage />} />
                     <Route
