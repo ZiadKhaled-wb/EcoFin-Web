@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { meApi } from '@/features/me/meApi';
 import { ApiError } from '@/lib/api';
 import { branchApi } from '@/services/branchApi';
+import { productsApi } from '@/services/productsApi';
 import { stockApi } from '@/services/stockApi';
 import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
 import { t } from '@/i18n';
@@ -247,6 +248,38 @@ describe('I05 movement history', () => {
       }),
     ).toBeInTheDocument();
     expect(stockApi.adjustment).toHaveBeenCalledWith(ADJ);
+  });
+});
+
+describe('I05 crafted links', () => {
+  beforeEach(() => {
+    signIn();
+    vi.spyOn(meApi, 'permissions').mockResolvedValue(permissionsFixture(['stock.view']));
+    vi.spyOn(branchApi, 'list').mockResolvedValue([]);
+    vi.spyOn(stockApi, 'movements').mockResolvedValue(page([]));
+    vi.spyOn(stockApi, 'adjustments').mockResolvedValue(page([]));
+  });
+  afterEach(() => {
+    signOut();
+    vi.restoreAllMocks();
+  });
+
+  it('ids that are not UUIDs never reach an API path', async () => {
+    const adjustment = vi.spyOn(stockApi, 'adjustment');
+    const product = vi.spyOn(productsApi, 'get');
+    await renderApp(routes, {
+      lang: 'en',
+      route: '/inventory/movements?product_id=..%2F..%2Femployees&branch_id=x',
+    });
+    await waitFor(() => expect(stockApi.movements).toHaveBeenCalledWith({ page: 1, pageSize: 50 }));
+    expect(product).not.toHaveBeenCalled();
+    await renderApp(routes, {
+      lang: 'en',
+      route: '/inventory/adjustments?view=..%2F..%2Femployees',
+    });
+    await waitFor(() => expect(stockApi.adjustments).toHaveBeenCalled());
+    expect(adjustment).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
 

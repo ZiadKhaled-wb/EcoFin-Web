@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
-import { ExportTooLargeDetail, type Product, type StockMovement } from '@ziadkhaled-wb/contracts';
+import {
+  ExportTooLargeDetail,
+  Uuid,
+  type Product,
+  type StockMovement,
+} from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import Button from '@/components/ui/Button';
@@ -45,8 +50,13 @@ export default function MovementsPage() {
   const branches = useBranches();
   const canExport = useCan('export.data');
   const [params, setParams] = useSearchParams();
-  const productId = params.get('product_id') ?? '';
-  const branchId = params.get('branch_id') ?? '';
+  // Ids from the URL must be UUIDs (the product id goes into an API path); others are ignored.
+  const uuidParam = (key: string) => {
+    const v = params.get(key) ?? '';
+    return Uuid.safeParse(v).success ? v : '';
+  };
+  const productId = uuidParam('product_id');
+  const branchId = uuidParam('branch_id');
   const serial = params.get('serial') ?? '';
   const group = params.get('type') ?? '';
   const from = params.get('from') ?? '';
