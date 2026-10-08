@@ -27,11 +27,6 @@ import ProductForm from './ProductForm';
 
 const PAGE_SIZE = 20;
 
-/** Money and cost: LTR-isolated, tabular, kept on one line. (Not meta.numeric: DataTable puts
- * the inline-block .num class on the cell itself, which breaks the table layout.) */
-function Num({ children }: { children: string }) {
-  return <span className="num whitespace-nowrap">{children}</span>;
-}
 const STATUSES: ProductStatus[] = ['active', 'archived', 'all'];
 
 export default function ProductsPage() {
@@ -166,24 +161,25 @@ export default function ProductsPage() {
     {
       id: 'cashPrice',
       header: t('products.columns.cashPrice'),
-      cell: ({ row }) => <Num>{formatMoney(row.original.cash_price)}</Num>,
+      meta: { numeric: true },
+      cell: ({ row }) => formatMoney(row.original.cash_price),
     },
     {
       id: 'installmentPrice',
       header: t('products.columns.installmentPrice'),
+      meta: { numeric: true },
       cell: ({ row }) =>
-        row.original.installment_price ? (
-          <Num>{formatMoney(row.original.installment_price)}</Num>
-        ) : (
-          t('products.fromPolicy')
-        ),
+        row.original.installment_price
+          ? formatMoney(row.original.installment_price)
+          : t('products.fromPolicy'),
     },
     ...(canManage
       ? [
           {
             id: 'cost',
             header: t('products.columns.cost'),
-            cell: ({ row }) => <Num>{formatNumber(row.original.avg_cost)}</Num>,
+            meta: { numeric: true },
+            cell: ({ row }) => formatNumber(row.original.avg_cost),
           } satisfies ColumnDef<Product, unknown>,
         ]
       : []),
