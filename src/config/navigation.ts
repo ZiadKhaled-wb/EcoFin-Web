@@ -100,6 +100,19 @@ export const NAV: NavItem[] = [
         permission: 'stock.view',
       },
       {
+        id: 'adjustments',
+        labelKey: 'nav.adjustments',
+        to: '/inventory/adjustments',
+        // I02: the list needs stock.view; posting needs stock.adjust (the button is hidden without it).
+        permission: 'stock.view',
+      },
+      {
+        id: 'counts',
+        labelKey: 'nav.counts',
+        to: '/inventory/counts',
+        permission: 'stock.count',
+      },
+      {
         id: 'warehouses',
         labelKey: 'nav.warehouses',
         to: '/inventory/warehouses',
