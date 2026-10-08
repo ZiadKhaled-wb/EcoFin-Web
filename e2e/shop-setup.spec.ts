@@ -75,6 +75,15 @@ async function inviteToken(request: APIRequestContext, email: string) {
   throw new Error(`no invite email for ${email}`);
 }
 
+/** TEST-2 RTL check: the page runs in the language's direction and nothing sticks out sideways. */
+async function expectDirection(page: Page, lang: Lang) {
+  await expect(page.locator('html')).toHaveAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
+  expect(overflow, `${page.url()} scrolls sideways`).toBeLessThanOrEqual(1);
+}
+
 test.describe('INT-2: a fresh shop is set up through the UI', () => {
   test.skip(process.env.RUN_E2E !== '1', 'set RUN_E2E=1 to run browser tests');
   test.describe.configure({ timeout: 180_000 });
@@ -111,6 +120,7 @@ test.describe('INT-2: a fresh shop is set up through the UI', () => {
       await page.getByRole('button', { name: t('shops.invite.accept') }).click();
       await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
       await login(page, ownerEmail, OWNER_PASSWORD);
+      await expectDirection(page, lang);
 
       // P03 settings and P04 legal profile.
       await page.goto('/settings');
@@ -124,6 +134,7 @@ test.describe('INT-2: a fresh shop is set up through the UI', () => {
       await page.getByLabel(t('settings.profile.legalName')).fill(`INT-2 Trading ${stamp}`);
       await page.getByRole('button', { name: t('settings.profile.save') }).click();
       await expect(page.getByText(t('settings.profile.saved')).first()).toBeVisible();
+      await expectDirection(page, lang);
 
       // O01 branches: two more fit the retail plan, a fourth is refused (P05).
       await page.goto('/settings/branches');
@@ -169,6 +180,7 @@ test.describe('INT-2: a fresh shop is set up through the UI', () => {
       await staff.getByRole('button', { name: t('employees.save') }).click();
       await expect(page.getByText(t('employees.saved')).first()).toBeVisible();
       await expect(page.getByRole('cell', { name: 'INT-2 Cashier' })).toBeVisible();
+      await expectDirection(page, lang);
 
       // C01 category, then C02 product with a T01 tax class.
       await page.goto('/inventory/categories');
@@ -206,6 +218,7 @@ test.describe('INT-2: a fresh shop is set up through the UI', () => {
       const preview = page.getByRole('region', { name: t('labels.preview') });
       await expect(preview.getByRole('img', { name: barcode })).toBeVisible();
       await expect(page.getByRole('button', { name: t('labels.print') })).toBeEnabled();
+      await expectDirection(page, lang);
 
       await owner.context.close();
     });
