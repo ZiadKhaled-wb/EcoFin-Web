@@ -1,5 +1,6 @@
 import BranchSwitcher from '@/components/layout/BranchSwitcher';
 import LanguageSwitch from '@/components/layout/LanguageSwitch';
+import SerialFindBox from '@/components/layout/SerialFindBox';
 import { t } from '@/i18n';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon, LogoutIcon, MenuIcon, StoreIcon } from '@/components/ui/Icons';
@@ -44,6 +45,7 @@ export default function Topbar({
       <Wordmark size="md" className="shrink-0 lg:hidden" />
 
       <div className="ms-auto flex min-w-0 items-center gap-2 sm:gap-3">
+        <SerialFindBox />
         {/* Below md the branch switcher lives in the menu drawer (AppShell), so the bar fits 360 px. */}
         <div className="hidden md:block">
           <BranchSwitcher />

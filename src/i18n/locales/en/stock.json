@@ -351,5 +351,89 @@
       "validation": "Check the quantities.",
       "failed": "That did not work. Try again."
     }
+  },
+  "units": {
+    "title": "Serial numbers",
+    "subtitle": "Every phone, laptop or TV with its own serial or IMEI: where it is and everything that happened to it.",
+    "search": "Search by serial or IMEI",
+    "allStatuses": "All statuses",
+    "status": "Status",
+    "statuses": {
+      "in_stock": "In stock",
+      "reserved": "Reserved",
+      "in_transit": "In transit",
+      "sold": "Sold",
+      "returned": "Returned to supplier",
+      "in_repair": "In repair",
+      "written_off": "Written off"
+    },
+    "columns": {
+      "serial": "Serial",
+      "product": "Product",
+      "branch": "Branch",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "view": "History",
+    "empty": "No serials found",
+    "emptyHint": "Register the serials you have, or change the search.",
+    "notFound": "No unit has the serial {serial}. Similar serials are listed below.",
+    "register": {
+      "open": "Register serials",
+      "title": "Register serials",
+      "help": "For serialized products you already have. Each serial can exist only once in the shop.",
+      "product": "Product",
+      "productSearch": "Find a serialized product",
+      "noProducts": "No serialized products found.",
+      "choose": "Choose",
+      "chosen": "Product: {name}",
+      "change": "Change",
+      "branch": "Branch",
+      "cost": "Cost per unit",
+      "serials": "Serials (one per line)",
+      "serialsHelp": "Scan or type; letters are stored in capitals.",
+      "scan": "Scan a serial",
+      "add": "Add",
+      "count": "{count} serials",
+      "note": "Note",
+      "submit": "Register",
+      "done": "{count} serials registered.",
+      "taken": "Already in the shop or repeated: {serials}",
+      "invalid": "A serial can use letters, digits and . _ / - only (up to 64).",
+      "noSerials": "Add at least one serial.",
+      "noProduct": "Choose a product.",
+      "badCost": "Enter the cost (0 or more).",
+      "module": "Your plan doesn't include serial tracking.",
+      "permission": "You don't have permission to register serials.",
+      "failed": "The serials could not be registered. Try again.",
+      "branchDenied": "You can't add stock to this branch."
+    },
+    "detail": {
+      "title": "Serial {serial}",
+      "back": "All serials",
+      "product": "Product",
+      "branch": "Current branch",
+      "status": "Status",
+      "cost": "Cost",
+      "since": "Registered",
+      "invoice": "Purchase invoice",
+      "history": "History",
+      "historyTitle": "History of serial {serial}",
+      "columns": {
+        "date": "Date",
+        "event": "What happened",
+        "branch": "Branch",
+        "document": "Document",
+        "party": "Customer / supplier",
+        "by": "By"
+      },
+      "loadFailed": "The unit could not be loaded.",
+      "empty": "No history yet."
+    },
+    "find": {
+      "label": "Find a serial",
+      "placeholder": "Serial / IMEI",
+      "submit": "Find"
+    }
   }
 }
