@@ -32,6 +32,8 @@ import StockPage from '@/pages/inventory/StockPage';
 import AdjustmentsPage from '@/pages/inventory/AdjustmentsPage';
 import CountsPage from '@/pages/inventory/CountsPage';
 import CountSheetPage from '@/pages/inventory/CountSheetPage';
+import TransfersPage from '@/pages/inventory/TransfersPage';
+import TransferPage from '@/pages/inventory/TransferPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 
@@ -57,6 +59,7 @@ const REAL_ROUTES = new Set([
   '/inventory/stock',
   '/inventory/adjustments',
   '/inventory/counts',
+  '/inventory/transfers',
 ]);
 
 export default function App() {
@@ -119,6 +122,8 @@ export default function App() {
                   <Route element={<RequirePermission permission="stock.view" />}>
                     <Route path="/inventory/stock" element={<StockPage />} />
                     <Route path="/inventory/adjustments" element={<AdjustmentsPage />} />
+                    <Route path="/inventory/transfers" element={<TransfersPage />} />
+                    <Route path="/inventory/transfers/:id" element={<TransferPage />} />
                   </Route>
                   <Route element={<RequirePermission permission="stock.count" />}>
                     <Route path="/inventory/counts" element={<CountsPage />} />

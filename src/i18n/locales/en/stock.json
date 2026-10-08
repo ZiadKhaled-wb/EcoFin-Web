@@ -228,5 +228,128 @@
       "failed": "That did not work. Try again.",
       "unitUnavailable": "This serial was sold or left the shop; it can't be counted here."
     }
+  },
+  "transfers": {
+    "title": "Branch transfers",
+    "subtitle": "Move stock between branches. Sent stock shows as in transit until the receiving branch confirms it.",
+    "new": "New transfer",
+    "allStatuses": "All statuses",
+    "status": "Status",
+    "statuses": {
+      "draft": "Draft",
+      "sent": "In transit",
+      "received": "Received",
+      "partially_received": "Received with shortages",
+      "cancelled": "Cancelled"
+    },
+    "columns": {
+      "number": "Number",
+      "date": "Created",
+      "from": "From",
+      "to": "To",
+      "status": "Status",
+      "sent": "Sent",
+      "received": "Received",
+      "by": "By",
+      "actions": "Actions"
+    },
+    "view": "View",
+    "empty": "No transfers yet",
+    "emptyHint": "Create a transfer to move stock to another branch.",
+    "form": {
+      "title": "New transfer",
+      "editTitle": "Edit transfer {number}",
+      "help": "Nothing moves until you send it. Serialized products are sent by serial.",
+      "from": "From branch",
+      "to": "To branch",
+      "chooseTo": "Choose a branch",
+      "notes": "Notes",
+      "search": "Find a product by name, SKU or barcode",
+      "noResults": "No products found.",
+      "add": "Add",
+      "chooseUnits": "Choose serials",
+      "lines": "Lines",
+      "noLines": "Add at least one product.",
+      "product": "Product",
+      "serial": "Serial",
+      "quantity": "Quantity",
+      "remove": "Remove",
+      "save": "Save draft",
+      "saved": "Transfer {number} saved as a draft.",
+      "unitsTitle": "Serials of {name}",
+      "unitsHelp": "Serials in stock in the source branch.",
+      "noUnits": "No serials in stock in this branch.",
+      "addUnits": "Add the selected serials",
+      "unitsFailed": "The serials could not be loaded.",
+      "chooseBoth": "Choose two different branches."
+    },
+    "detail": {
+      "title": "Transfer {number}",
+      "back": "All transfers",
+      "from": "From",
+      "to": "To",
+      "notes": "Notes",
+      "created": "Created",
+      "sentAt": "Sent",
+      "receivedAt": "Received",
+      "by": "{when} by {name}",
+      "adjustments": "Written off",
+      "linesTitle": "Lines of transfer {number}",
+      "columns": {
+        "product": "Product",
+        "serial": "Serial",
+        "sent": "Sent",
+        "received": "Received",
+        "reason": "Shortage"
+      },
+      "edit": "Edit",
+      "send": "Send",
+      "receive": "Receive",
+      "cancel": "Cancel transfer",
+      "sendTitle": "Send transfer {number}?",
+      "sendHelp": "{count} units leave {from} now and show as in transit at {to}.",
+      "sent": "Transfer sent.",
+      "cancelTitle": "Cancel transfer {number}?",
+      "cancelHelp": "Nothing has moved yet; the draft is closed.",
+      "cancelConfirm": "Cancel transfer",
+      "keep": "Keep it",
+      "cancelled": "Transfer cancelled.",
+      "loadFailed": "The transfer could not be loaded."
+    },
+    "receive": {
+      "title": "Receive transfer {number}",
+      "help": "Enter what actually arrived. Anything missing or broken is written off here with its reason.",
+      "arrived": "Arrived",
+      "reason": "Reason",
+      "reasons": {
+        "loss": "Missing",
+        "damage": "Damaged"
+      },
+      "unitArrived": "Arrived",
+      "unitMissing": "Missing",
+      "unitDamaged": "Damaged",
+      "submit": "Confirm receipt",
+      "received": "Transfer received.",
+      "receivedShort": "Transfer received; shortages written off."
+    },
+    "reasons": {
+      "loss": "Missing",
+      "damage": "Damaged"
+    },
+    "errors": {
+      "sameBranch": "Choose two different branches.",
+      "alreadySent": "This transfer was already sent; it can't be changed or cancelled.",
+      "notSent": "This transfer hasn't been sent yet.",
+      "final": "This transfer is closed.",
+      "outOfStock": "Not enough stock in the source branch for one of the lines.",
+      "unit": "A serial is not available in the source branch (sold, reserved or moved).",
+      "branch": "You don't work in this branch.",
+      "branchInactive": "One of the branches is inactive.",
+      "dayClosed": "The day is closed for this branch.",
+      "permission": "You don't have permission for this.",
+      "notFound": "A product or serial was not found.",
+      "validation": "Check the quantities.",
+      "failed": "That did not work. Try again."
+    }
   }
 }

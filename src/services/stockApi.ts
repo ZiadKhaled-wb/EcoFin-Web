@@ -7,12 +7,19 @@ import {
   StockCountList,
   StockList,
   StockMovementList,
+  StockTransfer,
+  StockTransferList,
+  TransferDestinationList,
   type AdjustmentReason,
   type StockAdjustmentCreateBody,
   type StockCountCreateBody,
   type StockCountLineBody,
   type StockCountLineFilter,
   type StockCountStatus,
+  type StockTransferCreateBody,
+  type StockTransferReceiveLine,
+  type StockTransferUpdateBody,
+  type TransferStatus,
 } from '@ziadkhaled-wb/contracts';
 import { api } from '@/lib/api';
 
@@ -44,6 +51,12 @@ export interface CountListParams {
   page?: number;
   pageSize?: number;
 }
+export interface TransferListParams {
+  branch_id?: string;
+  status?: TransferStatus;
+  page?: number;
+  pageSize?: number;
+}
 export interface CountDetailParams {
   filter?: StockCountLineFilter;
   search?: string;
@@ -69,6 +82,10 @@ export const stockKeys = {
   count: (orgId: string | null, id: string) => ['stock', orgId, 'count', id] as const,
   countLines: (orgId: string | null, id: string, params: CountDetailParams) =>
     ['stock', orgId, 'count', id, params] as const,
+  transfers: (orgId: string | null, params: TransferListParams) =>
+    ['stock', orgId, 'transfers', params] as const,
+  transfer: (orgId: string | null, id: string) => ['stock', orgId, 'transfer', id] as const,
+  destinations: (orgId: string | null) => ['stock', orgId, 'transfer-destinations'] as const,
 };
 
 /** I01 stock view (stock.view) and I02 adjustments and counts; only the caller's branches. */
@@ -120,4 +137,25 @@ export const stockApi = {
     ),
   cancelCount: async (id: string) =>
     StockCount.parse((await api.post(`/api/stock/counts/${id}/cancel`)).data),
+
+  /** I03 transfers: read with stock.view; draft / send / cancel with stock.transfer_send. */
+  transfers: async (params: TransferListParams = {}) =>
+    StockTransferList.parse((await api.get('/api/stock/transfers', { params })).data),
+  transfer: async (id: string) =>
+    StockTransfer.parse((await api.get(`/api/stock/transfers/${id}`)).data),
+  /** Every active branch of the shop (a sender works in some, sends to any). */
+  transferDestinations: async () =>
+    TransferDestinationList.parse((await api.get('/api/stock/transfers/destinations')).data),
+  createTransfer: async (body: StockTransferCreateBody, key: string) =>
+    StockTransfer.parse((await api.post('/api/stock/transfers', body, idempotent(key))).data),
+  updateTransfer: async (id: string, body: StockTransferUpdateBody) =>
+    StockTransfer.parse((await api.put(`/api/stock/transfers/${id}`, body)).data),
+  /** State changes: a repeat answers the transfer as it is and moves nothing again. */
+  sendTransfer: async (id: string) =>
+    StockTransfer.parse((await api.post(`/api/stock/transfers/${id}/send`)).data),
+  cancelTransfer: async (id: string) =>
+    StockTransfer.parse((await api.post(`/api/stock/transfers/${id}/cancel`)).data),
+  /** Only the lines that did not arrive in full. */
+  receiveTransfer: async (id: string, lines: StockTransferReceiveLine[]) =>
+    StockTransfer.parse((await api.post(`/api/stock/transfers/${id}/receive`, { lines })).data),
 };
