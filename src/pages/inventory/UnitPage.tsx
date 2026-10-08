@@ -75,9 +75,19 @@ export default function UnitPage() {
       <PageHeader
         title={t('stock.units.detail.title', { serial: u?.serial ?? '' })}
         actions={
-          <Link to="/inventory/units" className="btn btn-ghost">
-            {t('stock.units.detail.back')}
-          </Link>
+          <>
+            {u && (
+              <Link
+                to={`/inventory/movements?serial=${encodeURIComponent(u.serial)}`}
+                className="btn btn-ghost"
+              >
+                {t('stock.units.detail.allMovements')}
+              </Link>
+            )}
+            <Link to="/inventory/units" className="btn btn-ghost">
+              {t('stock.units.detail.back')}
+            </Link>
+          </>
         }
       />
       {u && (

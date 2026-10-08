@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import type {
@@ -34,7 +35,22 @@ export default function AdjustmentsPage() {
   const [reason, setReason] = useState('');
   const [page, setPage] = useState(1);
   const [creating, setCreating] = useState(false);
-  const [viewing, setViewing] = useState<string | null>(null);
+  // ?view=<id> (from the movement history, I05) opens that adjustment.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [viewing, setViewingState] = useState<string | null>(searchParams.get('view'));
+  const setViewing = (id: string | null) => {
+    setViewingState(id);
+    if (!id && searchParams.has('view')) {
+      setSearchParams(
+        (p) => {
+          const out = new URLSearchParams(p);
+          out.delete('view');
+          return out;
+        },
+        { replace: true },
+      );
+    }
+  };
 
   const params: AdjustmentListParams = {
     ...(branchId ? { branch_id: branchId } : {}),

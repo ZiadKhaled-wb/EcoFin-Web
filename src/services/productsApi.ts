@@ -25,6 +25,7 @@ export const productKeys = {
   all: (orgId: string | null) => ['products', orgId] as const,
   list: (orgId: string | null, params: ProductListParams) =>
     ['products', orgId, 'list', params] as const,
+  one: (orgId: string | null, id: string) => ['products', orgId, 'one', id] as const,
   image: (fileId: string | null) => ['product-image', fileId] as const,
   units: (orgId: string | null, id: string) => ['products', orgId, 'units', id] as const,
 };

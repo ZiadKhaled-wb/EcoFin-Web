@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { BranchSummary, StockMovement } from '@ziadkhaled-wb/contracts';
@@ -9,6 +10,7 @@ import { formatDateTime, formatNumber } from '@/lib/format';
 import { stockApi, stockKeys } from '@/services/stockApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
+import { documentHref, documentLabel } from './movementShared';
 
 const PAGE_SIZE = 20;
 
@@ -18,7 +20,10 @@ export interface MovementsTarget {
   branchId: string;
 }
 
-/** I01 drill-down: a product's ledger movements, newest first, with the running balance. */
+/**
+ * I01 drill-down: a product's ledger movements, newest first, with the running balance. Each
+ * document links to its screen (I05); "Full history" opens the movement history page.
+ */
 export default function StockMovementsDrawer({
   target,
   branches,
@@ -87,7 +92,17 @@ export default function StockMovementsDrawer({
     {
       id: 'document',
       header: t('stock.drawer.document'),
-      cell: ({ row }) => <span dir="ltr">{row.original.source_number ?? ''}</span>,
+      cell: ({ row }) => {
+        const href = documentHref(row.original);
+        const label = documentLabel(row.original);
+        return href ? (
+          <Link to={href} className="text-brand-700 hover:underline" dir="auto">
+            {label}
+          </Link>
+        ) : (
+          <span dir="auto">{label}</span>
+        );
+      },
     },
     {
       id: 'by',
@@ -105,6 +120,15 @@ export default function StockMovementsDrawer({
       className="w-[48rem]!"
     >
       <div className="space-y-4 overflow-y-auto p-4">
+        <Link
+          to={`/inventory/movements?${new URLSearchParams({
+            product_id: target.productId,
+            ...(branchId ? { branch_id: branchId } : {}),
+          }).toString()}`}
+          className="btn btn-ghost"
+        >
+          {t('stock.history.fullHistory')}
+        </Link>
         <Select
           label={t('stock.branch')}
           value={branchId}

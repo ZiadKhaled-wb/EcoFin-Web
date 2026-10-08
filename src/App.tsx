@@ -36,6 +36,7 @@ import TransfersPage from '@/pages/inventory/TransfersPage';
 import TransferPage from '@/pages/inventory/TransferPage';
 import UnitsPage from '@/pages/inventory/UnitsPage';
 import UnitPage from '@/pages/inventory/UnitPage';
+import MovementsPage from '@/pages/inventory/MovementsPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 
@@ -63,6 +64,7 @@ const REAL_ROUTES = new Set([
   '/inventory/counts',
   '/inventory/transfers',
   '/inventory/units',
+  '/inventory/movements',
 ]);
 
 export default function App() {
@@ -129,6 +131,7 @@ export default function App() {
                     <Route path="/inventory/transfers/:id" element={<TransferPage />} />
                     <Route path="/inventory/units" element={<UnitsPage />} />
                     <Route path="/inventory/units/:id" element={<UnitPage />} />
+                    <Route path="/inventory/movements" element={<MovementsPage />} />
                   </Route>
                   <Route element={<RequirePermission permission="stock.count" />}>
                     <Route path="/inventory/counts" element={<CountsPage />} />

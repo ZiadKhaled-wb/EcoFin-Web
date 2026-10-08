@@ -6,6 +6,7 @@ import {
   StockCountLine,
   StockCountList,
   StockList,
+  StockMovementExport,
   StockMovementList,
   StockTransfer,
   StockTransferList,
@@ -16,6 +17,8 @@ import {
   type StockCountLineBody,
   type StockCountLineFilter,
   type StockCountStatus,
+  type StockMovementExportBody,
+  type StockMovementType,
   type StockTransferCreateBody,
   type StockTransferReceiveLine,
   type StockTransferUpdateBody,
@@ -33,9 +36,14 @@ export interface StockListParams {
   page?: number;
   pageSize?: number;
 }
+/** I05 filters (all optional); `types` goes out as a comma-separated list. */
 export interface StockMovementsParams {
-  product_id: string;
+  product_id?: string;
   branch_id?: string;
+  serial?: string;
+  types?: StockMovementType[];
+  from?: string;
+  to?: string;
   page?: number;
   pageSize?: number;
 }
@@ -102,9 +110,18 @@ export const stockApi = {
         })
       ).data,
     ),
-  /** The drill-down: a product's ledger movements, newest first, with the running balance. */
-  movements: async (params: StockMovementsParams) =>
-    StockMovementList.parse((await api.get('/api/stock/movements', { params })).data),
+  /** I01 drill-down and I05 history: ledger movements, newest first, with the running balance. */
+  movements: async ({ types, ...rest }: StockMovementsParams) =>
+    StockMovementList.parse(
+      (
+        await api.get('/api/stock/movements', {
+          params: { ...rest, ...(types?.length ? { types: types.join(',') } : {}) },
+        })
+      ).data,
+    ),
+  /** I05 export (export.data + stock.view): every matching movement, at most 10 000; audited. */
+  exportMovements: async (body: StockMovementExportBody) =>
+    StockMovementExport.parse((await api.post('/api/stock/movements/export', body)).data),
 
   adjustments: async (params: AdjustmentListParams = {}) =>
     StockAdjustmentList.parse((await api.get('/api/stock/adjustments', { params })).data),
