@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { Product, ProductStatus } from '@ziadkhaled-wb/contracts';
@@ -36,6 +37,7 @@ const STATUSES: ProductStatus[] = ['active', 'archived', 'all'];
 export default function ProductsPage() {
   const orgId = useAuthStore((s) => s.orgId);
   const cache = useQueryClient();
+  const navigate = useNavigate();
   const canManage = useCan('catalog.manage');
   const canChangePrice = useCan('catalog.price_change');
   const [searchInput, setSearchInput] = useState('');
@@ -198,31 +200,42 @@ export default function ProductsPage() {
       id: 'actions',
       header: t('products.actions'),
       cell: ({ row }) => (
-        <Can permission="catalog.manage">
-          <div className="flex gap-2">
+        <div className="flex gap-2">
+          {!row.original.archived_at && (
             <Button
               size="sm"
-              variant="secondary"
-              disabled={!!row.original.archived_at}
-              onClick={() => {
-                setEditing(row.original);
-                setFormOpen(true);
-              }}
+              variant="ghost"
+              onClick={() => navigate(`/inventory/labels?product=${row.original.id}`)}
             >
-              {t('products.editAction')}
+              {t('products.labels')}
             </Button>
-            <Button
-              size="sm"
-              onClick={() =>
-                row.original.archived_at
-                  ? void restore(row.original)
-                  : setArchiveTarget(row.original)
-              }
-            >
-              {t(row.original.archived_at ? 'products.restore' : 'products.archive')}
-            </Button>
-          </div>
-        </Can>
+          )}
+          <Can permission="catalog.manage">
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                disabled={!!row.original.archived_at}
+                onClick={() => {
+                  setEditing(row.original);
+                  setFormOpen(true);
+                }}
+              >
+                {t('products.editAction')}
+              </Button>
+              <Button
+                size="sm"
+                onClick={() =>
+                  row.original.archived_at
+                    ? void restore(row.original)
+                    : setArchiveTarget(row.original)
+                }
+              >
+                {t(row.original.archived_at ? 'products.restore' : 'products.archive')}
+              </Button>
+            </div>
+          </Can>
+        </div>
       ),
     },
   ];
