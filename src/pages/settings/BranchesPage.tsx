@@ -65,7 +65,9 @@ export default function BranchesPage() {
       const parsed = BranchDeactivationCheck.safeParse(e.details);
       if (parsed.success) setCounts(parsed.data);
       setError(t('branches.warning'));
-    } else setError(t('errors.unknown'));
+    } else if (e instanceof ApiError && e.code === 'PLAN_LIMIT_REACHED')
+      setError(t('branches.planLimit'));
+    else setError(t('errors.unknown'));
   }
   async function edit(row: ManagedBranch) {
     setBusy(true);

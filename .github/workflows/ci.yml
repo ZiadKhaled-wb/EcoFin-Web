@@ -93,6 +93,9 @@ jobs:
           PORT: '3001'
           FRONTEND_URL: http://localhost:5173
           LOG_LEVEL: warn
+          # Shop and staff invites (INT-2 e2e) go to the local Mailpit.
+          SMTP_URL: smtp://127.0.0.1:54325
+          MAIL_FROM: EcoFin CI <ci@ecotech.test>
         run: |
           nohup npm start > "$RUNNER_TEMP/api.log" 2>&1 &
           for i in $(seq 1 60); do
@@ -123,6 +126,8 @@ jobs:
           E2E_MULTI_SHOP_NAME: Dev Shop Two
           E2E_RESET_EMAIL: owner.two@ecotech.test
           E2E_RESET_PASSWORD: LocalDev-Only-2026!
+          E2E_SUPERADMIN_EMAIL: superadmin@ecotech.test
+          E2E_SUPERADMIN_PASSWORD: LocalDev-Only-2026!
         run: npx playwright test --reporter=list
 
       - name: Upload test results and API log

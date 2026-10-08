@@ -97,6 +97,20 @@ describe('O01 branch management', () => {
     await u.click(screen.getByRole('button', { name: t('branches.save') }));
     expect(await screen.findByText(t('branches.codeTaken'))).toBeInTheDocument();
   });
+  it('explains a plan branch limit instead of a generic error (INT-2)', async () => {
+    vi.spyOn(branchApi, 'create').mockRejectedValue(
+      new ApiError(409, 'PLAN_LIMIT_REACHED', 'limit'),
+    );
+    await renderApp(<BranchesPage />, { lang: 'en' });
+    const u = userEvent.setup();
+    await screen.findByText('Second');
+    await u.click(screen.getByRole('button', { name: t('branches.create') }));
+    await u.type(screen.getByLabelText(t('branches.fields.name')), 'Fourth');
+    await u.type(screen.getByLabelText(t('branches.fields.code')), 'b4');
+    await u.click(screen.getByRole('button', { name: t('branches.save') }));
+    expect((await screen.findAllByText(t('branches.planLimit'))).length).toBeGreaterThan(0);
+    expect(screen.queryByText(t('errors.unknown'))).not.toBeInTheDocument();
+  });
   it('edit code is read-only and main has no deactivate action', async () => {
     await renderApp(<BranchesPage />, { lang: 'en' });
     const u = userEvent.setup();
