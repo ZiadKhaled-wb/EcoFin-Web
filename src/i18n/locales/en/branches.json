@@ -16,6 +16,7 @@
   "warning": "This branch has unfinished activity. Confirm before deactivating.",
   "counts": "Open shifts: {shifts} · Stock units: {stock} · Cash balance: {cash}",
   "codeInvalid": "Use 1–6 uppercase letters or digits for the branch code.",
+  "planLimit": "The plan branch limit has been reached.",
   "codeTaken": "This branch code is already used.",
   "validation": "Check the required fields and their length.",
   "saved": "Branch saved.",
