@@ -225,7 +225,8 @@
       "outOfStock": "The stock changed and a removal is not possible (reserved stock). Count again.",
       "dayClosed": "The day is closed for this branch.",
       "permission": "You don't have permission to count stock.",
-      "failed": "That did not work. Try again."
+      "failed": "That did not work. Try again.",
+      "unitUnavailable": "This serial was sold or left the shop; it can't be counted here."
     }
   }
 }

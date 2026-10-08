@@ -20,7 +20,7 @@ export const COUNT_ERRORS: Partial<Record<string, TranslationKey>> = {
   DOCUMENT_FINAL: 'stock.counts.errors.final',
   VALIDATION_FAILED: 'stock.counts.errors.validation',
   OUT_OF_STOCK: 'stock.counts.errors.outOfStock',
-  UNIT_NOT_AVAILABLE: 'stock.counts.errors.outOfStock',
+  UNIT_NOT_AVAILABLE: 'stock.counts.errors.unitUnavailable',
   DAY_CLOSED: 'stock.counts.errors.dayClosed',
   PERMISSION_DENIED: 'stock.counts.errors.permission',
 };
