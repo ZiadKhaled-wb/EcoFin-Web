@@ -113,6 +113,13 @@ export const NAV: NavItem[] = [
         permission: 'stock.count',
       },
       {
+        id: 'transfers',
+        labelKey: 'nav.transfers',
+        to: '/inventory/transfers',
+        // I03: reading needs stock.view; sending and receiving are checked per branch by the server.
+        permission: 'stock.view',
+      },
+      {
         id: 'warehouses',
         labelKey: 'nav.warehouses',
         to: '/inventory/warehouses',
