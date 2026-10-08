@@ -9,6 +9,8 @@
   "labels": "Barcode labels",
   "categories": "Categories",
   "stock": "Stock",
+  "adjustments": "Stock adjustments",
+  "counts": "Stock counts",
   "warehouses": "Warehouses",
   "purchasing": "Purchasing",
   "customers": "Customers",

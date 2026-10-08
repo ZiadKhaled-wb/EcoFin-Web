@@ -48,6 +48,8 @@ const movement = (over: Partial<StockMovement> = {}): StockMovement => ({
   serial: null,
   source_type: 'purchase_invoice',
   source_id: 'a0900000-0000-4000-8000-000000000011',
+  source_number: null,
+  reason: null,
   reverses_movement_id: null,
   created_by_name: 'Owner',
   ...over,
@@ -179,6 +181,26 @@ describe('I01 stock page', () => {
     expect(within(rows[0]!).getByText(t('stock.types.sale_out'))).toBeInTheDocument();
     expect(within(rows[0]!).getByText('-5')).toBeInTheDocument();
     expect(within(rows[1]!).getByText('+10')).toBeInTheDocument();
+    // I02: an adjustment movement names its reason and document.
+    movements.mockResolvedValue(
+      page([
+        movement({
+          type: 'adjustment',
+          quantity: -1,
+          balance_after: 4,
+          source_type: 'stock_adjustment',
+          source_number: 'B1-SA-26-000001',
+          reason: 'damage',
+        }),
+      ]),
+    );
+    await user.selectOptions(within(drawer).getByLabelText(t('stock.branch')), SECOND);
+    expect(
+      await within(drawer).findByText(
+        `${t('stock.types.adjustment')} · ${t('stock.reasons.damage')}`,
+      ),
+    ).toBeInTheDocument();
+    expect(within(drawer).getByText('B1-SA-26-000001')).toBeInTheDocument();
     // All branches: the branch filter is cleared.
     await user.selectOptions(within(drawer).getByLabelText(t('stock.branch')), '');
     await waitFor(() =>

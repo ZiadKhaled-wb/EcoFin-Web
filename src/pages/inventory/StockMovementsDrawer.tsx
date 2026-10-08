@@ -56,6 +56,7 @@ export default function StockMovementsDrawer({
       cell: ({ row }) => (
         <span>
           {t(`stock.types.${row.original.type}`)}
+          {row.original.reason && <> · {t(`stock.reasons.${row.original.reason}`)}</>}
           {row.original.stock_state === 'damaged' && (
             <span className="type-caption"> ({t('stock.drawer.damaged')})</span>
           )}
@@ -82,6 +83,11 @@ export default function StockMovementsDrawer({
       id: 'serial',
       header: t('stock.drawer.serial'),
       cell: ({ row }) => <span dir="ltr">{row.original.serial ?? ''}</span>,
+    },
+    {
+      id: 'document',
+      header: t('stock.drawer.document'),
+      cell: ({ row }) => <span dir="ltr">{row.original.source_number ?? ''}</span>,
     },
     {
       id: 'by',

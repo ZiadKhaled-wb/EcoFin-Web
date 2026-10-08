@@ -9,6 +9,8 @@
   "labels": "ملصقات الباركود",
   "categories": "التصنيفات",
   "stock": "أرصدة المخزون",
+  "adjustments": "تسويات المخزون",
+  "counts": "الجرد",
   "warehouses": "المخازن",
   "purchasing": "المشتريات",
   "customers": "العملاء",

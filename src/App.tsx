@@ -29,6 +29,9 @@ import CategoriesPage from '@/pages/inventory/CategoriesPage';
 import ProductsPage from '@/pages/inventory/ProductsPage';
 import LabelsPage from '@/pages/inventory/LabelsPage';
 import StockPage from '@/pages/inventory/StockPage';
+import AdjustmentsPage from '@/pages/inventory/AdjustmentsPage';
+import CountsPage from '@/pages/inventory/CountsPage';
+import CountSheetPage from '@/pages/inventory/CountSheetPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 
@@ -52,6 +55,8 @@ const REAL_ROUTES = new Set([
   '/inventory/products',
   '/inventory/labels',
   '/inventory/stock',
+  '/inventory/adjustments',
+  '/inventory/counts',
 ]);
 
 export default function App() {
@@ -113,6 +118,11 @@ export default function App() {
                   <Route path="/inventory/labels" element={<LabelsPage />} />
                   <Route element={<RequirePermission permission="stock.view" />}>
                     <Route path="/inventory/stock" element={<StockPage />} />
+                    <Route path="/inventory/adjustments" element={<AdjustmentsPage />} />
+                  </Route>
+                  <Route element={<RequirePermission permission="stock.count" />}>
+                    <Route path="/inventory/counts" element={<CountsPage />} />
+                    <Route path="/inventory/counts/:id" element={<CountSheetPage />} />
                   </Route>
                   {import.meta.env.DEV && <Route path="/sample" element={<SamplePage />} />}
                   {import.meta.env.DEV && (
