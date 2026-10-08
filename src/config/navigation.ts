@@ -120,6 +120,13 @@ export const NAV: NavItem[] = [
         permission: 'stock.view',
       },
       {
+        id: 'units',
+        labelKey: 'nav.units',
+        to: '/inventory/units',
+        // I04: serial search and history need stock.view; registering needs stock.adjust.
+        permission: 'stock.view',
+      },
+      {
         id: 'warehouses',
         labelKey: 'nav.warehouses',
         to: '/inventory/warehouses',
