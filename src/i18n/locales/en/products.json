@@ -2,6 +2,7 @@
   "title": "Products",
   "add": "Add product",
   "edit": "Edit product",
+  "labels": "Labels",
   "editAction": "Edit",
   "archive": "Archive",
   "restore": "Restore",

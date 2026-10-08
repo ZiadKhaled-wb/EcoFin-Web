@@ -365,3 +365,18 @@
     @apply bg-danger-50 text-danger-600;
   }
 }
+
+/* C03 labels: only the label sheet prints; on screen it lives in the page preview. */
+@media screen {
+  .print-root {
+    display: none;
+  }
+}
+@media print {
+  body > *:not(.print-root) {
+    display: none !important;
+  }
+  .print-root {
+    display: block;
+  }
+}
