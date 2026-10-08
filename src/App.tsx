@@ -28,6 +28,7 @@ import SettingsPage from '@/pages/settings/SettingsPage';
 import CategoriesPage from '@/pages/inventory/CategoriesPage';
 import ProductsPage from '@/pages/inventory/ProductsPage';
 import LabelsPage from '@/pages/inventory/LabelsPage';
+import StockPage from '@/pages/inventory/StockPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 
 // Dev-only living style guide; never reachable in production builds.
@@ -49,6 +50,7 @@ const REAL_ROUTES = new Set([
   '/inventory/categories',
   '/inventory/products',
   '/inventory/labels',
+  '/inventory/stock',
 ]);
 
 export default function App() {
@@ -107,6 +109,9 @@ export default function App() {
                   <Route path="/inventory/categories" element={<CategoriesPage />} />
                   <Route path="/inventory/products" element={<ProductsPage />} />
                   <Route path="/inventory/labels" element={<LabelsPage />} />
+                  <Route element={<RequirePermission permission="stock.view" />}>
+                    <Route path="/inventory/stock" element={<StockPage />} />
+                  </Route>
                   {import.meta.env.DEV && <Route path="/sample" element={<SamplePage />} />}
                   {import.meta.env.DEV && (
                     <Route element={<RequirePermission permission="audit.view" />}>

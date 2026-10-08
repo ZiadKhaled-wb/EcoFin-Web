@@ -96,7 +96,8 @@ export const NAV: NavItem[] = [
         id: 'stock',
         labelKey: 'nav.stock',
         to: '/inventory/stock',
-        roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE'],
+        // I01: everyone with stock.view (cashiers check stock too); the server limits branches.
+        permission: 'stock.view',
       },
       {
         id: 'warehouses',
