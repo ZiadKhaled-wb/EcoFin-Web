@@ -1,11 +1,13 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
-import type {
-  AdjustmentReason,
-  BranchSummary,
-  StockAdjustmentLine,
-  StockAdjustmentSummary,
+import {
+  Uuid,
+  type AdjustmentReason,
+  type BranchSummary,
+  type StockAdjustmentLine,
+  type StockAdjustmentSummary,
 } from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
@@ -34,7 +36,26 @@ export default function AdjustmentsPage() {
   const [reason, setReason] = useState('');
   const [page, setPage] = useState(1);
   const [creating, setCreating] = useState(false);
-  const [viewing, setViewing] = useState<string | null>(null);
+  // ?view=<id> (from the movement history, I05) opens that adjustment. Only a UUID is used: the id
+  // goes into the API path, so anything else in a crafted link is ignored.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [viewing, setViewingState] = useState<string | null>(() => {
+    const id = searchParams.get('view');
+    return id && Uuid.safeParse(id).success ? id : null;
+  });
+  const setViewing = (id: string | null) => {
+    setViewingState(id);
+    if (!id && searchParams.has('view')) {
+      setSearchParams(
+        (p) => {
+          const out = new URLSearchParams(p);
+          out.delete('view');
+          return out;
+        },
+        { replace: true },
+      );
+    }
+  };
 
   const params: AdjustmentListParams = {
     ...(branchId ? { branch_id: branchId } : {}),

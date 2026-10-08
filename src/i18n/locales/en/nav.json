@@ -9,6 +9,7 @@
   "labels": "Barcode labels",
   "categories": "Categories",
   "stock": "Stock",
+  "movements": "Movement history",
   "adjustments": "Stock adjustments",
   "counts": "Stock counts",
   "transfers": "Branch transfers",

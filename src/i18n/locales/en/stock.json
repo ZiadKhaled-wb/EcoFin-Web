@@ -428,12 +428,87 @@
         "by": "By"
       },
       "loadFailed": "The unit could not be loaded.",
-      "empty": "No history yet."
+      "empty": "No history yet.",
+      "allMovements": "All movements of this serial"
     },
     "find": {
       "label": "Find a serial",
       "placeholder": "Serial / IMEI",
       "submit": "Find"
+    }
+  },
+  "history": {
+    "title": "Movement history",
+    "subtitle": "Every stock movement with the balance after it and the document that caused it. Filter by product, branch, serial, type or date.",
+    "filters": "Movement filters",
+    "product": "Product",
+    "productSearch": "Search a product by name, SKU or barcode",
+    "productLoading": "Loading the product…",
+    "allProducts": "All products",
+    "noProducts": "No product matches.",
+    "choose": "Choose",
+    "type": "Movement type",
+    "allTypes": "All types",
+    "serial": "Serial / IMEI",
+    "from": "From",
+    "to": "To",
+    "empty": "No movements match these filters.",
+    "emptyHint": "Change the filters, or post stock first (adjustments, transfers, serials).",
+    "openDocument": "Open {document}",
+    "fullHistory": "Full history",
+    "groups": {
+      "sales": "Sales and deliveries",
+      "returns": "Returns",
+      "purchases": "Purchases",
+      "transfers": "Transfers",
+      "adjustments": "Adjustments and counts",
+      "opening": "Opening stock",
+      "warranty": "Warranty claims"
+    },
+    "columns": {
+      "date": "Date",
+      "product": "Product",
+      "branch": "Branch",
+      "type": "Type",
+      "quantity": "Quantity",
+      "balance": "Balance after",
+      "serial": "Serial",
+      "document": "Document",
+      "party": "Customer / supplier",
+      "by": "By"
+    },
+    "documents": {
+      "sale": "Sale",
+      "sales_return": "Sales return",
+      "delivery": "Delivery",
+      "purchase_invoice": "Purchase invoice",
+      "purchase_return": "Purchase return",
+      "transfer": "Transfer",
+      "stock_adjustment": "Adjustment",
+      "warranty_claim": "Warranty claim",
+      "import": "Serial registration",
+      "other": "Document"
+    },
+    "export": {
+      "button": "Export CSV",
+      "working": "Exporting…",
+      "done": "Exported {count} movements.",
+      "tooLarge": "{total} movements match; an export holds at most {limit}. Narrow the filters (for example the dates) and try again.",
+      "failed": "The export failed. Try again."
+    },
+    "csv": {
+      "date": "Date",
+      "businessDate": "Business date",
+      "product": "Product",
+      "sku": "SKU",
+      "branch": "Branch",
+      "type": "Type",
+      "quantity": "Quantity",
+      "balance": "Balance after",
+      "serial": "Serial",
+      "document": "Document",
+      "party": "Customer / supplier",
+      "by": "By"
     }
   }
 }

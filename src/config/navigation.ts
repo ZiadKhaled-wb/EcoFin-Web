@@ -100,6 +100,13 @@ export const NAV: NavItem[] = [
         permission: 'stock.view',
       },
       {
+        id: 'movements',
+        labelKey: 'nav.movements',
+        to: '/inventory/movements',
+        // I05: the movement history needs stock.view; the export also needs export.data.
+        permission: 'stock.view',
+      },
+      {
         id: 'adjustments',
         labelKey: 'nav.adjustments',
         to: '/inventory/adjustments',
