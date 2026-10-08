@@ -15,6 +15,7 @@
   "product": "Product",
   "serial": "Serial",
   "quantity": "Labels",
+  "maxPerItem": "Up to {max} labels.",
   "remove": "Remove",
   "template": "Label size",
   "templates": {
