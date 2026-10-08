@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
-import type { StockRow } from '@ziadkhaled-wb/contracts';
+import { Uuid, type StockRow } from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import Badge from '@/components/ui/Badge';
@@ -11,16 +12,22 @@ import DataTable from '@/components/ui/DataTable';
 import SearchInput from '@/components/ui/SearchInput';
 import Select from '@/components/ui/Select';
 import { useBranches } from '@/features/me/useBranches';
+import { useCan } from '@/features/me/useCan';
 import { formatNumber } from '@/lib/format';
 import { categoriesApi, categoryKeys } from '@/services/categoriesApi';
 import { stockApi, stockKeys, type StockListParams } from '@/services/stockApi';
 import { useAuthStore } from '@/store/authStore';
 import { t, type TranslationKey } from '@/i18n';
+import MinLevelsDialog from './MinLevelsDialog';
 import StockMovementsDrawer, { type MovementsTarget } from './StockMovementsDrawer';
 
 const PAGE_SIZE = 50;
 
-/** I01 stock view: per product and branch, on hand / reserved / available / in transit. */
+/**
+ * I01 stock view: per product and branch, on hand / reserved / available / in transit. I06: the
+ * min level says where it comes from; catalog.manage sets per-branch levels; `?low=1&branch_id=`
+ * (from the dashboard card) opens the low list of a branch.
+ */
 export default function StockPage() {
   const orgId = useAuthStore((s) => s.orgId);
   const branches = useBranches();
@@ -30,12 +37,19 @@ export default function StockPage() {
   });
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
-  const [branchId, setBranchId] = useState('');
+  const [params] = useSearchParams();
+  const canSetLevels = useCan('catalog.manage');
+  // Only a UUID from the URL is used as a branch filter.
+  const [branchId, setBranchId] = useState(() => {
+    const id = params.get('branch_id') ?? '';
+    return Uuid.safeParse(id).success ? id : '';
+  });
   const [categoryId, setCategoryId] = useState('');
   const [includeSub, setIncludeSub] = useState(true);
-  const [lowOnly, setLowOnly] = useState(false);
+  const [lowOnly, setLowOnly] = useState(() => params.get('low') === '1');
   const [page, setPage] = useState(1);
   const [drill, setDrill] = useState<MovementsTarget | null>(null);
+  const [levelsOf, setLevelsOf] = useState<{ productId: string; name: string } | null>(null);
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -45,7 +59,7 @@ export default function StockPage() {
     return () => clearTimeout(id);
   }, [searchInput]);
 
-  const params: StockListParams = {
+  const listParams: StockListParams = {
     ...(branchId ? { branch_id: branchId } : {}),
     ...(categoryId ? { category_id: categoryId, include_subcategories: includeSub } : {}),
     ...(search ? { search } : {}),
@@ -54,8 +68,8 @@ export default function StockPage() {
     pageSize: PAGE_SIZE,
   };
   const stock = useQuery({
-    queryKey: stockKeys.list(orgId, params),
-    queryFn: () => stockApi.list(params),
+    queryKey: stockKeys.list(orgId, listParams),
+    queryFn: () => stockApi.list(listParams),
     placeholderData: keepPreviousData,
   });
   const branchName = new Map((branches.data ?? []).map((b) => [b.id, b.name]));
@@ -105,7 +119,19 @@ export default function StockPage() {
     qty('available', 'stock.columns.available'),
     qty('in_transit', 'stock.columns.inTransit'),
     qty('damaged', 'stock.columns.damaged'),
-    qty('min_level', 'stock.columns.minLevel'),
+    {
+      id: 'min_level',
+      header: t('stock.columns.minLevel'),
+      meta: { numeric: true },
+      cell: ({ row }) => (
+        <span>
+          <span className="block">{formatNumber(row.original.min_level)}</span>
+          <span className="type-caption block">
+            {t(`stock.minSource.${row.original.min_source}`)}
+          </span>
+        </span>
+      ),
+    },
     {
       id: 'status',
       header: t('stock.columns.status'),
@@ -119,19 +145,35 @@ export default function StockPage() {
       id: 'actions',
       header: t('stock.columns.actions'),
       cell: ({ row }) => (
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() =>
-            setDrill({
-              productId: row.original.product_id,
-              name: productName(row.original),
-              branchId: row.original.branch_id,
-            })
-          }
-        >
-          {t('stock.movements')}
-        </Button>
+        <div className="flex gap-1">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() =>
+              setDrill({
+                productId: row.original.product_id,
+                name: productName(row.original),
+                branchId: row.original.branch_id,
+              })
+            }
+          >
+            {t('stock.movements')}
+          </Button>
+          {canSetLevels && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() =>
+                setLevelsOf({
+                  productId: row.original.product_id,
+                  name: productName(row.original),
+                })
+              }
+            >
+              {t('stock.minLevels.open')}
+            </Button>
+          )}
+        </div>
       ),
     },
   ];
@@ -203,6 +245,15 @@ export default function StockPage() {
         empty={{ title: t('stock.empty'), description: t('stock.emptyHint') }}
         server={{ page, pageSize: PAGE_SIZE, total: stock.data?.total ?? 0, onPageChange: setPage }}
       />
+      {levelsOf && (
+        <MinLevelsDialog
+          key={levelsOf.productId}
+          productId={levelsOf.productId}
+          name={levelsOf.name}
+          branches={branches.data ?? []}
+          onClose={() => setLevelsOf(null)}
+        />
+      )}
       {drill && (
         <StockMovementsDrawer
           key={`${drill.productId}:${drill.branchId}`}
