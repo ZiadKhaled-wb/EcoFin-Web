@@ -35,6 +35,17 @@ describe('DataTable (client mode)', () => {
     expect(names()[0]).toBe('golf');
   });
 
+  it('keeps numeric cells in the table layout (the inline-block .num wraps the content)', async () => {
+    await renderApp(<DataTable caption="people" columns={columns} data={rows} pageSize={10} />, {
+      lang: 'en',
+    });
+    const cell = within(screen.getAllByRole('rowgroup')[1]!).getAllByRole('cell')[1]!;
+    expect(cell).not.toHaveClass('num');
+    expect(cell).toHaveClass('text-end');
+    expect(cell.querySelector('span.num')).toHaveTextContent('0');
+    expect(screen.getByRole('columnheader', { name: /Qty/ })).toHaveClass('text-end');
+  });
+
   it('searches, then shows the no-results state', async () => {
     const user = userEvent.setup();
     await renderApp(

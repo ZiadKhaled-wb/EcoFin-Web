@@ -212,17 +212,20 @@ export default function DataTable<T>({
                   rowClassName?.(row.original),
                 )}
               >
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className={cn(
-                      'type-body px-4 py-3',
-                      cell.column.columnDef.meta?.numeric ? 'num text-end' : 'text-start',
-                    )}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const content = flexRender(cell.column.columnDef.cell, cell.getContext());
+                  // `.num` is inline-block (LTR isolation for digits); on the <td> itself it would
+                  // take the cell out of the table layout, so it wraps the content instead.
+                  return cell.column.columnDef.meta?.numeric ? (
+                    <td key={cell.id} className="type-body whitespace-nowrap px-4 py-3 text-end">
+                      <span className="num">{content}</span>
+                    </td>
+                  ) : (
+                    <td key={cell.id} className="type-body px-4 py-3 text-start">
+                      {content}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
