@@ -127,6 +127,18 @@ describe('C03 labels page', () => {
     expect(within(preview()).getAllByText('Phone')).toHaveLength(2);
   });
 
+  it('caps a line at 500 labels, and the field shows the cap', async () => {
+    await renderApp(<LabelsPage />, { lang: 'en' });
+    const user = userEvent.setup();
+    await user.click((await screen.findAllByRole('button', { name: t('labels.addProduct') }))[0]!);
+    const qty = screen.getByLabelText(t('labels.quantity'));
+    await user.clear(qty);
+    await user.type(qty, '501');
+    expect(qty).toHaveValue('500');
+    expect(screen.getByText(t('labels.count', { count: 500 }))).toBeInTheDocument();
+    expect(screen.getByText(t('labels.maxPerItem', { max: 500 }))).toBeInTheDocument();
+  }, 30_000);
+
   it('shows a message when the product has no units', async () => {
     vi.spyOn(productsApi, 'units').mockResolvedValue([]);
     await renderApp(<LabelsPage />, { lang: 'en' });

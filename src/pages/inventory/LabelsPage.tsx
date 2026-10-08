@@ -219,12 +219,16 @@ export default function LabelsPage() {
                           label={t('labels.quantity')}
                           value={item.quantity}
                           decimals={0}
-                          maxLength={3}
-                          onValueChange={(v) =>
+                          maxLength={4}
+                          help={t('labels.maxPerItem', { max: MAX_PER_ITEM })}
+                          onValueChange={(v) => {
+                            // At most MAX_PER_ITEM labels per line: the field shows what prints.
+                            const quantity =
+                              v && Number(v) > MAX_PER_ITEM ? String(MAX_PER_ITEM) : v;
                             setItems((list) =>
-                              list.map((i) => (i.key === item.key ? { ...i, quantity: v } : i)),
-                            )
-                          }
+                              list.map((i) => (i.key === item.key ? { ...i, quantity } : i)),
+                            );
+                          }}
                         />
                       )}
                     </td>
