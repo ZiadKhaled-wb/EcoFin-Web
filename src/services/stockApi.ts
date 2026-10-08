@@ -1,4 +1,6 @@
 import {
+  BranchMinLevels,
+  LowStockSummary,
   StockAdjustment,
   StockAdjustmentList,
   StockCount,
@@ -12,6 +14,7 @@ import {
   StockTransferList,
   TransferDestinationList,
   type AdjustmentReason,
+  type BranchMinLevelBody,
   type StockAdjustmentCreateBody,
   type StockCountCreateBody,
   type StockCountLineBody,
@@ -94,6 +97,10 @@ export const stockKeys = {
     ['stock', orgId, 'transfers', params] as const,
   transfer: (orgId: string | null, id: string) => ['stock', orgId, 'transfer', id] as const,
   destinations: (orgId: string | null) => ['stock', orgId, 'transfer-destinations'] as const,
+  lowSummary: (orgId: string | null, limit: number) =>
+    ['stock', orgId, 'low-summary', limit] as const,
+  minLevels: (orgId: string | null, productId: string) =>
+    ['stock', orgId, 'min-levels', productId] as const,
 };
 
 /** I01 stock view (stock.view) and I02 adjustments and counts; only the caller's branches. */
@@ -118,6 +125,19 @@ export const stockApi = {
           params: { ...rest, ...(types?.length ? { types: types.join(',') } : {}) },
         })
       ).data,
+    ),
+  /** I06 dashboard card: low products per active branch and the biggest shortages. */
+  lowSummary: async (limit = 5) =>
+    LowStockSummary.parse((await api.get('/api/stock/low-summary', { params: { limit } })).data),
+  /** I06: a product's min level in each of the caller's branches and where it comes from. */
+  minLevels: async (productId: string) =>
+    BranchMinLevels.parse(
+      (await api.get(`/api/stock/min-levels/${encodeURIComponent(productId)}`)).data,
+    ),
+  /** I06 (catalog.manage): a branch's own level, or null to fall back to the product's / shop's. */
+  setMinLevel: async (productId: string, body: BranchMinLevelBody) =>
+    BranchMinLevels.parse(
+      (await api.put(`/api/stock/min-levels/${encodeURIComponent(productId)}`, body)).data,
     ),
   /** I05 export (export.data + stock.view): every matching movement, at most 10 000; audited. */
   exportMovements: async (body: StockMovementExportBody) =>

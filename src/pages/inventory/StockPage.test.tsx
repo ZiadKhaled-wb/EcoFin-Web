@@ -33,6 +33,7 @@ const row = (over: Partial<StockRow> = {}): StockRow => ({
   damaged: 1,
   in_transit: 0,
   min_level: 3,
+  min_source: 'shop',
   low: false,
   ...over,
 });
@@ -129,7 +130,9 @@ describe('I01 stock page', () => {
         .getAllByRole('cell')
         .map((c) => c.textContent);
       // product, sku, branch, on hand, reserved, available, in transit, damaged, min, status
-      expect(cells.slice(2, 9)).toEqual(['Main', '5', '2', '3', '0', '1', '3']);
+      expect(cells.slice(2, 8)).toEqual(['Main', '5', '2', '3', '0', '1']);
+      // I06: the min level and where it comes from.
+      expect(cells[8]).toBe(`3${t('stock.minSource.shop')}`);
       expect(within(main).getByText(t('stock.ok'))).toBeInTheDocument();
       const second = within(table).getByRole('row', { name: /Second/ });
       expect(within(second).getByText(t('stock.low'))).toBeInTheDocument();

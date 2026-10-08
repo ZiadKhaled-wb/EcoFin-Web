@@ -4,6 +4,8 @@ import PageHeader from '@/components/layout/PageHeader';
 import Card from '@/components/ui/Card';
 import PageContainer from '@/components/ui/PageContainer';
 import { t } from '@/i18n';
+import { useCan } from '@/features/me/useCan';
+import LowStockCard from '@/features/stock/LowStockCard';
 import { useAuthStore } from '@/store/authStore';
 import { readOnboardingProgress, type OnboardingProgress } from '@/features/onboarding/progress';
 
@@ -15,6 +17,8 @@ export default function DashboardPage() {
   // in the wizard right after the first login (InviteAcceptPage → LoginPage); there is no
   // redirect from here, so an owner on a new device isn't sent away from the dashboard.
   const [setup] = useState<OnboardingProgress>(() => readOnboardingProgress(orgId));
+  // I06: products below their min level (stock.view; the server limits the branches).
+  const canSeeStock = useCan('stock.view');
   return (
     <PageContainer>
       <PageHeader
@@ -38,6 +42,7 @@ export default function DashboardPage() {
           </Link>
         </Card>
       )}
+      {canSeeStock && <LowStockCard />}
     </PageContainer>
   );
 }

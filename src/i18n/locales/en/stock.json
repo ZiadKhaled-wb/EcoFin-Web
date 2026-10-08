@@ -510,5 +510,42 @@
       "party": "Customer / supplier",
       "by": "By"
     }
+  },
+  "minSource": {
+    "branch": "This branch",
+    "product": "Product",
+    "shop": "Shop default"
+  },
+  "minLevels": {
+    "open": "Min levels",
+    "title": "Min levels: {name}",
+    "description": "Below its min level a product is low in that branch. A branch's own level wins; otherwise the product's level ({product}) is used, or the shop default ({shop}) when the product has none. 0 means never low in that branch.",
+    "branch": "Branch",
+    "inUse": "Level in use",
+    "own": "This branch's level",
+    "input": "Min level in {branch}",
+    "save": "Save",
+    "useDefault": "Use default",
+    "saved": "Min level saved.",
+    "cleared": "The branch uses the default level again.",
+    "noBranches": "No branches to show.",
+    "errors": {
+      "invalid": "A whole number from 0 to 1,000,000.",
+      "denied": "You don't work in this branch.",
+      "inactive": "This branch is deactivated.",
+      "failed": "The level could not be saved. Try again.",
+      "load": "The levels could not be loaded."
+    }
+  },
+  "lowCard": {
+    "title": "Low stock",
+    "description": "Products below their min level in your branches.",
+    "none": "No product is below its min level.",
+    "viewAll": "View all {count}",
+    "perBranch": "Low products per branch",
+    "biggest": "Biggest shortages",
+    "level": "{available} available, min {min}",
+    "short": "{count} short",
+    "loadFailed": "Low stock could not be loaded."
   }
 }
