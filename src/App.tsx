@@ -37,6 +37,8 @@ import TransferPage from '@/pages/inventory/TransferPage';
 import UnitsPage from '@/pages/inventory/UnitsPage';
 import UnitPage from '@/pages/inventory/UnitPage';
 import MovementsPage from '@/pages/inventory/MovementsPage';
+import SuppliersPage from '@/pages/suppliers/SuppliersPage';
+import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 
@@ -65,7 +67,11 @@ const REAL_ROUTES = new Set([
   '/inventory/transfers',
   '/inventory/units',
   '/inventory/movements',
+  '/suppliers',
 ]);
+/** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
+ * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
+const SUPPLIERS_ITEM = navLeaves().find((i) => i.id === 'suppliers')!;
 
 export default function App() {
   return (
@@ -133,6 +139,22 @@ export default function App() {
                     <Route path="/inventory/units/:id" element={<UnitPage />} />
                     <Route path="/inventory/movements" element={<MovementsPage />} />
                   </Route>
+                  <Route
+                    path="/suppliers"
+                    element={
+                      <RequireNavItem item={SUPPLIERS_ITEM}>
+                        <SuppliersPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/suppliers/:id"
+                    element={
+                      <RequireNavItem item={SUPPLIERS_ITEM}>
+                        <SupplierStatementPage />
+                      </RequireNavItem>
+                    }
+                  />
                   <Route element={<RequirePermission permission="stock.count" />}>
                     <Route path="/inventory/counts" element={<CountsPage />} />
                     <Route path="/inventory/counts/:id" element={<CountSheetPage />} />
