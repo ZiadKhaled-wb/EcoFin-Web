@@ -39,6 +39,8 @@ import UnitPage from '@/pages/inventory/UnitPage';
 import MovementsPage from '@/pages/inventory/MovementsPage';
 import SuppliersPage from '@/pages/suppliers/SuppliersPage';
 import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
+import VaultsPage from '@/pages/accounting/VaultsPage';
+import VaultLedgerPage from '@/pages/accounting/VaultLedgerPage';
 import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
 import PurchaseInvoiceFormPage from '@/pages/purchasing/PurchaseInvoiceFormPage';
@@ -74,6 +76,7 @@ const REAL_ROUTES = new Set([
   '/suppliers',
   '/purchasing/invoices',
   '/purchasing/approvals',
+  '/accounting/vaults',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
  * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
@@ -195,6 +198,11 @@ export default function App() {
                       </RequireNavItem>
                     }
                   />
+                  {/* K01: vaults and their ledgers need cash.view (D56). */}
+                  <Route element={<RequirePermission permission="cash.view" />}>
+                    <Route path="/accounting/vaults" element={<VaultsPage />} />
+                    <Route path="/accounting/vaults/:id" element={<VaultLedgerPage />} />
+                  </Route>
                   <Route element={<RequirePermission permission="purchase.invoice_approve" />}>
                     <Route path="/purchasing/approvals" element={<PurchaseApprovalsPage />} />
                   </Route>
