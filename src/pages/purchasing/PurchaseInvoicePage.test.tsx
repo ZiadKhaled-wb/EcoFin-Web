@@ -7,10 +7,19 @@ import { ApiError } from '@/lib/api';
 import { meApi } from '@/features/me/meApi';
 import { branchApi } from '@/services/branchApi';
 import { purchaseInvoicesApi } from '@/services/purchaseInvoicesApi';
+import { purchaseReturnsApi } from '@/services/purchaseReturnsApi';
 import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
 import { t } from '@/i18n';
 import PurchaseInvoicePage from './PurchaseInvoicePage';
-import { INVOICE, LINE_PHONE, approval, branches, invoice } from './purchaseFixtures';
+import {
+  INVOICE,
+  LINE_PHONE,
+  RETURN,
+  approval,
+  branches,
+  invoice,
+  returnSummary,
+} from './purchaseFixtures';
 
 vi.mock('@/lib/supabase', () => ({ supabase: {} }));
 
@@ -33,6 +42,12 @@ describe('U02 purchase invoice page', () => {
       branches as Awaited<ReturnType<typeof branchApi.list>>,
     );
     vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(invoice());
+    vi.spyOn(purchaseReturnsApi, 'list').mockResolvedValue({
+      items: [],
+      page: 1,
+      pageSize: 100,
+      total: 0,
+    });
   });
 
   afterEach(() => {
@@ -144,6 +159,58 @@ describe('U02 purchase invoice page', () => {
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('link', { name: t('purchases.detail.edit') }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('U04: an approved invoice offers Return goods and lists its returns', async () => {
+    setPermissions(['purchase.return_create']);
+    vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(invoice({ status: 'approved' }));
+    const list = vi.spyOn(purchaseReturnsApi, 'list').mockResolvedValue({
+      items: [returnSummary()],
+      page: 1,
+      pageSize: 100,
+      total: 1,
+    });
+    await renderApp(page, { lang: 'en', route });
+    expect(
+      await screen.findByRole('link', { name: t('purchases.returns.action') }),
+    ).toHaveAttribute('href', `/purchasing/invoices/${INVOICE}/return`);
+    const table = await screen.findByRole('table', { name: t('purchases.returns.ofInvoice') });
+    expect(within(table).getByRole('link', { name: 'MAIN-PR-26-000001' })).toHaveAttribute(
+      'href',
+      `/purchasing/returns/${RETURN}`,
+    );
+    expect(list).toHaveBeenCalledWith({ purchase_invoice_id: INVOICE, pageSize: 100 });
+  });
+
+  it('U03: an approved invoice with something owed offers Pay, with the invoice pre-selected', async () => {
+    setPermissions(['supplier.payment_create']);
+    vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(
+      invoice({ status: 'approved', outstanding: '3534.00' }),
+    );
+    await renderApp(page, { lang: 'en', route });
+    expect(await screen.findByRole('link', { name: 'Pay' })).toHaveAttribute(
+      'href',
+      `/purchasing/payments/new?supplier_id=${invoice().supplier_id}&invoice_id=${INVOICE}`,
+    );
+  });
+
+  it('U03: a paid-off invoice has no Pay', async () => {
+    setPermissions(['supplier.payment_create']);
+    vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(
+      invoice({ status: 'approved', outstanding: '0.00' }),
+    );
+    await renderApp(page, { lang: 'en', route });
+    await linesTable();
+    expect(screen.queryByRole('link', { name: 'Pay' })).not.toBeInTheDocument();
+  });
+
+  it('U04: a draft has no Return goods; neither has a user without the permission', async () => {
+    setPermissions(['purchase.return_create']);
+    await renderApp(page, { lang: 'en', route });
+    await linesTable();
+    expect(
+      screen.queryByRole('link', { name: t('purchases.returns.action') }),
     ).not.toBeInTheDocument();
   });
 

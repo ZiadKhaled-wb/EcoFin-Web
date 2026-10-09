@@ -20,6 +20,7 @@ import { ApiError } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { formatBusinessDate, formatDateTime, formatMoney, formatNumber } from '@/lib/format';
 import { purchaseInvoiceKeys, purchaseInvoicesApi } from '@/services/purchaseInvoicesApi';
+import { purchaseReturnKeys, purchaseReturnsApi } from '@/services/purchaseReturnsApi';
 import { supplierKeys } from '@/services/suppliersApi';
 import { stockKeys } from '@/services/stockApi';
 import { useAuthStore } from '@/store/authStore';
@@ -62,6 +63,13 @@ export default function PurchaseInvoicePage() {
     queryKey: purchaseInvoiceKeys.one(orgId, id),
     queryFn: () => purchaseInvoicesApi.get(id),
     enabled: validId,
+  });
+  // U04: an approved invoice lists what was sent back to the supplier.
+  const returnsParams = { purchase_invoice_id: id, pageSize: 100 };
+  const returns = useQuery({
+    queryKey: purchaseReturnKeys.list(orgId, returnsParams),
+    queryFn: () => purchaseReturnsApi.list(returnsParams),
+    enabled: validId && invoice.data?.status === 'approved',
   });
   const [approving, setApproving] = useState(false);
   const [rejecting, setRejecting] = useState(false);
@@ -196,6 +204,23 @@ export default function PurchaseInvoicePage() {
                 <Button disabled={busy} onClick={() => setApproving(true)}>
                   {t('purchases.detail.approve')}
                 </Button>
+              </Can>
+            )}
+            {inv.status === 'approved' && (
+              <Can permission="purchase.return_create">
+                <Link to={`/purchasing/invoices/${inv.id}/return`} className="btn btn-secondary">
+                  {t('purchases.returns.action')}
+                </Link>
+              </Can>
+            )}
+            {inv.status === 'approved' && Number(inv.outstanding ?? 0) > 0 && (
+              <Can permission="supplier.payment_create">
+                <Link
+                  to={`/purchasing/payments/new?supplier_id=${inv.supplier_id}&invoice_id=${inv.id}`}
+                  className="btn btn-primary"
+                >
+                  {t('purchases.payments.pay')}
+                </Link>
               </Can>
             )}
             {pending && isOwner && (
@@ -369,6 +394,41 @@ export default function PurchaseInvoicePage() {
             )}
           </dl>
         </Card>
+        {(returns.data?.items.length ?? 0) > 0 && (
+          <Card title={t('purchases.returns.ofInvoice')} padded={false}>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-start">
+                <caption className="sr-only">{t('purchases.returns.ofInvoice')}</caption>
+                <thead className="border-b border-line bg-paper">
+                  <tr>
+                    <th className={th}>{t('purchases.returns.columns.number')}</th>
+                    <th className={th}>{t('purchases.returns.columns.date')}</th>
+                    <th className={th}>{t('purchases.returns.columns.refundMode')}</th>
+                    <th className={thNum}>{t('purchases.returns.columns.total')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {returns.data!.items.map((r) => (
+                    <tr key={r.id} className="border-b border-line">
+                      <td className={td}>
+                        <Link
+                          to={`/purchasing/returns/${r.id}`}
+                          className="text-brand-700 hover:underline"
+                          dir="ltr"
+                        >
+                          {r.number}
+                        </Link>
+                      </td>
+                      <td className={td}>{formatBusinessDate(r.business_date)}</td>
+                      <td className={td}>{t(`purchases.returns.mode.${r.refund_mode}`)}</td>
+                      <td className={tdNum}>{formatMoney(r.total)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        )}
       </div>
 
       <ConfirmDialog
