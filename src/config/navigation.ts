@@ -179,8 +179,16 @@ export const NAV: NavItem[] = [
     id: 'accounting',
     labelKey: 'nav.accounting',
     icon: CalculatorIcon,
-    to: '/accounting',
     roles: [OWNER, 'ACCOUNTANT'],
+    children: [
+      // K01 (D56): safes and banks; anyone with cash.view.
+      {
+        id: 'vaults',
+        labelKey: 'cash.nav.vaults',
+        to: '/accounting/vaults',
+        permission: 'cash.view',
+      },
+    ],
   },
   {
     id: 'reports',

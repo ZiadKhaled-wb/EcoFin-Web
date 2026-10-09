@@ -13,7 +13,7 @@ exports[`menu by role (TEST-2) > ACCOUNTANT sees these pages 1`] = `
   "/purchasing/invoices",
   "/customers",
   "/suppliers",
-  "/accounting",
+  "/accounting/vaults",
   "/reports",
   "/audit",
 ]
@@ -39,6 +39,7 @@ exports[`menu by role (TEST-2) > BRANCH_MANAGER sees these pages 1`] = `
   "/purchasing/approvals",
   "/customers",
   "/suppliers",
+  "/accounting/vaults",
   "/reports",
   "/audit",
 ]
@@ -92,7 +93,7 @@ exports[`menu by role (TEST-2) > OWNER sees these pages 1`] = `
   "/purchasing/approvals",
   "/customers",
   "/suppliers",
-  "/accounting",
+  "/accounting/vaults",
   "/reports",
   "/audit",
   "/settings/employees",
