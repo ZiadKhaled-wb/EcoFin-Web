@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ApiError } from '@/lib/api';
+import { ApiError, type ApiErrorCode } from '@/lib/api';
 import { meApi } from '@/features/me/meApi';
 import { branchApi } from '@/services/branchApi';
 import { purchaseReturnsApi } from '@/services/purchaseReturnsApi';
@@ -144,7 +144,7 @@ describe('U03 supplier payment form', () => {
     expect(create.mock.calls[0]![1]).toMatch(/^[0-9a-f-]{36}$/);
   });
 
-  it.each([
+  it.each<[ApiErrorCode, object | undefined, string]>([
     ['INSUFFICIENT_FUNDS', undefined, 'The account does not have enough money.'],
     [
       'PAYMENT_EXCEEDS_OUTSTANDING',
