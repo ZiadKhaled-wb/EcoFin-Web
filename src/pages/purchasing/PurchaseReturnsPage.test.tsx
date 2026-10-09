@@ -99,7 +99,7 @@ describe('U04 purchase returns list and detail', () => {
     await renderApp(detail, { lang: 'en', route: `/purchasing/returns/${RETURN}` });
     expect(
       await screen.findByRole('heading', {
-        name: t('purchases.returns.detail.title', { number: 'MAIN-PR-26-000001' }),
+        name: 'Purchase return MAIN-PR-26-000001',
       }),
     ).toBeInTheDocument();
     expect(screen.getByText('Damaged on arrival')).toBeInTheDocument();

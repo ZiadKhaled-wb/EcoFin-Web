@@ -64,6 +64,9 @@ describe('U04 purchase return form', () => {
     await renderApp(page, { lang: 'en', route });
     const user = userEvent.setup();
     const qty = await tvQuantity();
+    expect(
+      screen.getByRole('heading', { name: 'Return goods of MAIN-PI-26-000001' }),
+    ).toBeInTheDocument();
     await user.type(qty, '9');
     expect(qty).toHaveValue('6');
     // The last 6 of 10 take what is left of the line: 1482.00 - 592.80.
@@ -145,9 +148,7 @@ describe('U04 purchase return form', () => {
     await user.type(reason(), 'Damaged');
     await user.click(submit());
     const row = (await screen.findByText('TV-55')).closest('tr')!;
-    expect(
-      await within(row).findByText(t('purchases.returns.errors.qtyExceeded', { returnable: '3' })),
-    ).toBeInTheDocument();
+    expect(await within(row).findByText('Only 3 can still be returned.')).toBeInTheDocument();
   });
 
   it.each(['UNIT_NOT_AVAILABLE', 'OUT_OF_STOCK'])(
