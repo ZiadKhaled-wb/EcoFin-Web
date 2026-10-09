@@ -232,10 +232,20 @@ export default function SupplierStatementPage() {
                           </span>
                         )}
                       </td>
-                      {/* The number becomes a link once U02 (invoices), U03 (payments) and
-                          U04 (returns) add their document pages. */}
+                      {/* Invoices open their page (U02); payments and returns become links
+                          once U03 and U04 add theirs. */}
                       <td className={td}>
-                        <span dir="ltr">{row.number}</span>
+                        {row.kind === 'invoice' ? (
+                          <Link
+                            to={`/purchasing/invoices/${row.document_id}`}
+                            className="text-brand-700 hover:underline"
+                            dir="ltr"
+                          >
+                            {row.number}
+                          </Link>
+                        ) : (
+                          <span dir="ltr">{row.number}</span>
+                        )}
                       </td>
                       <td className={td}>
                         <span dir="auto">{row.reference ?? ''}</span>

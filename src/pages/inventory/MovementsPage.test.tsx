@@ -169,6 +169,35 @@ describe('I05 movement history', () => {
     );
   });
 
+  it.each(['ar', 'en'] as const)(
+    'U02: a purchase invoice row opens the invoice (%s)',
+    async (lang) => {
+      const PI = 'a0f00000-0000-4000-8000-000000000008';
+      vi.spyOn(stockApi, 'movements').mockResolvedValue(
+        page([
+          movement({
+            type: 'purchase_in',
+            quantity: 5,
+            balance_after: 8,
+            source_type: 'purchase_invoice',
+            source_id: PI,
+            source_number: 'MAIN-PI-26-000001',
+            party: 'Nile Traders',
+            reason: null,
+          }),
+        ]),
+      );
+      await renderApp(routes, { lang, route: '/inventory/movements' });
+      const table = await historyTable();
+      expect(
+        within(table).getByRole('link', {
+          name: t('stock.history.openDocument', { document: 'MAIN-PI-26-000001' }),
+        }),
+      ).toHaveAttribute('href', `/purchasing/invoices/${PI}`);
+      expect(within(table).getByText('Nile Traders')).toBeInTheDocument();
+    },
+  );
+
   it('exports the filtered rows as a CSV (with export.data)', async () => {
     vi.spyOn(meApi, 'permissions').mockResolvedValue(
       permissionsFixture(['stock.view', 'export.data']),

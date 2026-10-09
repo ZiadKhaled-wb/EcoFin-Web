@@ -39,6 +39,9 @@ import UnitPage from '@/pages/inventory/UnitPage';
 import MovementsPage from '@/pages/inventory/MovementsPage';
 import SuppliersPage from '@/pages/suppliers/SuppliersPage';
 import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
+import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
+import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
+import PurchaseInvoiceFormPage from '@/pages/purchasing/PurchaseInvoiceFormPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 
@@ -68,10 +71,13 @@ const REAL_ROUTES = new Set([
   '/inventory/units',
   '/inventory/movements',
   '/suppliers',
+  '/purchasing/invoices',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
  * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
 const SUPPLIERS_ITEM = navLeaves().find((i) => i.id === 'suppliers')!;
+/** U02: the purchase invoice pages follow their menu item (same roles as purchasing). */
+const PURCHASE_INVOICES_ITEM = navLeaves().find((i) => i.id === 'purchase-invoices')!;
 
 export default function App() {
   return (
@@ -144,6 +150,38 @@ export default function App() {
                     element={
                       <RequireNavItem item={SUPPLIERS_ITEM}>
                         <SuppliersPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/purchasing/invoices"
+                    element={
+                      <RequireNavItem item={PURCHASE_INVOICES_ITEM}>
+                        <PurchaseInvoicesPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/purchasing/invoices/new"
+                    element={
+                      <RequireNavItem item={PURCHASE_INVOICES_ITEM}>
+                        <PurchaseInvoiceFormPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/purchasing/invoices/:id"
+                    element={
+                      <RequireNavItem item={PURCHASE_INVOICES_ITEM}>
+                        <PurchaseInvoicePage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/purchasing/invoices/:id/edit"
+                    element={
+                      <RequireNavItem item={PURCHASE_INVOICES_ITEM}>
+                        <PurchaseInvoiceFormPage />
                       </RequireNavItem>
                     }
                   />

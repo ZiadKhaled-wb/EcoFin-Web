@@ -145,8 +145,15 @@ export const NAV: NavItem[] = [
     id: 'purchasing',
     labelKey: 'nav.purchasing',
     icon: TruckIcon,
-    to: '/purchasing',
     roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
+    children: [
+      {
+        id: 'purchase-invoices',
+        labelKey: 'purchases.nav.invoices',
+        to: '/purchasing/invoices',
+        roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
+      },
+    ],
   },
   {
     id: 'customers',

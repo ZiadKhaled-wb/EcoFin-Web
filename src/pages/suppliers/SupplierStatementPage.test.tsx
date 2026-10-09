@@ -138,6 +138,12 @@ describe('U01 supplier statement page', () => {
     const invoice = all[2]!;
     expect(within(invoice).getByText('Purchase invoice')).toBeInTheDocument();
     expect(within(invoice).getByText('PI-2026-000002')).toHaveAttribute('dir', 'ltr');
+    // U02: the invoice number opens the invoice; payments and returns stay plain text.
+    expect(within(invoice).getByRole('link', { name: 'PI-2026-000002' })).toHaveAttribute(
+      'href',
+      `/purchasing/invoices/${doc(1)}`,
+    );
+    expect(within(all[3]!).queryByRole('link')).toBeNull();
     expect(within(invoice).getByText('S-200')).toBeInTheDocument();
     expect(within(invoice).getByText('Main')).toBeInTheDocument();
     expect(within(invoice).getByText('500.50 EGP')).toBeInTheDocument();
