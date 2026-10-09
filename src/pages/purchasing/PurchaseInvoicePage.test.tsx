@@ -183,6 +183,28 @@ describe('U02 purchase invoice page', () => {
     expect(list).toHaveBeenCalledWith({ purchase_invoice_id: INVOICE, pageSize: 100 });
   });
 
+  it('U03: an approved invoice with something owed offers Pay, with the invoice pre-selected', async () => {
+    setPermissions(['supplier.payment_create']);
+    vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(
+      invoice({ status: 'approved', outstanding: '3534.00' }),
+    );
+    await renderApp(page, { lang: 'en', route });
+    expect(await screen.findByRole('link', { name: 'Pay' })).toHaveAttribute(
+      'href',
+      `/purchasing/payments/new?supplier_id=${invoice().supplier_id}&invoice_id=${INVOICE}`,
+    );
+  });
+
+  it('U03: a paid-off invoice has no Pay', async () => {
+    setPermissions(['supplier.payment_create']);
+    vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(
+      invoice({ status: 'approved', outstanding: '0.00' }),
+    );
+    await renderApp(page, { lang: 'en', route });
+    await linesTable();
+    expect(screen.queryByRole('link', { name: 'Pay' })).not.toBeInTheDocument();
+  });
+
   it('U04: a draft has no Return goods; neither has a user without the permission', async () => {
     setPermissions(['purchase.return_create']);
     await renderApp(page, { lang: 'en', route });

@@ -48,6 +48,9 @@ import PurchaseApprovalsPage from '@/pages/purchasing/PurchaseApprovalsPage';
 import PurchaseReturnsPage from '@/pages/purchasing/PurchaseReturnsPage';
 import PurchaseReturnPage from '@/pages/purchasing/PurchaseReturnPage';
 import PurchaseReturnFormPage from '@/pages/purchasing/PurchaseReturnFormPage';
+import SupplierPaymentsPage from '@/pages/purchasing/SupplierPaymentsPage';
+import SupplierPaymentPage from '@/pages/purchasing/SupplierPaymentPage';
+import SupplierPaymentFormPage from '@/pages/purchasing/SupplierPaymentFormPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 
@@ -80,6 +83,7 @@ const REAL_ROUTES = new Set([
   '/purchasing/invoices',
   '/purchasing/approvals',
   '/purchasing/returns',
+  '/purchasing/payments',
   '/accounting/vaults',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
@@ -89,6 +93,8 @@ const SUPPLIERS_ITEM = navLeaves().find((i) => i.id === 'suppliers')!;
 const PURCHASE_INVOICES_ITEM = navLeaves().find((i) => i.id === 'purchase-invoices')!;
 /** U04: the purchase return pages follow their menu item (same roles as purchasing). */
 const PURCHASE_RETURNS_ITEM = navLeaves().find((i) => i.id === 'purchase-returns')!;
+/** U03: the supplier payment pages follow their menu item (same roles as purchasing). */
+const SUPPLIER_PAYMENTS_ITEM = navLeaves().find((i) => i.id === 'supplier-payments')!;
 
 export default function App() {
   return (
@@ -222,6 +228,26 @@ export default function App() {
                     element={
                       <RequireNavItem item={PURCHASE_RETURNS_ITEM}>
                         <PurchaseReturnPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/purchasing/payments"
+                    element={
+                      <RequireNavItem item={SUPPLIER_PAYMENTS_ITEM}>
+                        <SupplierPaymentsPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  {/* U03: paying a supplier needs supplier.payment_create (D58); before /:id. */}
+                  <Route element={<RequirePermission permission="supplier.payment_create" />}>
+                    <Route path="/purchasing/payments/new" element={<SupplierPaymentFormPage />} />
+                  </Route>
+                  <Route
+                    path="/purchasing/payments/:id"
+                    element={
+                      <RequireNavItem item={SUPPLIER_PAYMENTS_ITEM}>
+                        <SupplierPaymentPage />
                       </RequireNavItem>
                     }
                   />

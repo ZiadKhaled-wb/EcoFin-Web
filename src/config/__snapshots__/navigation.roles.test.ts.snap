@@ -12,6 +12,7 @@ exports[`menu by role (TEST-2) > ACCOUNTANT sees these pages 1`] = `
   "/inventory/units",
   "/purchasing/invoices",
   "/purchasing/returns",
+  "/purchasing/payments",
   "/customers",
   "/suppliers",
   "/accounting/vaults",
@@ -38,6 +39,7 @@ exports[`menu by role (TEST-2) > BRANCH_MANAGER sees these pages 1`] = `
   "/inventory/warehouses",
   "/purchasing/invoices",
   "/purchasing/returns",
+  "/purchasing/payments",
   "/purchasing/approvals",
   "/customers",
   "/suppliers",
@@ -93,6 +95,7 @@ exports[`menu by role (TEST-2) > OWNER sees these pages 1`] = `
   "/inventory/warehouses",
   "/purchasing/invoices",
   "/purchasing/returns",
+  "/purchasing/payments",
   "/purchasing/approvals",
   "/customers",
   "/suppliers",
@@ -121,6 +124,7 @@ exports[`menu by role (TEST-2) > WAREHOUSE sees these pages 1`] = `
   "/inventory/warehouses",
   "/purchasing/invoices",
   "/purchasing/returns",
+  "/purchasing/payments",
   "/suppliers",
 ]
 `;

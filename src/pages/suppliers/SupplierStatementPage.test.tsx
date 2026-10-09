@@ -147,7 +147,11 @@ describe('U01 supplier statement page', () => {
       'href',
       `/purchasing/invoices/${doc(1)}`,
     );
-    expect(within(all[3]!).queryByRole('link')).toBeNull();
+    // U03: a payment opens its receipt.
+    expect(within(all[3]!).getByRole('link')).toHaveAttribute(
+      'href',
+      `/purchasing/payments/${doc(2)}`,
+    );
     expect(within(invoice).getByText('S-200')).toBeInTheDocument();
     expect(within(invoice).getByText('Main')).toBeInTheDocument();
     expect(within(invoice).getByText('500.50 EGP')).toBeInTheDocument();

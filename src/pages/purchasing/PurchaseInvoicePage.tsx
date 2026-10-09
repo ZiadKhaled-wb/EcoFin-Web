@@ -213,6 +213,16 @@ export default function PurchaseInvoicePage() {
                 </Link>
               </Can>
             )}
+            {inv.status === 'approved' && Number(inv.outstanding ?? 0) > 0 && (
+              <Can permission="supplier.payment_create">
+                <Link
+                  to={`/purchasing/payments/new?supplier_id=${inv.supplier_id}&invoice_id=${inv.id}`}
+                  className="btn btn-primary"
+                >
+                  {t('purchases.payments.pay')}
+                </Link>
+              </Can>
+            )}
             {pending && isOwner && (
               <Can permission="purchase.invoice_approve">
                 <Button variant="secondary" onClick={openReject}>

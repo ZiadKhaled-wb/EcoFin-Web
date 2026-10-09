@@ -13,10 +13,19 @@ import { useBranches } from '@/features/me/useBranches';
 import { ApiError } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { formatBusinessDate, formatMoney, formatNumber } from '@/lib/format';
+import Can from '@/features/me/Can';
 import { supplierKeys, suppliersApi, type SupplierStatementParams } from '@/services/suppliersApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
 import { owesSupplier } from './supplierShared';
+
+/** Where a statement row's document opens. */
+const DOCUMENT_PATH: Record<SupplierStatementRow['kind'], string> = {
+  invoice: 'invoices',
+  return: 'returns',
+  payment: 'payments',
+  payment_reversal: 'payments',
+};
 
 const th = 'type-label px-4 py-3 text-start';
 const thNum = 'type-label px-4 py-3 text-end';
@@ -111,9 +120,18 @@ export default function SupplierStatementPage() {
         title={data ? data.supplier.name : t('suppliers.statement.title')}
         description={t('suppliers.statement.title')}
         actions={
-          <Link to="/suppliers" className="btn btn-ghost">
-            {t('suppliers.statement.back')}
-          </Link>
+          <>
+            <Link to="/suppliers" className="btn btn-ghost">
+              {t('suppliers.statement.back')}
+            </Link>
+            {validId && (
+              <Can permission="supplier.payment_create">
+                <Link to={`/purchasing/payments/new?supplier_id=${id}`} className="btn btn-primary">
+                  {t('purchases.payments.pay')}
+                </Link>
+              </Can>
+            )}
+          </>
         }
       />
       {!data ? (
@@ -232,12 +250,12 @@ export default function SupplierStatementPage() {
                           </span>
                         )}
                       </td>
-                      {/* Invoices (U02) and returns (U04) open their page; payments become
-                          links once U03 adds theirs. */}
+                      {/* Invoices (U02), returns (U04), payments and reversals (U03) open
+                          their page. */}
                       <td className={td}>
-                        {row.kind === 'invoice' || row.kind === 'return' ? (
+                        {DOCUMENT_PATH[row.kind] ? (
                           <Link
-                            to={`/purchasing/${row.kind === 'invoice' ? 'invoices' : 'returns'}/${row.document_id}`}
+                            to={`/purchasing/${DOCUMENT_PATH[row.kind]}/${row.document_id}`}
                             className="text-brand-700 hover:underline"
                             dir="ltr"
                           >
