@@ -10,7 +10,7 @@ import { purchaseInvoicesApi } from '@/services/purchaseInvoicesApi';
 import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
 import { t } from '@/i18n';
 import PurchaseInvoicePage from './PurchaseInvoicePage';
-import { INVOICE, LINE_PHONE, branches, invoice } from './purchaseFixtures';
+import { INVOICE, LINE_PHONE, approval, branches, invoice } from './purchaseFixtures';
 
 vi.mock('@/lib/supabase', () => ({ supabase: {} }));
 
@@ -75,7 +75,8 @@ describe('U02 purchase invoice page', () => {
     await user.dblClick(
       within(dialog).getByRole('button', { name: t('purchases.detail.approve') }),
     );
-    await waitFor(() => expect(approve).toHaveBeenCalledWith(INVOICE));
+    // No note on a draft (U06's owner note is for pending invoices only).
+    await waitFor(() => expect(approve).toHaveBeenCalledWith(INVOICE, undefined));
     expect(await screen.findByText(t('purchases.detail.approved'))).toBeInTheDocument();
     expect(approve).toHaveBeenCalledTimes(1);
   });
@@ -186,5 +187,82 @@ describe('U02 purchase invoice page', () => {
     );
     await renderApp(page, { lang: 'en', route });
     expect(await screen.findByText(t('purchases.detail.notFound'))).toBeInTheDocument();
+  });
+
+  it('U06: an approve answered pending_approval says it went to the owner', async () => {
+    signIn('CASHIER');
+    vi.spyOn(purchaseInvoicesApi, 'approve').mockResolvedValue(
+      invoice({ status: 'pending_approval', approval: approval() }),
+    );
+    await renderApp(page, { lang: 'en', route });
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: t('purchases.detail.approve') }));
+    const dialog = await screen.findByRole('dialog');
+    await user.click(within(dialog).getByRole('button', { name: t('purchases.detail.approve') }));
+    expect(
+      await screen.findByText(t('purchases.approval.sent', { threshold: '1,000.00 EGP' })),
+    ).toBeInTheDocument();
+  });
+
+  it('U06: a pending invoice shows the banner and no decision buttons to a non-owner', async () => {
+    signIn('CASHIER');
+    vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(
+      invoice({ status: 'pending_approval', approval: approval() }),
+    );
+    await renderApp(page, { lang: 'en', route });
+    expect(
+      await screen.findByText(/Waiting for the owner: requested by Manager/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: t('purchases.detail.approve') }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: t('purchases.detail.reject') }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: t('purchases.detail.edit') }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('U06: the owner approves a pending invoice with a required note (ar)', async () => {
+    vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(
+      invoice({ status: 'pending_approval', approval: approval() }),
+    );
+    const approve = vi
+      .spyOn(purchaseInvoicesApi, 'approve')
+      .mockResolvedValue(
+        invoice({ status: 'approved', approval: approval({ status: 'approved' }) }),
+      );
+    await renderApp(page, { lang: 'ar', route });
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: t('purchases.detail.approve') }));
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).getByText(t('purchases.approval.ownerApproveHelp'))).toBeInTheDocument();
+    await user.click(within(dialog).getByRole('button', { name: t('purchases.detail.approve') }));
+    expect(
+      await within(dialog).findByText(t('purchases.approval.noteInvalid')),
+    ).toBeInTheDocument();
+    expect(approve).not.toHaveBeenCalled();
+    await user.type(within(dialog).getByLabelText(t('purchases.approval.note')), '  تمت المراجعة ');
+    await user.click(within(dialog).getByRole('button', { name: t('purchases.detail.approve') }));
+    await waitFor(() => expect(approve).toHaveBeenCalledWith(INVOICE, 'تمت المراجعة'));
+  });
+
+  it('U06: APPROVAL_OWNER_ONLY is shown translated', async () => {
+    vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(
+      invoice({ status: 'pending_approval', approval: approval() }),
+    );
+    vi.spyOn(purchaseInvoicesApi, 'approve').mockRejectedValue(
+      new ApiError(403, 'APPROVAL_OWNER_ONLY', 'Owner only.'),
+    );
+    await renderApp(page, { lang: 'en', route });
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: t('purchases.detail.approve') }));
+    const dialog = await screen.findByRole('dialog');
+    await user.type(within(dialog).getByLabelText(t('purchases.approval.note')), 'Looks right');
+    await user.click(within(dialog).getByRole('button', { name: t('purchases.detail.approve') }));
+    expect(
+      await within(dialog).findByText(t('purchases.errors.approvalOwnerOnly')),
+    ).toBeInTheDocument();
   });
 });

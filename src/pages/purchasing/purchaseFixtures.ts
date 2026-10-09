@@ -1,4 +1,9 @@
-import type { Product, PurchaseInvoice, TaxClass } from '@ziadkhaled-wb/contracts';
+import type {
+  Product,
+  PurchaseApproval,
+  PurchaseInvoice,
+  TaxClass,
+} from '@ziadkhaled-wb/contracts';
 
 /** Test data shared by the purchase invoice page tests. */
 export const MAIN = 'a0540000-0000-4000-8000-000000000011';
@@ -79,6 +84,7 @@ export const invoice = (over: Partial<PurchaseInvoice> = {}): PurchaseInvoice =>
   created_by_name: 'Owner',
   created_at: ts,
   updated_at: ts,
+  approval: null,
   lines: [
     {
       id: LINE_TV,
@@ -124,3 +130,17 @@ export const summary = (over: Partial<PurchaseInvoice> = {}) => {
 };
 
 export const branches = [{ id: MAIN, code: 'B1', name: 'Main', is_main: true }];
+
+/** U06: a waiting approval (12 000 above a 10 000 threshold), requested by a manager. */
+export const approval = (over: Partial<PurchaseApproval> = {}): PurchaseApproval => ({
+  id: 'a0540000-0000-4000-8000-000000000040',
+  status: 'pending',
+  amount: '3534.00',
+  threshold: '1000.00',
+  requested_by_name: 'Manager',
+  requested_at: ts,
+  decided_by_name: null,
+  decided_at: null,
+  note: null,
+  ...over,
+});

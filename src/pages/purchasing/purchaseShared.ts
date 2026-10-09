@@ -40,6 +40,8 @@ const ERRORS: Partial<Record<string, TranslationKey>> = {
   DAY_CLOSED: 'purchases.errors.dayClosed',
   PERMISSION_DENIED: 'purchases.errors.permission',
   VALIDATION_FAILED: 'purchases.errors.validation',
+  APPROVAL_OWNER_ONLY: 'purchases.errors.approvalOwnerOnly',
+  APPROVAL_NOTE_REQUIRED: 'purchases.errors.approvalNoteRequired',
 };
 
 /** The serials a SERIAL_TAKEN refusal names (empty for any other error). */
