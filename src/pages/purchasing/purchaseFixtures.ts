@@ -2,6 +2,8 @@ import type {
   Product,
   PurchaseApproval,
   PurchaseInvoice,
+  PurchaseReturn,
+  ReturnableInvoice,
   TaxClass,
 } from '@ziadkhaled-wb/contracts';
 
@@ -143,4 +145,88 @@ export const approval = (over: Partial<PurchaseApproval> = {}): PurchaseApproval
   decided_at: null,
   note: null,
   ...over,
+});
+
+/** U04: an approved invoice where 4 of the 10 TVs already went back; both phones are in stock. */
+export const RETURN = 'a0540000-0000-4000-8000-000000000050';
+export const UNIT_1 = 'a0540000-0000-4000-8000-000000000061';
+export const UNIT_2 = 'a0540000-0000-4000-8000-000000000062';
+export const SAFE = 'a0540000-0000-4000-8000-000000000070';
+
+export const purchaseReturn = (over: Partial<PurchaseReturn> = {}): PurchaseReturn => ({
+  id: RETURN,
+  number: 'MAIN-PR-26-000001',
+  purchase_invoice_id: INVOICE,
+  invoice_number: 'MAIN-PI-26-000001',
+  supplier_id: SUPPLIER,
+  supplier_name: 'Nile Traders',
+  branch_id: MAIN,
+  refund_mode: 'supplier_credit',
+  cash_account_id: null,
+  cash_account_name: null,
+  subtotal: '520.00',
+  tax_total: '72.80',
+  total: '592.80',
+  reason: 'Damaged on arrival',
+  business_date: '2026-10-11',
+  created_by_name: 'Owner',
+  created_at: ts,
+  lines: [
+    {
+      id: 'a0540000-0000-4000-8000-000000000051',
+      invoice_line_id: LINE_TV,
+      product_id: TV,
+      name_ar: 'تلفزيون',
+      name_en: 'TV',
+      sku: 'TV-55',
+      unit_id: null,
+      serial: null,
+      quantity: 4,
+      unit_cost: '130.00',
+      tax_amount: '72.80',
+      net: '520.00',
+      line_total: '592.80',
+    },
+  ],
+  ...over,
+});
+
+export const returnSummary = (over: Partial<PurchaseReturn> = {}) => {
+  const { lines, ...rest } = purchaseReturn(over);
+  return { ...rest, lines_count: lines.length };
+};
+
+export const returnable = (): ReturnableInvoice => ({
+  invoice: summary({ status: 'approved', outstanding: '2941.20' }),
+  lines: [
+    {
+      invoice_line_id: LINE_TV,
+      product_id: TV,
+      name_ar: 'تلفزيون',
+      name_en: 'TV',
+      sku: 'TV-55',
+      is_serialized: false,
+      purchased: 10,
+      returned: 4,
+      returnable: 6,
+      unit_cost: '130.00',
+      units_in_stock: [],
+    },
+    {
+      invoice_line_id: LINE_PHONE,
+      product_id: PHONE,
+      name_ar: 'موبايل',
+      name_en: 'Phone',
+      sku: 'PH-1',
+      is_serialized: true,
+      purchased: 2,
+      returned: 0,
+      returnable: 2,
+      unit_cost: '900.00',
+      units_in_stock: [
+        { unit_id: UNIT_1, serial: 'SN-1' },
+        { unit_id: UNIT_2, serial: 'SN-2' },
+      ],
+    },
+  ],
 });

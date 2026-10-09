@@ -1,7 +1,8 @@
 {
   "nav": {
     "invoices": "Purchase invoices",
-    "approvals": "Purchase approvals"
+    "approvals": "Purchase approvals",
+    "returns": "Purchase returns"
   },
   "title": "Purchase invoices",
   "description": "Supplier invoices: drafts, approvals and what they added to stock.",
@@ -160,5 +161,102 @@
     "ownerApproveHelp": "Adds the goods to stock and updates their cost. Write a note for the record.",
     "note": "Note",
     "noteInvalid": "Write a note of 3 to 500 characters."
+  },
+  "returns": {
+    "title": "Purchase returns",
+    "description": "Goods sent back to suppliers, with the credit or the cash refund.",
+    "back": "Purchase returns",
+    "empty": "No purchase returns yet",
+    "emptyHint": "Open an approved purchase invoice and choose Return goods.",
+    "filters": {
+      "supplier": "Supplier",
+      "allSuppliers": "All suppliers",
+      "branch": "Branch",
+      "allBranches": "All branches",
+      "from": "From",
+      "to": "To"
+    },
+    "columns": {
+      "number": "Number",
+      "invoice": "Invoice",
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "date": "Date",
+      "refundMode": "Refund",
+      "total": "Total"
+    },
+    "mode": {
+      "supplier_credit": "Supplier credit",
+      "cash": "Cash refund"
+    },
+    "modeHelp": {
+      "supplier_credit": "What the shop owes the supplier goes down.",
+      "cash": "The supplier pays the money back into a safe or bank."
+    },
+    "action": "Return goods",
+    "ofInvoice": "Returns of this invoice",
+    "form": {
+      "title": "Return goods of {{number}}",
+      "help": "Goods leave the stock of the invoice branch at the invoice cost.",
+      "lines": "Lines to return",
+      "product": "Product",
+      "purchased": "Bought",
+      "returned": "Returned",
+      "returnable": "Can return",
+      "unitCost": "Unit cost",
+      "quantity": "Quantity to return",
+      "quantityFor": "Quantity to return of {{name}}",
+      "units": "Units to return",
+      "noUnits": "No units of this line are in stock in this branch.",
+      "nothingLeft": "Everything on this invoice was already returned.",
+      "refundMode": "Refund",
+      "cashAccount": "Safe or bank",
+      "chooseAccount": "Choose a safe or bank",
+      "noAccounts": "This branch has no active safe or bank.",
+      "reason": "Reason",
+      "subtotal": "Net",
+      "taxTotal": "VAT",
+      "total": "Total",
+      "submit": "Post the return",
+      "cancel": "Cancel",
+      "posted": "Return {{number}} posted.",
+      "notApproved": "Only an approved invoice can be returned.",
+      "loadFailed": "Could not load the invoice."
+    },
+    "detail": {
+      "title": "Purchase return {{number}}",
+      "notFound": "Purchase return not found",
+      "notFoundHint": "It may belong to a branch you do not work in.",
+      "loadFailed": "Could not load the purchase return.",
+      "invoice": "Invoice",
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "date": "Date",
+      "refundMode": "Refund",
+      "cashAccount": "Safe or bank",
+      "reason": "Reason",
+      "createdBy": "Created by",
+      "lines": "Returned lines",
+      "serial": "Serial",
+      "quantity": "Quantity",
+      "net": "Net",
+      "vat": "VAT",
+      "lineTotal": "Total",
+      "totals": "Totals"
+    },
+    "errors": {
+      "nothing": "Choose at least one line to return.",
+      "reasonInvalid": "Write a reason of 3 to 500 characters.",
+      "accountRequired": "Choose the safe or bank the refund goes into.",
+      "qtyExceeded": "Only {{returnable}} can still be returned.",
+      "qtyExceededForm": "A line has more than can still be returned.",
+      "notInBranch": "The goods are not in this branch. Transfer them back first.",
+      "notApproved": "Only an approved invoice can be returned.",
+      "notFound": "Purchase return not found.",
+      "vaultInvalid": "This safe or bank cannot be used for this branch.",
+      "accountInactive": "This safe or bank is inactive.",
+      "unitNotFound": "A chosen unit was not found.",
+      "failed": "Could not post the return. Try again."
+    }
   }
 }

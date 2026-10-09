@@ -232,12 +232,12 @@ export default function SupplierStatementPage() {
                           </span>
                         )}
                       </td>
-                      {/* Invoices open their page (U02); payments and returns become links
-                          once U03 and U04 add theirs. */}
+                      {/* Invoices (U02) and returns (U04) open their page; payments become
+                          links once U03 adds theirs. */}
                       <td className={td}>
-                        {row.kind === 'invoice' ? (
+                        {row.kind === 'invoice' || row.kind === 'return' ? (
                           <Link
-                            to={`/purchasing/invoices/${row.document_id}`}
+                            to={`/purchasing/${row.kind === 'invoice' ? 'invoices' : 'returns'}/${row.document_id}`}
                             className="text-brand-700 hover:underline"
                             dir="ltr"
                           >
