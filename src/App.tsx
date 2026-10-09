@@ -51,6 +51,9 @@ import PurchaseReturnFormPage from '@/pages/purchasing/PurchaseReturnFormPage';
 import SupplierPaymentsPage from '@/pages/purchasing/SupplierPaymentsPage';
 import SupplierPaymentPage from '@/pages/purchasing/SupplierPaymentPage';
 import SupplierPaymentFormPage from '@/pages/purchasing/SupplierPaymentFormPage';
+import PurchaseOrdersPage from '@/pages/purchasing/PurchaseOrdersPage';
+import PurchaseOrderPage from '@/pages/purchasing/PurchaseOrderPage';
+import PurchaseOrderFormPage from '@/pages/purchasing/PurchaseOrderFormPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 
@@ -84,6 +87,7 @@ const REAL_ROUTES = new Set([
   '/purchasing/approvals',
   '/purchasing/returns',
   '/purchasing/payments',
+  '/purchasing/orders',
   '/accounting/vaults',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
@@ -95,6 +99,8 @@ const PURCHASE_INVOICES_ITEM = navLeaves().find((i) => i.id === 'purchase-invoic
 const PURCHASE_RETURNS_ITEM = navLeaves().find((i) => i.id === 'purchase-returns')!;
 /** U03: the supplier payment pages follow their menu item (same roles as purchasing). */
 const SUPPLIER_PAYMENTS_ITEM = navLeaves().find((i) => i.id === 'supplier-payments')!;
+/** U05: the purchase order pages follow their menu item (same roles as purchasing). */
+const PURCHASE_ORDERS_ITEM = navLeaves().find((i) => i.id === 'purchase-orders')!;
 
 export default function App() {
   return (
@@ -228,6 +234,27 @@ export default function App() {
                     element={
                       <RequireNavItem item={PURCHASE_RETURNS_ITEM}>
                         <PurchaseReturnPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/purchasing/orders"
+                    element={
+                      <RequireNavItem item={PURCHASE_ORDERS_ITEM}>
+                        <PurchaseOrdersPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  {/* U05: ordering needs purchase.order_manage (D59); /new before /:id. */}
+                  <Route element={<RequirePermission permission="purchase.order_manage" />}>
+                    <Route path="/purchasing/orders/new" element={<PurchaseOrderFormPage />} />
+                    <Route path="/purchasing/orders/:id/edit" element={<PurchaseOrderFormPage />} />
+                  </Route>
+                  <Route
+                    path="/purchasing/orders/:id"
+                    element={
+                      <RequireNavItem item={PURCHASE_ORDERS_ITEM}>
+                        <PurchaseOrderPage />
                       </RequireNavItem>
                     }
                   />

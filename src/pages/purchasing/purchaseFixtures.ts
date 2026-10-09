@@ -87,6 +87,8 @@ export const invoice = (over: Partial<PurchaseInvoice> = {}): PurchaseInvoice =>
   created_at: ts,
   updated_at: ts,
   approval: null,
+  po_id: null,
+  po_number: null,
   lines: [
     {
       id: LINE_TV,
@@ -104,6 +106,7 @@ export const invoice = (over: Partial<PurchaseInvoice> = {}): PurchaseInvoice =>
       line_total: '1482.00',
       serials: null,
       unit_ids: [],
+      po_line_id: null,
     },
     {
       id: LINE_PHONE,
@@ -121,6 +124,7 @@ export const invoice = (over: Partial<PurchaseInvoice> = {}): PurchaseInvoice =>
       line_total: '2052.00',
       serials: null,
       unit_ids: [],
+      po_line_id: null,
     },
   ],
   ...over,

@@ -183,6 +183,17 @@ describe('U02 purchase invoice page', () => {
     expect(list).toHaveBeenCalledWith({ purchase_invoice_id: INVOICE, pageSize: 100 });
   });
 
+  it('U05: an invoice of a purchase order links to the order', async () => {
+    vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(
+      invoice({ po_id: RETURN, po_number: 'MAIN-PO-26-000001' }),
+    );
+    await renderApp(page, { lang: 'en', route });
+    expect(await screen.findByRole('link', { name: 'MAIN-PO-26-000001' })).toHaveAttribute(
+      'href',
+      `/purchasing/orders/${RETURN}`,
+    );
+  });
+
   it('U03: an approved invoice with something owed offers Pay, with the invoice pre-selected', async () => {
     setPermissions(['supplier.payment_create']);
     vi.spyOn(purchaseInvoicesApi, 'get').mockResolvedValue(

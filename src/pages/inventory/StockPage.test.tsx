@@ -139,6 +139,23 @@ describe('I01 stock page', () => {
     },
   );
 
+  it('U05: low stock of one branch offers Create purchase order (with purchase.order_manage)', async () => {
+    vi.spyOn(meApi, 'permissions').mockResolvedValue(
+      permissionsFixture(['stock.view', 'purchase.order_manage']),
+    );
+    await renderApp(<StockPage />, { lang: 'en', route: `/?low=1&branch_id=${MAIN}` });
+    expect(await screen.findByRole('link', { name: 'Create purchase order' })).toHaveAttribute(
+      'href',
+      `/purchasing/orders/new?branch_id=${MAIN}&from=low`,
+    );
+  });
+
+  it('U05: no Create purchase order without the permission or without one branch', async () => {
+    await renderApp(<StockPage />, { lang: 'en', route: `/?low=1&branch_id=${MAIN}` });
+    await stockTable();
+    expect(screen.queryByRole('link', { name: 'Create purchase order' })).not.toBeInTheDocument();
+  });
+
   it('sends the branch, category, search and low-stock filters', async () => {
     const list = vi.spyOn(stockApi, 'list');
     await renderApp(<StockPage />, { lang: 'en' });

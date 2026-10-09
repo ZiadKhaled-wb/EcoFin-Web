@@ -274,6 +274,20 @@ export default function PurchaseInvoicePage() {
                 {inv.supplier_invoice_no ? <span dir="ltr">{inv.supplier_invoice_no}</span> : '—'}
               </dd>
             </div>
+            {inv.po_id && (
+              <div>
+                <dt className="type-caption">{t('purchases.orders.fromOrder')}</dt>
+                <dd>
+                  <Link
+                    to={`/purchasing/orders/${inv.po_id}`}
+                    className="text-brand-700 hover:underline"
+                    dir="ltr"
+                  >
+                    {inv.po_number}
+                  </Link>
+                </dd>
+              </div>
+            )}
             <div>
               <dt className="type-caption">{t('purchases.detail.createdBy')}</dt>
               <dd>{by(inv.created_by_name, inv.created_at)}</dd>

@@ -154,6 +154,12 @@ export const NAV: NavItem[] = [
         roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
       },
       {
+        id: 'purchase-orders',
+        labelKey: 'purchases.nav.orders',
+        to: '/purchasing/orders',
+        roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
+      },
+      {
         id: 'purchase-returns',
         labelKey: 'purchases.nav.returns',
         to: '/purchasing/returns',
