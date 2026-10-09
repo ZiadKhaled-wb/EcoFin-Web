@@ -153,6 +153,12 @@ export const NAV: NavItem[] = [
         to: '/purchasing/invoices',
         roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
       },
+      {
+        id: 'purchase-approvals',
+        labelKey: 'purchases.nav.approvals',
+        to: '/purchasing/approvals',
+        permission: 'purchase.invoice_approve',
+      },
     ],
   },
   {

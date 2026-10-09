@@ -71,6 +71,11 @@ export default function PurchaseInvoicePage() {
   const [needSerials, setNeedSerials] = useState<string[]>([]);
   // A double click on Confirm must post once: state updates land too late to block it.
   const approvingNow = useRef(false);
+  // U06: only the owner decides an invoice waiting above the approval limit (the server checks too).
+  const isOwner = useAuthStore((s) => s.user?.role === 'OWNER');
+  const [deciding, setDeciding] = useState(false);
+  const [note, setNote] = useState('');
+  const [noteError, setNoteError] = useState('');
 
   if (!validId) return <NotFound />;
   if (invoice.isError && !invoice.data) {
@@ -94,26 +99,46 @@ export default function PurchaseInvoicePage() {
       cache.invalidateQueries({ queryKey: stockKeys.all(orgId) }),
     ]);
 
-  async function approve() {
+  /** `ownerNote`: the owner's decision on a waiting invoice (U06). */
+  async function approve(ownerNote?: string) {
     if (approvingNow.current) return;
     approvingNow.current = true;
     setBusy(true);
     setNeedSerials([]);
     try {
-      await purchaseInvoicesApi.approve(inv!.id);
-      notify.success(t('purchases.detail.approved'));
+      const result = await purchaseInvoicesApi.approve(inv!.id, ownerNote);
+      if (result.status === 'pending_approval') {
+        notify.info(
+          t('purchases.approval.sent', {
+            threshold: formatMoney(result.approval?.threshold ?? '0'),
+          }),
+        );
+      } else {
+        notify.success(t('purchases.detail.approved'));
+      }
+      setDeciding(false);
       await refresh();
     } catch (err) {
       if (err instanceof ApiError && err.code === 'SERIALS_REQUIRED') {
         const detail = SerialsRequiredDetail.safeParse(err.details);
         if (detail.success) setNeedSerials(detail.data.line_ids);
       }
-      notify.error(purchaseError(err));
+      if (ownerNote !== undefined) setNoteError(purchaseError(err));
+      else notify.error(purchaseError(err));
     } finally {
       approvingNow.current = false;
       setBusy(false);
       setApproving(false);
     }
+  }
+
+  function decide() {
+    const text = note.trim();
+    if (text.length < 3 || text.length > 500) {
+      setNoteError(t('purchases.approval.noteInvalid'));
+      return;
+    }
+    void approve(text);
   }
 
   async function reject() {
@@ -136,7 +161,13 @@ export default function PurchaseInvoicePage() {
   }
 
   const branchName = (branches.data ?? []).find((b) => b.id === inv.branch_id)?.name ?? '';
-  const draft = inv.status === 'draft' || inv.status === 'pending_approval';
+  const draft = inv.status === 'draft';
+  const pending = inv.status === 'pending_approval';
+  const openReject = () => {
+    setReason('');
+    setReasonError('');
+    setRejecting(true);
+  };
   const by = (name: string | null, at: string) =>
     t('purchases.detail.by', { name: name ?? '', when: formatDateTime(at) });
   const serialsOf = (l: PurchaseInvoiceLine) => (l.serials ?? []).join(', ');
@@ -159,17 +190,27 @@ export default function PurchaseInvoicePage() {
             )}
             {draft && (
               <Can permission="purchase.invoice_approve">
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setReason('');
-                    setReasonError('');
-                    setRejecting(true);
-                  }}
-                >
+                <Button variant="secondary" onClick={openReject}>
                   {t('purchases.detail.reject')}
                 </Button>
                 <Button disabled={busy} onClick={() => setApproving(true)}>
+                  {t('purchases.detail.approve')}
+                </Button>
+              </Can>
+            )}
+            {pending && isOwner && (
+              <Can permission="purchase.invoice_approve">
+                <Button variant="secondary" onClick={openReject}>
+                  {t('purchases.detail.reject')}
+                </Button>
+                <Button
+                  disabled={busy}
+                  onClick={() => {
+                    setNote('');
+                    setNoteError('');
+                    setDeciding(true);
+                  }}
+                >
                   {t('purchases.detail.approve')}
                 </Button>
               </Can>
@@ -226,6 +267,29 @@ export default function PurchaseInvoicePage() {
             )}
           </dl>
         </Card>
+
+        {pending && inv.approval && (
+          <Card>
+            <p role="status" className="text-warning-700">
+              {t('purchases.approval.pendingBanner', {
+                name: inv.approval.requested_by_name ?? '',
+                when: formatDateTime(inv.approval.requested_at),
+                threshold: formatMoney(inv.approval.threshold ?? '0'),
+              })}
+            </p>
+          </Card>
+        )}
+        {inv.approval?.decided_at && (
+          <Card>
+            <p>
+              {t('purchases.approval.decided', {
+                name: inv.approval.decided_by_name ?? '',
+                when: formatDateTime(inv.approval.decided_at),
+                note: inv.approval.note ?? '',
+              })}
+            </p>
+          </Card>
+        )}
 
         {needSerials.length > 0 && <FormError message={t('purchases.errors.serialsRequired')} />}
 
@@ -333,6 +397,26 @@ export default function PurchaseInvoicePage() {
           />
           <Button variant="danger" loading={busy} disabled={busy} onClick={() => void reject()}>
             {t('purchases.detail.reject')}
+          </Button>
+        </div>
+      </Dialog>
+      <Dialog
+        open={deciding}
+        onOpenChange={(v) => !v && setDeciding(false)}
+        title={t('purchases.approval.ownerApproveTitle')}
+        description={t('purchases.approval.ownerApproveHelp')}
+      >
+        <div className="space-y-3">
+          <Textarea
+            label={t('purchases.approval.note')}
+            value={note}
+            maxLength={500}
+            rows={3}
+            error={noteError}
+            onChange={(e) => setNote(e.target.value)}
+          />
+          <Button loading={busy} disabled={busy} onClick={decide}>
+            {t('purchases.detail.approve')}
           </Button>
         </div>
       </Dialog>

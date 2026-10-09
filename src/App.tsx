@@ -42,6 +42,7 @@ import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
 import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
 import PurchaseInvoiceFormPage from '@/pages/purchasing/PurchaseInvoiceFormPage';
+import PurchaseApprovalsPage from '@/pages/purchasing/PurchaseApprovalsPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 
@@ -72,6 +73,7 @@ const REAL_ROUTES = new Set([
   '/inventory/movements',
   '/suppliers',
   '/purchasing/invoices',
+  '/purchasing/approvals',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
  * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
@@ -193,6 +195,9 @@ export default function App() {
                       </RequireNavItem>
                     }
                   />
+                  <Route element={<RequirePermission permission="purchase.invoice_approve" />}>
+                    <Route path="/purchasing/approvals" element={<PurchaseApprovalsPage />} />
+                  </Route>
                   <Route element={<RequirePermission permission="stock.count" />}>
                     <Route path="/inventory/counts" element={<CountsPage />} />
                     <Route path="/inventory/counts/:id" element={<CountSheetPage />} />

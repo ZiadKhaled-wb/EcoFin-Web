@@ -1,6 +1,7 @@
 {
   "nav": {
-    "invoices": "Purchase invoices"
+    "invoices": "Purchase invoices",
+    "approvals": "Purchase approvals"
   },
   "title": "Purchase invoices",
   "description": "Supplier invoices: drafts, approvals and what they added to stock.",
@@ -123,6 +124,41 @@
     "dayClosed": "The day is closed for this branch.",
     "permission": "You don't have permission to do this.",
     "validation": "Check the highlighted fields.",
-    "failed": "Something went wrong. Try again."
+    "failed": "Something went wrong. Try again.",
+    "approvalOwnerOnly": "Only the owner can decide an invoice above the approval limit.",
+    "approvalNoteRequired": "Write a note of 3 to 500 characters."
+  },
+  "approvals": {
+    "title": "Purchase approvals",
+    "description": "Invoices above the approval limit wait here for the owner's decision.",
+    "status": "Status",
+    "statuses": {
+      "pending": "Waiting",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    },
+    "empty": "Nothing waiting for approval",
+    "emptyHint": "Invoices above the approval limit appear here when a manager approves them.",
+    "columns": {
+      "number": "Invoice",
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "total": "Total",
+      "threshold": "Limit",
+      "requestedBy": "Requested by",
+      "requestedAt": "Requested at",
+      "decidedBy": "Decided by",
+      "note": "Note"
+    }
+  },
+  "approval": {
+    "sent": "Sent to the owner for approval: the total is above the limit of {threshold}.",
+    "pendingBanner": "Waiting for the owner: requested by {name} on {when} (limit {threshold}).",
+    "decided": "Owner decision by {name} on {when}: {note}",
+    "ownerApproveTitle": "Approve this invoice?",
+    "ownerApproveHelp": "Adds the goods to stock and updates their cost. Write a note for the record.",
+    "note": "Note",
+    "noteInvalid": "Write a note of 3 to 500 characters."
   }
 }
