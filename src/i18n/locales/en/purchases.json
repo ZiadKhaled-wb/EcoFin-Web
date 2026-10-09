@@ -2,7 +2,8 @@
   "nav": {
     "invoices": "Purchase invoices",
     "approvals": "Purchase approvals",
-    "returns": "Purchase returns"
+    "returns": "Purchase returns",
+    "payments": "Supplier payments"
   },
   "title": "Purchase invoices",
   "description": "Supplier invoices: drafts, approvals and what they added to stock.",
@@ -257,6 +258,104 @@
       "accountInactive": "This safe or bank is inactive.",
       "unitNotFound": "A chosen unit was not found.",
       "failed": "Could not post the return. Try again."
+    }
+  },
+  "payments": {
+    "title": "Supplier payments",
+    "description": "Money paid to suppliers from safes and banks, and reversals.",
+    "new": "New payment",
+    "back": "Supplier payments",
+    "empty": "No supplier payments yet",
+    "emptyHint": "Pay a supplier from an approved invoice or from the supplier statement.",
+    "pay": "Pay",
+    "filters": {
+      "supplier": "Supplier",
+      "allSuppliers": "All suppliers",
+      "branch": "Branch",
+      "allBranches": "All branches",
+      "from": "From",
+      "to": "To"
+    },
+    "columns": {
+      "number": "Receipt no.",
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "date": "Date",
+      "account": "Paid from",
+      "amount": "Amount",
+      "state": "State"
+    },
+    "state": {
+      "paid": "Paid",
+      "reversed": "Reversed",
+      "reversal": "Reversal"
+    },
+    "form": {
+      "title": "Pay a supplier",
+      "help": "The money leaves a safe or bank and is split over the supplier’s approved invoices.",
+      "supplier": "Supplier",
+      "chooseSupplier": "Choose a supplier",
+      "branch": "Branch",
+      "account": "Pay from",
+      "chooseAccount": "Choose a safe or bank",
+      "noAccounts": "This branch has no active safe or bank.",
+      "amount": "Amount",
+      "reference": "Reference (optional)",
+      "invoices": "Open invoices",
+      "noInvoices": "This supplier has no open invoices in your branches.",
+      "invoice": "Invoice",
+      "invoiceDate": "Invoice date",
+      "dueDate": "Due",
+      "overdue": "Overdue",
+      "outstanding": "Outstanding",
+      "allocation": "Pay now",
+      "allocationFor": "Pay now on {number}",
+      "totalOutstanding": "Total outstanding",
+      "allocated": "Allocated",
+      "fillOldest": "Fill oldest first",
+      "mismatch": "The allocations must add up to the amount.",
+      "submit": "Pay",
+      "cancel": "Cancel",
+      "posted": "Payment {number} posted."
+    },
+    "detail": {
+      "title": "Payment receipt {number}",
+      "notFound": "Supplier payment not found",
+      "notFoundHint": "It may belong to a branch you do not work in.",
+      "loadFailed": "Could not load the payment.",
+      "receiptNo": "Receipt no.",
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "date": "Date",
+      "account": "Paid from",
+      "amount": "Amount",
+      "reference": "Reference",
+      "createdBy": "Recorded by",
+      "allocations": "Invoices paid",
+      "invoice": "Invoice",
+      "print": "Print",
+      "reverse": "Reverse",
+      "reverseTitle": "Reverse this payment?",
+      "reverseHelp": "The amount goes back into the account and the invoices are owed again. This cannot be undone.",
+      "reason": "Reason",
+      "reasonInvalid": "Write a reason of 3 to 500 characters.",
+      "reversed": "Payment reversed.",
+      "reversedBy": "This payment was reversed.",
+      "reversalOf": "This is the reversal of another payment.",
+      "openReversal": "Open the reversal",
+      "openOriginal": "Open the original payment"
+    },
+    "errors": {
+      "insufficientFunds": "The account does not have enough money.",
+      "exceedsOutstanding": "This is more than what is owed: {outstanding} is outstanding.",
+      "allocationInvalid": "The split over the invoices is not valid. Refresh and try again.",
+      "dayClosed": "The day is closed for this branch.",
+      "vaultInvalid": "This safe or bank cannot be used for this branch.",
+      "accountInactive": "This safe or bank is inactive.",
+      "notFound": "Supplier payment not found.",
+      "alreadyReversed": "This payment was already reversed.",
+      "ownerOnly": "Only the owner can reverse a payment.",
+      "failed": "Could not save the payment. Try again."
     }
   }
 }

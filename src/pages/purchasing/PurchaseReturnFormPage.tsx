@@ -223,7 +223,7 @@ export default function PurchaseReturnFormPage() {
         void returnable.refetch();
       }
       setFormError(returnError(err));
-    } finally {
+      // A refused call can be tried again; after a success the form stays locked until it leaves.
       posting.current = false;
       setBusy(false);
     }
