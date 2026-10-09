@@ -151,7 +151,7 @@ describe('U04 purchase return form', () => {
     expect(await within(row).findByText('Only 3 can still be returned.')).toBeInTheDocument();
   });
 
-  it.each(['UNIT_NOT_AVAILABLE', 'OUT_OF_STOCK'])(
+  it.each(['UNIT_NOT_AVAILABLE', 'OUT_OF_STOCK'] as const)(
     '%s explains that the goods are not in this branch',
     async (code) => {
       vi.spyOn(purchaseReturnsApi, 'create').mockRejectedValue(new ApiError(409, code, 'No.'));
