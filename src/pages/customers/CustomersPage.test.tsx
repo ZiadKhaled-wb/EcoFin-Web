@@ -24,6 +24,7 @@ const customer = (over: Partial<Customer> = {}): Customer => ({
   national_id_masked: '**********0015',
   birth_date: '1990-01-01',
   gender: 'male',
+  governorate_code: '01',
   address: '12 شارع التحرير',
   city: 'القاهرة',
   job: null,
@@ -143,13 +144,14 @@ describe('R01 customers page', () => {
         within(dialog).getByLabelText(t('customers.fields.fullName')),
         '  Ahmed   Ali ',
       );
-      // Without an ID the birth date and gender can be typed; with one they are read from it.
-      expect(within(dialog).getByLabelText(t('customers.fields.birthDate'))).toBeInTheDocument();
+      // Birth date and gender are never typed: there is no field for them, with or without an ID.
+      expect(within(dialog).queryByLabelText(t('customers.fields.birthDate'))).toBeNull();
       await user.type(
         within(dialog).getByLabelText(t('customers.fields.nationalId')),
         '2900101-0100015',
       );
       expect(within(dialog).queryByLabelText(t('customers.fields.birthDate'))).toBeNull();
+      expect(within(dialog).queryByLabelText(t('customers.fields.gender'))).toBeNull();
       expect(within(dialog).getByText(t('customers.gender.male'))).toBeInTheDocument();
       expect(within(dialog).getByText(t('customers.governorates.01'))).toBeInTheDocument();
       await user.type(

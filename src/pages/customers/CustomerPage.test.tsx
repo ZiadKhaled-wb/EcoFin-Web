@@ -24,8 +24,9 @@ const customer = (over: Partial<Customer> = {}): Customer => ({
   national_id_masked: '**********0015',
   birth_date: '1990-01-01',
   gender: 'male',
+  governorate_code: '01',
   address: '12 Tahrir St',
-  city: 'Cairo',
+  city: 'Nasr City',
   job: 'Engineer',
   employer: null,
   monthly_income: '8500.50',
@@ -73,23 +74,27 @@ describe('R01 customer profile', () => {
     vi.restoreAllMocks();
   });
 
-  it('without customer.view_pii: the masked ID with its note, no governorate, no photo list', async () => {
+  it('without customer.view_pii: the masked ID with its note and the governorate, no photo list', async () => {
     const photos = vi.spyOn(customersApi, 'photos');
     await renderAt(CUSTOMER_ID);
     expect(await screen.findByRole('heading', { name: 'Ahmed Ali Hassan' })).toBeInTheDocument();
     expect(screen.getByText('**********0015')).toHaveAttribute('dir', 'ltr');
     expect(screen.getByText(t('customers.profile.idHidden'))).toBeInTheDocument();
-    expect(screen.queryByText(t('customers.fields.governorate'))).toBeNull();
+    // The governorate is read from the ID by the server and shown to everyone; the number stays masked.
+    expect(screen.getByText(t('customers.fields.governorate'))).toBeInTheDocument();
+    expect(screen.getByText(t('customers.governorates.01'))).toBeInTheDocument();
     expect(
       screen.getByText(t('customers.profile.photosCount', { count: '2' })),
     ).toBeInTheDocument();
     expect(screen.getByText(t('customers.profile.photosHidden'))).toBeInTheDocument();
     expect(photos).not.toHaveBeenCalled();
     expect(document.body.textContent).not.toMatch(/\d{14}/);
-    // customer.create alone neither edits nor blocks nor uploads.
+    // customer.create alone neither edits nor blocks, but it adds ID photos (a cashier at the counter).
     expect(screen.queryByRole('button', { name: t('customers.editAction') })).toBeNull();
     expect(screen.queryByRole('button', { name: t('customers.block') })).toBeNull();
-    expect(screen.queryByRole('button', { name: t('customers.profile.uploadPhoto') })).toBeNull();
+    expect(
+      screen.getByRole('button', { name: t('customers.profile.uploadPhoto') }),
+    ).toBeInTheDocument();
   });
 
   it('with customer.view_pii in Arabic: the full ID, its governorate and the photos to open', async () => {
@@ -118,7 +123,7 @@ describe('R01 customer profile', () => {
   });
 
   it('uploads an ID photo for the customer and refreshes', async () => {
-    setPermissions(['customer.edit', 'customer.view_pii']);
+    setPermissions(['customer.create', 'customer.view_pii']);
     vi.spyOn(customersApi, 'photos').mockResolvedValue([]);
     const upload = vi.spyOn(customersApi, 'uploadPhoto').mockResolvedValue(photo(1));
     await renderAt(CUSTOMER_ID);
@@ -131,7 +136,7 @@ describe('R01 customer profile', () => {
   });
 
   it('a refused photo type shows its message', async () => {
-    setPermissions(['customer.edit', 'customer.view_pii']);
+    setPermissions(['customer.create', 'customer.view_pii']);
     vi.spyOn(customersApi, 'photos').mockResolvedValue([]);
     vi.spyOn(customersApi, 'uploadPhoto').mockRejectedValue(
       new ApiError(415, 'FILE_TYPE_NOT_ALLOWED', 'Type.'),
