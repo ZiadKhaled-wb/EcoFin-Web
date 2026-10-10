@@ -152,7 +152,10 @@ export default function SalePage() {
                 <th className={th}>{t('sales.detail.paymentNumber')}</th>
                 <th className={th}>{t('sales.detail.method')}</th>
                 <th className={th}>{t('sales.detail.account')}</th>
+                <th className={th}>{t('sales.detail.reference')}</th>
                 <th className={thNum}>{t('sales.detail.amount')}</th>
+                <th className={thNum}>{t('sales.detail.received')}</th>
+                <th className={thNum}>{t('sales.detail.change')}</th>
               </tr>
             </thead>
             <tbody>
@@ -165,7 +168,12 @@ export default function SalePage() {
                   <td className={td}>
                     <span dir="auto">{p.cash_account_name ?? ''}</span>
                   </td>
+                  <td className={td}>
+                    <span dir="ltr">{p.reference ?? ''}</span>
+                  </td>
                   <td className={tdNum}>{formatMoney(p.amount)}</td>
+                  <td className={tdNum}>{p.tendered === null ? '' : formatMoney(p.tendered)}</td>
+                  <td className={tdNum}>{p.change === null ? '' : formatMoney(p.change)}</td>
                 </tr>
               ))}
             </tbody>

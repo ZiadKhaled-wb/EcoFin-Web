@@ -6,6 +6,7 @@ import {
   type ProductUnit,
   type Sale,
   type SaleLineInput,
+  type SalePaymentInput,
 } from '@ziadkhaled-wb/contracts';
 import { ApiError } from '@/lib/api';
 import { getLanguage } from '@/i18n';
@@ -59,12 +60,17 @@ export function cartLines(lines: readonly CartLine[]): SaleLineInput[] | null {
  *
  * The idempotency key belongs to the cart's content: the same cart sent twice (a double click, a
  * retry after a lost answer) is one sale; a changed cart is a new sale with a new key.
+ *
+ * S02: confirming sells with the payment lines the cashier chose in the payment dialog. The sale's
+ * customer (set by whoever opens the screen; S06 will pick it) is sent with the quote and the
+ * sale, so store credit can be offered.
  */
 export function usePosCart(enabled: boolean) {
   const orgId = useAuthStore((s) => s.orgId);
   const cache = useQueryClient();
   const [lines, setLines] = useState<CartLine[]>([]);
   const [key, setKey] = useState(() => crypto.randomUUID());
+  const [customerId, setCustomerId] = useState<string | null>(null);
   const [done, setDone] = useState<Sale | null>(null);
   const [busy, setBusy] = useState(false);
   const posting = useRef(false);
@@ -111,11 +117,18 @@ export function usePosCart(enabled: boolean) {
     change((list) => list.map((l) => (l.key === lineKey ? { ...l, quantity } : l)));
   const setPrice = (lineKey: string, price: string) =>
     change((list) => list.map((l) => (l.key === lineKey ? { ...l, price } : l)));
+  const setCustomer = (id: string | null) => {
+    setCustomerId(id);
+    setKey(crypto.randomUUID());
+  };
   const remove = (lineKey: string) => change((list) => list.filter((l) => l.key !== lineKey));
 
   // The quote follows the cart a moment after the last change.
   const wanted = cartLines(lines);
-  const wantedText = wanted && wanted.length > 0 ? JSON.stringify(wanted) : '';
+  const wantedText =
+    wanted && wanted.length > 0
+      ? JSON.stringify({ lines: wanted, ...(customerId ? { customer_id: customerId } : {}) })
+      : '';
   const [quotedText, setQuotedText] = useState('');
   useEffect(() => {
     const id = setTimeout(() => setQuotedText(wantedText), wantedText ? QUOTE_DELAY_MS : 0);
@@ -123,7 +136,7 @@ export function usePosCart(enabled: boolean) {
   }, [wantedText]);
   const quote = useQuery({
     queryKey: saleKeys.quote(orgId, quotedText),
-    queryFn: () => salesApi.quote(SaleQuoteBody.parse({ lines: JSON.parse(quotedText) })),
+    queryFn: () => salesApi.quote(SaleQuoteBody.parse(JSON.parse(quotedText))),
     enabled: enabled && quotedText !== '',
     placeholderData: keepPreviousData,
     retry: false,
@@ -134,13 +147,21 @@ export function usePosCart(enabled: boolean) {
   const current =
     wantedText !== '' && quotedText === wantedText && quote.isSuccess && !quote.isFetching;
 
-  /** Sells the cart at the quoted total. Returns the error of a refused sale, or null. */
-  async function confirm(): Promise<unknown> {
+  /** Sells the cart at the quoted total, paid by `payments`. Returns the error of a refused sale, or null. */
+  async function confirm(payments: SalePaymentInput[]): Promise<unknown> {
     if (posting.current || !current || !wanted || !quote.data) return null;
     posting.current = true;
     setBusy(true);
     try {
-      const sale = await salesApi.create({ lines: wanted, expected_total: quote.data.total }, key);
+      const sale = await salesApi.create(
+        {
+          lines: wanted,
+          expected_total: quote.data.total,
+          payments,
+          ...(customerId ? { customer_id: customerId } : {}),
+        },
+        key,
+      );
       setDone(sale);
       await Promise.all([
         cache.invalidateQueries({ queryKey: shiftKeys.all(orgId) }),
@@ -173,6 +194,8 @@ export function usePosCart(enabled: boolean) {
 
   return {
     lines,
+    customerId,
+    setCustomer,
     addProduct,
     addUnits,
     setQuantity,

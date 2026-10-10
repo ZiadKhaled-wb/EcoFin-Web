@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
 import type {
@@ -83,6 +83,10 @@ function quoteOf(body: SaleQuoteBody, available = 10): SaleQuote {
     subtotal: total,
     tax_total: lines.reduce((sum, l) => sum + Number(l.tax_amount), 0).toFixed(2),
     total,
+    paid: total,
+    remaining: '0.00',
+    change: '0.00',
+    store_credit_balance: body.customer_id ? '300.00' : null,
   };
 }
 const sale = (over: Partial<Sale> = {}): Sale => ({
@@ -146,8 +150,12 @@ const sale = (over: Partial<Sale> = {}): Sale => ({
       cash_account_id: OTHER,
       cash_account_name: 'Drawer of Mona',
       reference: null,
+      tendered: null,
+      change: null,
     },
   ],
+  paid_total: '5500.00',
+  change_total: '0.00',
   ...over,
 });
 function setPermissions(keys: PermissionKey[]) {
@@ -168,6 +176,13 @@ async function addFromSearch(
   await user.clear(search);
   await user.type(search, text);
   await user.click(await screen.findByRole('button', { name: button }));
+}
+/** Confirm opens the payment dialog. */
+async function openPay(user: ReturnType<typeof userEvent.setup>) {
+  const confirm = screen.getByRole('button', { name: 'Confirm and pay' });
+  await waitFor(() => expect(confirm).toBeEnabled());
+  await user.click(confirm);
+  return screen.findByRole('dialog', { name: 'Payment' });
 }
 const detail = (
   <Routes>
@@ -263,7 +278,7 @@ describe('S01 sale screen', () => {
     expect(screen.queryByLabelText('Quantity: Phone')).not.toBeInTheDocument();
   });
 
-  it('confirm sells the quoted cart once for a double click, then offers a new sale', async () => {
+  it('confirm opens the payment dialog; cash for the whole total sells once for a double click', async () => {
     const create = vi
       .spyOn(salesApi, 'create')
       .mockImplementation(() => new Promise((r) => setTimeout(() => r(sale()), 50)));
@@ -271,12 +286,17 @@ describe('S01 sale screen', () => {
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
     await addFromSearch(user, 'cha', 'Add');
-    const confirm = screen.getByRole('button', { name: 'Confirm cash sale' });
-    await waitFor(() => expect(confirm).toBeEnabled());
-    await user.dblClick(confirm);
+    const dialog = await openPay(user);
+    expect(create).not.toHaveBeenCalled();
+    expect(within(dialog).getByTestId('pay-remaining')).toHaveTextContent('0.00');
+    await user.dblClick(within(dialog).getByRole('button', { name: 'Pay' }));
     await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
     const [body, key] = create.mock.calls[0]!;
-    expect(body).toEqual({ lines: [{ product_id: CHAIR, quantity: 1 }], expected_total: '250.00' });
+    expect(body).toEqual({
+      lines: [{ product_id: CHAIR, quantity: 1 }],
+      expected_total: '250.00',
+      payments: [{ method: 'cash', amount: '250.00' }],
+    });
     expect(key).toMatch(/^[0-9a-f-]{36}$/);
     expect(
       await screen.findByRole('heading', { name: 'Sale MAIN-SL-26-000001 completed' }),
@@ -303,8 +323,7 @@ describe('S01 sale screen', () => {
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
     await addFromSearch(user, 'cha', 'Add');
-    const confirm = screen.getByRole('button', { name: 'Confirm cash sale' });
-    await waitFor(() => expect(confirm).toBeEnabled());
+    const dialog = await openPay(user);
     // The price rises on the server between the quote and the sale.
     quote.mockImplementation(async (body: SaleQuoteBody) => ({
       ...quoteOf(body),
@@ -312,16 +331,26 @@ describe('S01 sale screen', () => {
       subtotal: '260.00',
     }));
     const quotesBefore = quote.mock.calls.length;
-    await user.click(confirm);
+    await user.click(within(dialog).getByRole('button', { name: 'Pay' }));
     expect(
-      await screen.findByText('Prices changed. Check the new total, then confirm again.'),
+      await within(dialog).findByText('Prices changed. Check the new total, then confirm again.'),
     ).toBeInTheDocument();
     await waitFor(() => expect(quote.mock.calls.length).toBeGreaterThan(quotesBefore));
-    await waitFor(() => expect(screen.getByTestId('sale-total')).toHaveTextContent('260.00'));
-    await waitFor(() => expect(confirm).toBeEnabled());
-    await user.click(confirm);
+    await waitFor(() =>
+      expect(within(dialog).getByTestId('pay-total')).toHaveTextContent('260.00'),
+    );
+    // The new total is not covered yet: the cashier fixes the amount, then pays.
+    expect(within(dialog).getByTestId('pay-remaining')).toHaveTextContent('10.00');
+    expect(within(dialog).getByRole('button', { name: 'Pay' })).toBeDisabled();
+    const amount = within(dialog).getByLabelText('Amount: Cash');
+    await user.clear(amount);
+    await user.type(amount, '260');
+    await user.click(within(dialog).getByRole('button', { name: 'Pay' }));
     await waitFor(() => expect(create).toHaveBeenCalledTimes(2));
-    expect(create.mock.calls[1]![0]).toMatchObject({ expected_total: '260.00' });
+    expect(create.mock.calls[1]![0]).toMatchObject({
+      expected_total: '260.00',
+      payments: [{ method: 'cash', amount: '260.00' }],
+    });
     // The cart didn't change, so it is still the same sale for the server.
     expect(create.mock.calls[1]![1]).toBe(create.mock.calls[0]![1]);
   });
@@ -333,7 +362,7 @@ describe('S01 sale screen', () => {
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
     await addFromSearch(user, 'cha', 'Add');
-    const confirm = screen.getByRole('button', { name: 'Confirm cash sale' });
+    const confirm = screen.getByRole('button', { name: 'Confirm and pay' });
     await waitFor(() => expect(confirm).toBeEnabled());
     const quantity = screen.getByLabelText('Quantity: Chair');
     await user.clear(quantity);
@@ -354,13 +383,15 @@ describe('S01 sale screen', () => {
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
     await addFromSearch(user, 'cha', 'Add');
-    const confirm = screen.getByRole('button', { name: 'Confirm cash sale' });
-    await waitFor(() => expect(confirm).toBeEnabled());
-    await user.click(confirm);
-    expect(await screen.findByText('Not enough stock: only 0 left.')).toBeInTheDocument();
-    await waitFor(() => expect(confirm).toBeEnabled());
-    await user.click(confirm);
-    expect(await screen.findByText('Your shift was closed. Open a new one.')).toBeInTheDocument();
+    const dialog = await openPay(user);
+    const pay = within(dialog).getByRole('button', { name: 'Pay' });
+    await user.click(pay);
+    expect(await within(dialog).findByText('Not enough stock: only 0 left.')).toBeInTheDocument();
+    await waitFor(() => expect(pay).toBeEnabled());
+    await user.click(pay);
+    expect(
+      await within(dialog).findByText('Your shift was closed. Open a new one.'),
+    ).toBeInTheDocument();
     expect(create).toHaveBeenCalledTimes(2);
   });
 
@@ -388,7 +419,220 @@ describe('S01 sale screen', () => {
     expect(
       await screen.findByText('This serial is no longer in stock in this branch.'),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Confirm cash sale' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Confirm and pay' })).toBeDisabled();
+  });
+});
+
+describe('S02 payment dialog', () => {
+  const BANK = 'a0620000-0000-4000-8000-0000000000b1';
+  const CUSTOMER = 'a0620000-0000-4000-8000-0000000000c1';
+  let create: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    signIn();
+    setPermissions(['sale.create']);
+    vi.spyOn(shiftsApi, 'current').mockResolvedValue({
+      id: OTHER,
+      number: 'MAIN-SH-26-000003',
+      branch_id: MAIN,
+    } as Awaited<ReturnType<typeof shiftsApi.current>>);
+    vi.spyOn(productsApi, 'list').mockResolvedValue({
+      items: [chair],
+      page: 1,
+      pageSize: 8,
+      total: 1,
+    });
+    vi.spyOn(salesApi, 'quote').mockImplementation(async (body) => quoteOf(body));
+    vi.spyOn(salesApi, 'paymentAccounts').mockResolvedValue({ items: [{ id: BANK, name: 'NBE' }] });
+    create = vi.spyOn(salesApi, 'create').mockResolvedValue(sale());
+  });
+
+  afterEach(() => {
+    signOut();
+    vi.restoreAllMocks();
+  });
+
+  async function start(route = '/sales/pos', lang: 'en' | 'ar' = 'en') {
+    await renderApp(<PosPage />, { lang, route });
+    const user = userEvent.setup();
+    await screen.findByText(/MAIN-SH-26-000003/);
+    if (lang === 'en') {
+      await addFromSearch(user, 'cha', 'Add');
+    } else {
+      await user.type(screen.getByRole('searchbox'), 'cha');
+      const [first] = await screen.findAllByRole('listitem');
+      await user.click(within(first!).getByRole('button'));
+    }
+    return user;
+  }
+
+  it('half cash and half transfer: Remaining and Pay follow, and both lines are sent', async () => {
+    const user = await start();
+    const dialog = await openPay(user);
+    const pay = within(dialog).getByRole('button', { name: 'Pay' });
+    expect(within(dialog).getByTestId('pay-total')).toHaveTextContent('250.00');
+    const cash = within(dialog).getByLabelText('Amount: Cash');
+    await user.clear(cash);
+    await user.type(cash, '125');
+    expect(within(dialog).getByTestId('pay-remaining')).toHaveTextContent('125.00');
+    expect(pay).toBeDisabled();
+    // The new line starts with what remains.
+    await user.click(within(dialog).getByRole('button', { name: 'Add bank transfer' }));
+    expect(within(dialog).getByLabelText('Amount: Bank transfer')).toHaveValue('125.00');
+    expect(within(dialog).getByTestId('pay-remaining')).toHaveTextContent('0.00');
+    // The account and the reference are both needed.
+    expect(pay).toBeDisabled();
+    await user.selectOptions(within(dialog).getByLabelText('Bank account'), BANK);
+    expect(pay).toBeDisabled();
+    await user.type(within(dialog).getByLabelText('Transfer reference'), ' TRX-1 ');
+    expect(pay).toBeEnabled();
+    await user.click(pay);
+    await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
+    expect(create.mock.calls[0]![0]).toEqual({
+      lines: [{ product_id: CHAIR, quantity: 1 }],
+      expected_total: '250.00',
+      payments: [
+        { method: 'cash', amount: '125.00' },
+        { method: 'bank_transfer', amount: '125.00', cash_account_id: BANK, reference: 'TRX-1' },
+      ],
+    });
+  });
+
+  it('Received shows the change; a received amount below the amount stops Pay', async () => {
+    const user = await start();
+    const dialog = await openPay(user);
+    const received = within(dialog).getByLabelText('Received from the customer');
+    await user.type(received, '200');
+    expect(
+      await within(dialog).findByText('Received must be at least the amount.'),
+    ).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: 'Pay' })).toBeDisabled();
+    await user.clear(received);
+    await user.type(received, '300');
+    expect(within(dialog).getByTestId('pay-change')).toHaveTextContent('50.00');
+    await user.click(within(dialog).getByRole('button', { name: 'Pay' }));
+    await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
+    expect(create.mock.calls[0]![0]).toMatchObject({
+      payments: [{ method: 'cash', amount: '250.00', tendered: '300.00' }],
+    });
+  });
+
+  it('a transfer without a bank account is explained; a blank reference stops Pay', async () => {
+    vi.spyOn(salesApi, 'paymentAccounts').mockResolvedValue({ items: [] });
+    const user = await start();
+    const dialog = await openPay(user);
+    await user.click(within(dialog).getByRole('button', { name: 'Add bank transfer' }));
+    expect(
+      await within(dialog).findByText(/No bank account is available for this branch/),
+    ).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: 'Pay' })).toBeDisabled();
+  });
+
+  it('store credit is hidden without a customer and offered with one that has a balance', async () => {
+    const user = await start();
+    let dialog = await openPay(user);
+    expect(
+      within(dialog).queryByRole('button', { name: 'Add store credit' }),
+    ).not.toBeInTheDocument();
+    await user.click(within(dialog).getByRole('button', { name: 'Back' }));
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Payment' })).toBeNull());
+    cleanup();
+
+    const second = await start(`/sales/pos?customer=${CUSTOMER}`);
+    dialog = await openPay(second);
+    expect(within(dialog).getByRole('button', { name: 'Add store credit' })).toBeInTheDocument();
+    const cash = within(dialog).getByLabelText('Amount: Cash');
+    await second.clear(cash);
+    await second.type(cash, '150');
+    await second.click(within(dialog).getByRole('button', { name: 'Add store credit' }));
+    expect(within(dialog).getByLabelText('Amount: Store credit')).toHaveValue('100.00');
+    expect(within(dialog).getByText(/Store credit balance:.*300.00/)).toBeInTheDocument();
+    await second.click(within(dialog).getByRole('button', { name: 'Pay' }));
+    await waitFor(() => expect(create).toHaveBeenCalledTimes(1));
+    expect(create.mock.calls[0]![0]).toMatchObject({
+      customer_id: CUSTOMER,
+      payments: [
+        { method: 'cash', amount: '150.00' },
+        { method: 'store_credit', amount: '100.00' },
+      ],
+    });
+  });
+
+  it('a bad customer id in the address is ignored', async () => {
+    const quote = vi.spyOn(salesApi, 'quote');
+    await start('/sales/pos?customer=not-a-uuid');
+    await waitFor(() => expect(quote).toHaveBeenCalled());
+    expect(quote.mock.calls.at(-1)![0]).toEqual({ lines: [{ product_id: CHAIR, quantity: 1 }] });
+  });
+
+  it('PAYMENT_TOTAL_MISMATCH is shown in the dialog and the sale can be corrected', async () => {
+    create.mockRejectedValueOnce(
+      refused(400, 'PAYMENT_TOTAL_MISMATCH', { total: '250.00', paid: '249.00' }),
+    );
+    const user = await start();
+    const dialog = await openPay(user);
+    await user.click(within(dialog).getByRole('button', { name: 'Pay' }));
+    expect(
+      await within(dialog).findByText('The payments must add up to the total.'),
+    ).toBeInTheDocument();
+  });
+
+  it('INSUFFICIENT_STORE_CREDIT and VAULT_INVALID are translated', async () => {
+    create
+      .mockRejectedValueOnce(refused(409, 'INSUFFICIENT_STORE_CREDIT', { balance: '0.00' }))
+      .mockRejectedValueOnce(refused(400, 'VAULT_INVALID'));
+    const user = await start();
+    const dialog = await openPay(user);
+    const pay = within(dialog).getByRole('button', { name: 'Pay' });
+    await user.click(pay);
+    expect(
+      await within(dialog).findByText("The customer's store credit is not enough."),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(pay).toBeEnabled());
+    await user.click(pay);
+    expect(
+      await within(dialog).findByText('This bank account can not take this payment.'),
+    ).toBeInTheDocument();
+  });
+
+  it('after the sale the screen shows the payments and the change to give back', async () => {
+    create.mockResolvedValue(
+      sale({
+        payments: [
+          {
+            id: UNIT,
+            number: 'MAIN-PY-26-000001',
+            method: 'cash',
+            amount: '250.00',
+            cash_account_id: OTHER,
+            cash_account_name: 'Drawer of Mona',
+            reference: null,
+            tendered: '300.00',
+            change: '50.00',
+          },
+        ],
+        paid_total: '250.00',
+        change_total: '50.00',
+      }),
+    );
+    const user = await start();
+    const dialog = await openPay(user);
+    await user.click(within(dialog).getByRole('button', { name: 'Pay' }));
+    expect(await screen.findByTestId('sale-change')).toHaveTextContent('Change to give back');
+    expect(screen.getByTestId('sale-change')).toHaveTextContent('50.00');
+    expect(screen.queryByRole('dialog', { name: 'Payment' })).not.toBeInTheDocument();
+  });
+
+  it('the dialog works in Arabic', async () => {
+    const user = await start('/sales/pos', 'ar');
+    const confirm = await screen.findByRole('button', { name: 'تأكيد ودفع' });
+    await waitFor(() => expect(confirm).toBeEnabled());
+    await user.click(confirm);
+    const dialog = await screen.findByRole('dialog', { name: 'الدفع' });
+    expect(within(dialog).getByText('المتبقي')).toBeInTheDocument();
+    await user.click(within(dialog).getByRole('button', { name: 'إضافة تحويل بنكي' }));
+    expect(within(dialog).getByLabelText('مرجع التحويل')).toBeInTheDocument();
+    expect(within(dialog).getByLabelText('الحساب البنكي')).toBeInTheDocument();
   });
 });
 

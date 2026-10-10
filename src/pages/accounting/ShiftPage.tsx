@@ -14,7 +14,7 @@ import { formatDateTime, formatMoney, formatNumber } from '@/lib/format';
 import { shiftKeys, shiftsApi } from '@/services/shiftsApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
-import { ShiftMovementsTable } from './ShiftParts';
+import { ShiftMovementsTable, ShiftTakings } from './ShiftParts';
 
 function NotFound() {
   return (
@@ -147,6 +147,9 @@ export default function ShiftPage() {
               </div>
             )}
           </dl>
+        </Card>
+        <Card title={t('cash.shifts.takings.title')}>
+          <ShiftTakings shift={shift} />
         </Card>
         <Card title={t('cash.shifts.current.movements')} padded={false}>
           <ShiftMovementsTable movements={shift.movements} />

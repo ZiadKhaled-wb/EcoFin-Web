@@ -21,6 +21,7 @@ import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
 import {
   CloseShiftDialog,
+  ShiftTakings,
   OpenShiftForm,
   ShiftCashDialog,
   ShiftMovementsTable,
@@ -236,6 +237,10 @@ function MyShift() {
               <dd className="type-caption">{t('cash.shifts.current.expectedHelp')}</dd>
             </div>
           </dl>
+          <div className="space-y-1">
+            <p className="type-caption">{t('cash.shifts.takings.title')}</p>
+            <ShiftTakings shift={shift} />
+          </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" onClick={() => setMoving('in')}>
               {t('cash.shifts.current.cashIn')}

@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { Product, ProductUnit, Shift } from '@ziadkhaled-wb/contracts';
+import {
+  Uuid,
+  compareMoney,
+  type Product,
+  type ProductUnit,
+  type Shift,
+} from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import Badge from '@/components/ui/Badge';
@@ -22,6 +28,7 @@ import { productKeys, productsApi } from '@/services/productsApi';
 import { shiftKeys, shiftsApi } from '@/services/shiftsApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
+import PaymentDialog from './PaymentDialog';
 import { saleError } from './saleShared';
 import { productName, usePosCart } from './usePosCart';
 
@@ -31,8 +38,9 @@ const tdNum = 'type-body whitespace-nowrap py-2 text-end';
 
 /**
  * S01: the smallest screen that sells. The cashier finds products, the server prices the cart
- * after every change, and Confirm sells it for cash in the open shift. S06 turns this into the
- * full POS (scanner, shortcuts, held carts); S02 adds the payment dialog.
+ * after every change, and Confirm opens the payment dialog (S02): cash, bank transfers and store
+ * credit, which must add up to the total. S06 turns this into the full POS (scanner, shortcuts,
+ * held carts, the customer picker: until then `?customer=<id>` names the sale's customer).
  */
 export default function PosPage() {
   const orgId = useAuthStore((s) => s.orgId);
@@ -64,11 +72,16 @@ export default function PosPage() {
 function Sell({ shift }: { shift: Shift }) {
   const orgId = useAuthStore((s) => s.orgId);
   const cart = usePosCart(true);
+  const [params] = useSearchParams();
+  const customerParam = Uuid.safeParse(params.get('customer')).data ?? null;
+  const { setCustomer } = cart;
+  useEffect(() => setCustomer(customerParam), [customerParam]); // eslint-disable-line react-hooks/exhaustive-deps
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [unitsFor, setUnitsFor] = useState<Product | null>(null);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [error, setError] = useState('');
+  const [paying, setPaying] = useState(false);
 
   useEffect(() => {
     const id = setTimeout(() => setSearch(searchInput.trim()), 300);
@@ -108,11 +121,6 @@ function Sell({ shift }: { shift: Shift }) {
     );
     setUnitsFor(null);
   }
-  async function confirm() {
-    setError('');
-    const refused = await cart.confirm();
-    if (refused) setError(saleError(refused));
-  }
 
   if (cart.done) {
     return (
@@ -124,6 +132,19 @@ function Sell({ shift }: { shift: Shift }) {
           <p className="type-body" data-testid="sale-paid">
             {t('sales.pos.done.total', { amount: formatMoney(cart.done.total) })}
           </p>
+          <ul className="type-body space-y-1">
+            {cart.done.payments.map((p) => (
+              <li key={p.id}>
+                {t(`sales.detail.methods.${p.method}`)}:{' '}
+                <span className="num">{formatMoney(p.amount)}</span>
+              </li>
+            ))}
+          </ul>
+          {compareMoney(cart.done.change_total, '0.00') > 0 && (
+            <p className="type-section-title" data-testid="sale-change">
+              {t('sales.pos.done.change', { amount: formatMoney(cart.done.change_total) })}
+            </p>
+          )}
           <div className="flex flex-wrap gap-2">
             <Button onClick={cart.reset}>{t('sales.pos.done.newSale')}</Button>
             <Link to={`/sales/${cart.done.id}`} className="btn btn-secondary">
@@ -292,7 +313,10 @@ function Sell({ shift }: { shift: Shift }) {
               <Button
                 loading={cart.busy}
                 disabled={cart.busy || !cart.current || anyOver}
-                onClick={() => void confirm()}
+                onClick={() => {
+                  setError('');
+                  setPaying(true);
+                }}
               >
                 {t('sales.pos.confirm')}
               </Button>
@@ -300,6 +324,17 @@ function Sell({ shift }: { shift: Shift }) {
           </div>
         )}
       </Card>
+
+      {paying && quote && (
+        <PaymentDialog
+          total={quote.total}
+          customerId={cart.customerId}
+          storeCreditBalance={quote.store_credit_balance}
+          busy={cart.busy}
+          onPay={cart.confirm}
+          onClose={() => setPaying(false)}
+        />
+      )}
 
       <Dialog
         open={!!unitsFor}
