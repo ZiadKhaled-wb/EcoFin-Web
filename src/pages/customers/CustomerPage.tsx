@@ -1,7 +1,7 @@
 import { useRef, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Uuid, parseNationalId } from '@ziadkhaled-wb/contracts';
+import { Uuid } from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import Badge from '@/components/ui/Badge';
@@ -127,8 +127,6 @@ export default function CustomerPage() {
   const data = customer.data;
   const none = <span className="type-caption">{t('customers.profile.noValue')}</span>;
   const text = (value: string | null) => value ?? none;
-  // The governorate is only known from the full number, so only with customer.view_pii.
-  const parsedId = data?.national_id ? parseNationalId(data.national_id) : null;
 
   return (
     <PageContainer>
@@ -194,9 +192,9 @@ export default function CustomerPage() {
               <Detail label={t('customers.fields.gender')}>
                 {data.gender ? t(`customers.gender.${data.gender}`) : none}
               </Detail>
-              {parsedId && (
+              {data.governorate_code && (
                 <Detail label={t('customers.fields.governorate')}>
-                  {governorateName(parsedId.governorate_code)}
+                  {governorateName(data.governorate_code)}
                 </Detail>
               )}
               {data.tax_registration_no && (
@@ -252,7 +250,7 @@ export default function CustomerPage() {
             title={t('customers.profile.photos')}
             description={t('customers.profile.photosHint')}
             actions={
-              <Can permission="customer.edit">
+              <Can permission="customer.create">
                 <input
                   ref={fileRef}
                   type="file"

@@ -18,7 +18,6 @@ import Dialog from '@/components/ui/Dialog';
 import FormError from '@/components/ui/FormError';
 import FormField from '@/components/ui/FormField';
 import MoneyInput from '@/components/ui/MoneyInput';
-import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import { notify } from '@/components/ui/notify';
 import { useCan } from '@/features/me/useCan';
@@ -32,8 +31,6 @@ interface FormState {
   full_name: string;
   phones: string[];
   national_id: string;
-  birth_date: string;
-  gender: string;
   address: string;
   city: string;
   job: string;
@@ -51,8 +48,6 @@ const FIELD_ERRORS: Record<Field, TranslationKey> = {
   full_name: 'customers.errors.fullName',
   phones: 'customers.errors.phones',
   national_id: 'customers.errors.nationalId',
-  birth_date: 'customers.errors.birthDate',
-  gender: 'customers.errors.gender',
   address: 'customers.errors.address',
   city: 'customers.errors.city',
   job: 'customers.errors.job',
@@ -69,8 +64,6 @@ function initial(customer: Customer | null): FormState {
     phones: customer?.phones.length ? customer.phones : [''],
     // The full number is only here for a user with customer.view_pii; a mask is never put in the field.
     national_id: customer?.national_id ?? '',
-    birth_date: customer?.birth_date ?? '',
-    gender: customer?.gender ?? '',
     address: customer?.address ?? '',
     city: customer?.city ?? '',
     job: customer?.job ?? '',
@@ -85,7 +78,7 @@ function initial(customer: Customer | null): FormState {
 /**
  * The form as a create body; empty optional fields are left out (the server keeps null).
  * `idLocked`: the customer has an ID this user may not see, so it is not part of the body.
- * Birth date and gender are only sent without a national ID: with one the server reads them from it.
+ * Birth date, gender and governorate are never sent: the server reads them from the national ID.
  */
 function toInput(f: FormState, idLocked: boolean): CustomerCreateInput {
   const body: CustomerCreateInput = {
@@ -93,12 +86,7 @@ function toInput(f: FormState, idLocked: boolean): CustomerCreateInput {
     phones: f.phones.filter((p) => p.trim() !== ''),
     is_business: f.is_business,
   };
-  const hasId = f.national_id.trim() !== '';
-  if (!idLocked && hasId) body.national_id = f.national_id;
-  if (!idLocked && !hasId) {
-    if (f.birth_date) body.birth_date = f.birth_date;
-    if (f.gender === 'male' || f.gender === 'female') body.gender = f.gender;
-  }
+  if (!idLocked && f.national_id.trim() !== '') body.national_id = f.national_id;
   for (const key of TEXT_FIELDS) if (f[key].trim()) body[key] = f[key];
   if (f.monthly_income.trim()) body.monthly_income = f.monthly_income.trim();
   return body;
@@ -135,12 +123,6 @@ function changesOf(
   if (!idLocked) {
     const nationalId = next.national_id ?? null;
     if (nationalId !== customer.national_id) changes.national_id = nationalId;
-    if (nationalId === null) {
-      const birthDate = next.birth_date ?? null;
-      if (birthDate !== customer.birth_date) changes.birth_date = birthDate;
-      const gender = next.gender ?? null;
-      if (gender !== customer.gender) changes.gender = gender;
-    }
   }
   return changes;
 }
@@ -156,7 +138,7 @@ export interface CustomerFormProps {
 
 /**
  * R01 (D62) add / edit. The national ID is validated and parsed while typing (birth date, age,
- * gender, governorate), as the old CRM screen did. A saved ID can only be changed by a user who
+ * gender, governorate), as the old CRM screen did; none of them is typed. A saved ID can only be changed by a user who
  * may see it (customer.view_pii); everyone else sees its last four digits, read-only.
  */
 export default function CustomerForm({ open, onOpenChange, customer, onSaved }: CustomerFormProps) {
@@ -178,7 +160,6 @@ export default function CustomerForm({ open, onOpenChange, customer, onSaved }: 
   const idLocked = savedMask !== null && !canSeePii;
   const typedId = normalizeNationalId(form.national_id);
   const parsedId = idLocked ? null : parseNationalId(typedId);
-  const manualBirth = !idLocked && typedId === '';
 
   async function save(e: FormEvent) {
     e.preventDefault();
@@ -311,29 +292,6 @@ export default function CustomerForm({ open, onOpenChange, customer, onSaved }: 
                 <dd>{governorateName(parsedId.governorate_code)}</dd>
               </div>
             </dl>
-          )}
-          {manualBirth && (
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <FormField
-                label={t('customers.fields.birthDate')}
-                type="date"
-                ltr
-                value={form.birth_date}
-                error={errors.birth_date}
-                onChange={(e) => set('birth_date', e.target.value)}
-              />
-              <Select
-                label={t('customers.fields.gender')}
-                value={form.gender}
-                placeholder={t('customers.fields.genderNone')}
-                options={[
-                  { value: 'male', label: t('customers.gender.male') },
-                  { value: 'female', label: t('customers.gender.female') },
-                ]}
-                error={errors.gender}
-                onChange={(e) => set('gender', e.target.value)}
-              />
-            </div>
           )}
         </section>
 
