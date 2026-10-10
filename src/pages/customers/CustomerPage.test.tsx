@@ -1,0 +1,182 @@
+import { screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Route, Routes } from 'react-router-dom';
+import type { Customer, FileResponse, PermissionKey } from '@ziadkhaled-wb/contracts';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ApiError } from '@/lib/api';
+import { meApi } from '@/features/me/meApi';
+import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
+import { customersApi } from '@/services/customersApi';
+import { t } from '@/i18n';
+import CustomerPage from './CustomerPage';
+
+vi.mock('@/lib/supabase', () => ({ supabase: {} }));
+
+const CUSTOMER_ID = 'a0630000-0000-4000-8000-000000000001';
+const NATIONAL_ID = '29001010100015';
+const timestamp = '2026-10-12T09:00:00.000Z';
+
+const customer = (over: Partial<Customer> = {}): Customer => ({
+  id: CUSTOMER_ID,
+  full_name: 'Ahmed Ali Hassan',
+  phones: ['01001234567'],
+  national_id: null,
+  national_id_masked: '**********0015',
+  birth_date: '1990-01-01',
+  gender: 'male',
+  address: '12 Tahrir St',
+  city: 'Cairo',
+  job: 'Engineer',
+  employer: null,
+  monthly_income: '8500.50',
+  is_business: false,
+  tax_registration_no: null,
+  status: 'active',
+  notes: null,
+  id_photos_count: 2,
+  created_at: timestamp,
+  updated_at: timestamp,
+  ...over,
+});
+
+const photo = (n: number): FileResponse => ({
+  id: `a0630000-0000-4000-8000-0000000000f${n}`,
+  purpose: 'customer_id',
+  originalName: `id-${n}.jpg`,
+  mime: 'image/jpeg',
+  sizeBytes: 1000,
+  entityType: 'customer',
+  entityId: CUSTOMER_ID,
+  createdAt: timestamp,
+});
+
+function setPermissions(keys: PermissionKey[]) {
+  vi.spyOn(meApi, 'permissions').mockResolvedValue(permissionsFixture(keys));
+}
+const renderAt = (id: string, lang: 'ar' | 'en' = 'en') =>
+  renderApp(
+    <Routes>
+      <Route path="/customers/:id" element={<CustomerPage />} />
+    </Routes>,
+    { lang, route: `/customers/${id}` },
+  );
+
+describe('R01 customer profile', () => {
+  beforeEach(() => {
+    signIn();
+    setPermissions(['customer.create']);
+    vi.spyOn(customersApi, 'get').mockResolvedValue(customer());
+  });
+
+  afterEach(() => {
+    signOut();
+    vi.restoreAllMocks();
+  });
+
+  it('without customer.view_pii: the masked ID with its note, no governorate, no photo list', async () => {
+    const photos = vi.spyOn(customersApi, 'photos');
+    await renderAt(CUSTOMER_ID);
+    expect(await screen.findByRole('heading', { name: 'Ahmed Ali Hassan' })).toBeInTheDocument();
+    expect(screen.getByText('**********0015')).toHaveAttribute('dir', 'ltr');
+    expect(screen.getByText(t('customers.profile.idHidden'))).toBeInTheDocument();
+    expect(screen.queryByText(t('customers.fields.governorate'))).toBeNull();
+    expect(
+      screen.getByText(t('customers.profile.photosCount', { count: '2' })),
+    ).toBeInTheDocument();
+    expect(screen.getByText(t('customers.profile.photosHidden'))).toBeInTheDocument();
+    expect(photos).not.toHaveBeenCalled();
+    expect(document.body.textContent).not.toMatch(/\d{14}/);
+    // customer.create alone neither edits nor blocks nor uploads.
+    expect(screen.queryByRole('button', { name: t('customers.editAction') })).toBeNull();
+    expect(screen.queryByRole('button', { name: t('customers.block') })).toBeNull();
+    expect(screen.queryByRole('button', { name: t('customers.profile.uploadPhoto') })).toBeNull();
+  });
+
+  it('with customer.view_pii in Arabic: the full ID, its governorate and the photos to open', async () => {
+    setPermissions(['customer.edit', 'customer.view_pii']);
+    vi.spyOn(customersApi, 'get').mockResolvedValue(customer({ national_id: NATIONAL_ID }));
+    vi.spyOn(customersApi, 'photos').mockResolvedValue([photo(1), photo(2)]);
+    const url = vi
+      .spyOn(customersApi, 'photoUrl')
+      .mockResolvedValue({ url: 'https://files.example/signed', expiresAt: timestamp });
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    await renderAt(CUSTOMER_ID, 'ar');
+    expect(await screen.findByText(NATIONAL_ID)).toHaveAttribute('dir', 'ltr');
+    expect(screen.queryByText(t('customers.profile.idHidden'))).toBeNull();
+    expect(screen.getByText('القاهرة')).toBeInTheDocument();
+    expect(screen.getByText('ذكر')).toBeInTheDocument();
+    const views = await screen.findAllByRole('button', { name: t('customers.profile.viewPhoto') });
+    expect(views).toHaveLength(2);
+    const user = userEvent.setup();
+    await user.click(views[0]!);
+    await waitFor(() => expect(url).toHaveBeenCalledWith(photo(1).id));
+    expect(open).toHaveBeenCalledWith(
+      'https://files.example/signed',
+      '_blank',
+      'noopener,noreferrer',
+    );
+  });
+
+  it('uploads an ID photo for the customer and refreshes', async () => {
+    setPermissions(['customer.edit', 'customer.view_pii']);
+    vi.spyOn(customersApi, 'photos').mockResolvedValue([]);
+    const upload = vi.spyOn(customersApi, 'uploadPhoto').mockResolvedValue(photo(1));
+    await renderAt(CUSTOMER_ID);
+    expect(await screen.findByText(t('customers.profile.photosEmpty'))).toBeInTheDocument();
+    const user = userEvent.setup();
+    const file = new File(['x'], 'front.png', { type: 'image/png' });
+    await user.upload(screen.getByLabelText(t('customers.profile.uploadPhoto')), file);
+    await waitFor(() => expect(upload).toHaveBeenCalledWith(CUSTOMER_ID, file));
+    expect(await screen.findByText(t('customers.profile.photoUploaded'))).toBeInTheDocument();
+  });
+
+  it('a refused photo type shows its message', async () => {
+    setPermissions(['customer.edit', 'customer.view_pii']);
+    vi.spyOn(customersApi, 'photos').mockResolvedValue([]);
+    vi.spyOn(customersApi, 'uploadPhoto').mockRejectedValue(
+      new ApiError(415, 'FILE_TYPE_NOT_ALLOWED', 'Type.'),
+    );
+    await renderAt(CUSTOMER_ID);
+    await screen.findByText(t('customers.profile.photosEmpty'));
+    const user = userEvent.setup({ applyAccept: false });
+    await user.upload(
+      screen.getByLabelText(t('customers.profile.uploadPhoto')),
+      new File(['x'], 'id.pdf', { type: 'application/pdf' }),
+    );
+    expect(await screen.findByText(t('customers.profile.photoType'))).toBeInTheDocument();
+  });
+
+  it('blocks from the profile with a reason', async () => {
+    setPermissions(['customer.edit']);
+    const setStatus = vi
+      .spyOn(customersApi, 'setStatus')
+      .mockResolvedValue(customer({ status: 'blocked' }));
+    await renderAt(CUSTOMER_ID);
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: t('customers.block') }));
+    const dialog = await screen.findByRole('dialog');
+    await user.type(within(dialog).getByLabelText(t('customers.blockReason')), 'bounced cheques');
+    await user.click(within(dialog).getByRole('button', { name: t('customers.block') }));
+    await waitFor(() =>
+      expect(setStatus).toHaveBeenCalledWith(CUSTOMER_ID, {
+        status: 'blocked',
+        reason: 'bounced cheques',
+      }),
+    );
+  });
+
+  it('an id that is not a UUID never reaches the API', async () => {
+    const get = vi.spyOn(customersApi, 'get');
+    await renderAt('not-a-uuid');
+    expect(await screen.findByText(t('customers.profile.notFound'))).toBeInTheDocument();
+    expect(get).not.toHaveBeenCalled();
+  });
+
+  it("another shop's customer reads as not found", async () => {
+    vi.spyOn(customersApi, 'get').mockRejectedValue(
+      new ApiError(404, 'CUSTOMER_NOT_FOUND', 'Not found.'),
+    );
+    await renderAt(CUSTOMER_ID);
+    expect(await screen.findByText(t('customers.profile.notFound'))).toBeInTheDocument();
+  });
+});

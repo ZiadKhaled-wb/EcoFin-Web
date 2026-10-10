@@ -37,6 +37,8 @@ import TransferPage from '@/pages/inventory/TransferPage';
 import UnitsPage from '@/pages/inventory/UnitsPage';
 import UnitPage from '@/pages/inventory/UnitPage';
 import MovementsPage from '@/pages/inventory/MovementsPage';
+import CustomersPage from '@/pages/customers/CustomersPage';
+import CustomerPage from '@/pages/customers/CustomerPage';
 import SuppliersPage from '@/pages/suppliers/SuppliersPage';
 import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
 import VaultsPage from '@/pages/accounting/VaultsPage';
@@ -88,6 +90,7 @@ const REAL_ROUTES = new Set([
   '/inventory/units',
   '/inventory/movements',
   '/suppliers',
+  '/customers',
   '/purchasing/invoices',
   '/purchasing/approvals',
   '/purchasing/returns',
@@ -101,6 +104,9 @@ const REAL_ROUTES = new Set([
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
  * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
 const SUPPLIERS_ITEM = navLeaves().find((i) => i.id === 'suppliers')!;
+/** R01: the customers pages follow the menu item's rule; the server checks the customer read keys
+ * and masks national IDs without customer.view_pii on every call (D62). */
+const CUSTOMERS_ITEM = navLeaves().find((i) => i.id === 'customers')!;
 /** U02: the purchase invoice pages follow their menu item (same roles as purchasing). */
 const PURCHASE_INVOICES_ITEM = navLeaves().find((i) => i.id === 'purchase-invoices')!;
 /** U04: the purchase return pages follow their menu item (same roles as purchasing). */
@@ -182,6 +188,22 @@ export default function App() {
                     <Route path="/inventory/units/:id" element={<UnitPage />} />
                     <Route path="/inventory/movements" element={<MovementsPage />} />
                   </Route>
+                  <Route
+                    path="/customers"
+                    element={
+                      <RequireNavItem item={CUSTOMERS_ITEM}>
+                        <CustomersPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/customers/:id"
+                    element={
+                      <RequireNavItem item={CUSTOMERS_ITEM}>
+                        <CustomerPage />
+                      </RequireNavItem>
+                    }
+                  />
                   <Route
                     path="/suppliers"
                     element={
