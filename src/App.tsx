@@ -41,6 +41,9 @@ import SuppliersPage from '@/pages/suppliers/SuppliersPage';
 import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
 import VaultsPage from '@/pages/accounting/VaultsPage';
 import VaultLedgerPage from '@/pages/accounting/VaultLedgerPage';
+import ShiftsPage from '@/pages/accounting/ShiftsPage';
+import ExpensesPage from '@/pages/accounting/ExpensesPage';
+import ShiftPage from '@/pages/accounting/ShiftPage';
 import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
 import PurchaseInvoiceFormPage from '@/pages/purchasing/PurchaseInvoiceFormPage';
@@ -51,6 +54,9 @@ import PurchaseReturnFormPage from '@/pages/purchasing/PurchaseReturnFormPage';
 import SupplierPaymentsPage from '@/pages/purchasing/SupplierPaymentsPage';
 import SupplierPaymentPage from '@/pages/purchasing/SupplierPaymentPage';
 import SupplierPaymentFormPage from '@/pages/purchasing/SupplierPaymentFormPage';
+import PurchaseOrdersPage from '@/pages/purchasing/PurchaseOrdersPage';
+import PurchaseOrderPage from '@/pages/purchasing/PurchaseOrderPage';
+import PurchaseOrderFormPage from '@/pages/purchasing/PurchaseOrderFormPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 
@@ -84,7 +90,10 @@ const REAL_ROUTES = new Set([
   '/purchasing/approvals',
   '/purchasing/returns',
   '/purchasing/payments',
+  '/purchasing/orders',
   '/accounting/vaults',
+  '/accounting/shifts',
+  '/accounting/expenses',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
  * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
@@ -95,6 +104,12 @@ const PURCHASE_INVOICES_ITEM = navLeaves().find((i) => i.id === 'purchase-invoic
 const PURCHASE_RETURNS_ITEM = navLeaves().find((i) => i.id === 'purchase-returns')!;
 /** U03: the supplier payment pages follow their menu item (same roles as purchasing). */
 const SUPPLIER_PAYMENTS_ITEM = navLeaves().find((i) => i.id === 'supplier-payments')!;
+/** U05: the purchase order pages follow their menu item (same roles as purchasing). */
+const PURCHASE_ORDERS_ITEM = navLeaves().find((i) => i.id === 'purchase-orders')!;
+/** K02: the shift pages follow their menu item (shift.operate, or the accountant's history). */
+const SHIFTS_ITEM = navLeaves().find((i) => i.id === 'shifts')!;
+/** K03: the expenses page follows its menu item (expense.create). */
+const EXPENSES_ITEM = navLeaves().find((i) => i.id === 'expenses')!;
 
 export default function App() {
   return (
@@ -210,6 +225,30 @@ export default function App() {
                       </RequireNavItem>
                     }
                   />
+                  <Route
+                    path="/accounting/shifts"
+                    element={
+                      <RequireNavItem item={SHIFTS_ITEM}>
+                        <ShiftsPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/accounting/expenses"
+                    element={
+                      <RequireNavItem item={EXPENSES_ITEM}>
+                        <ExpensesPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/accounting/shifts/:id"
+                    element={
+                      <RequireNavItem item={SHIFTS_ITEM}>
+                        <ShiftPage />
+                      </RequireNavItem>
+                    }
+                  />
                   {/* K01: vaults and their ledgers need cash.view (D56). */}
                   <Route element={<RequirePermission permission="cash.view" />}>
                     <Route path="/accounting/vaults" element={<VaultsPage />} />
@@ -228,6 +267,27 @@ export default function App() {
                     element={
                       <RequireNavItem item={PURCHASE_RETURNS_ITEM}>
                         <PurchaseReturnPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/purchasing/orders"
+                    element={
+                      <RequireNavItem item={PURCHASE_ORDERS_ITEM}>
+                        <PurchaseOrdersPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  {/* U05: ordering needs purchase.order_manage (D59); /new before /:id. */}
+                  <Route element={<RequirePermission permission="purchase.order_manage" />}>
+                    <Route path="/purchasing/orders/new" element={<PurchaseOrderFormPage />} />
+                    <Route path="/purchasing/orders/:id/edit" element={<PurchaseOrderFormPage />} />
+                  </Route>
+                  <Route
+                    path="/purchasing/orders/:id"
+                    element={
+                      <RequireNavItem item={PURCHASE_ORDERS_ITEM}>
+                        <PurchaseOrderPage />
                       </RequireNavItem>
                     }
                   />

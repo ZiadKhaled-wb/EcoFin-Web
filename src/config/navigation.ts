@@ -154,6 +154,12 @@ export const NAV: NavItem[] = [
         roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
       },
       {
+        id: 'purchase-orders',
+        labelKey: 'purchases.nav.orders',
+        to: '/purchasing/orders',
+        roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
+      },
+      {
         id: 'purchase-returns',
         labelKey: 'purchases.nav.returns',
         to: '/purchasing/returns',
@@ -199,6 +205,21 @@ export const NAV: NavItem[] = [
         labelKey: 'cash.nav.vaults',
         to: '/accounting/vaults',
         permission: 'cash.view',
+      },
+      // K02 (D60): cashiers run their shift here (shift.operate); accountants read the history.
+      {
+        id: 'shifts',
+        labelKey: 'cash.nav.shifts',
+        to: '/accounting/shifts',
+        roles: ['ACCOUNTANT'],
+        permission: 'shift.operate',
+      },
+      // K03 (D61): whoever records expenses (expense.create: owner, managers, accountants).
+      {
+        id: 'expenses',
+        labelKey: 'cash.nav.expenses',
+        to: '/accounting/expenses',
+        permission: 'expense.create',
       },
     ],
   },

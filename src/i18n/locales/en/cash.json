@@ -1,6 +1,8 @@
 {
   "nav": {
-    "vaults": "Vaults and banks"
+    "vaults": "Vaults and banks",
+    "shifts": "Shifts",
+    "expenses": "Expenses"
   },
   "title": "Vaults and banks",
   "description": "Where the shop keeps its money: safes in each branch and bank accounts.",
@@ -120,6 +122,261 @@
       "settlement": "Settlement",
       "adjustment": "Adjustment",
       "opening": "Opening balance"
+    }
+  },
+  "shifts": {
+    "title": "Shifts",
+    "description": "The cash each cashier handles during a shift: float, drawer and closing count.",
+    "back": "Shifts",
+    "mine": "My shift",
+    "none": "You have no open shift.",
+    "history": "Shift history",
+    "empty": "No shifts yet",
+    "emptyHint": "Shifts appear here once a cashier opens one.",
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "filters": {
+      "branch": "Branch",
+      "allBranches": "All branches",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "from": "From",
+      "to": "To"
+    },
+    "columns": {
+      "number": "Number",
+      "cashier": "Cashier",
+      "branch": "Branch",
+      "opened": "Opened",
+      "status": "Status",
+      "expected": "Expected",
+      "counted": "Counted",
+      "difference": "Difference"
+    },
+    "open": {
+      "title": "Open a shift",
+      "branch": "Branch",
+      "float": "Opening float",
+      "floatHelp": "Cash taken from a safe to start with. Leave 0 for none.",
+      "vault": "Safe",
+      "chooseVault": "Choose a safe",
+      "noVaults": "This branch has no active safe.",
+      "vaultRequired": "Choose the safe the float comes from.",
+      "submit": "Open shift",
+      "opened": "Shift {number} opened."
+    },
+    "current": {
+      "number": "Shift",
+      "openedAt": "Opened",
+      "float": "Opening float",
+      "expected": "Cash that should be in the drawer",
+      "expectedHelp": "The float plus every cash movement of this shift.",
+      "movements": "Drawer movements",
+      "noMovements": "No cash has moved in this shift yet.",
+      "cashIn": "Cash in",
+      "cashOut": "Cash out",
+      "close": "Close shift"
+    },
+    "movement": {
+      "time": "Time",
+      "type": "Type",
+      "document": "Document",
+      "note": "Note",
+      "amount": "Amount",
+      "float_in": "Cash in from the safe",
+      "float_out": "Cash out to the safe",
+      "sale": "Sale",
+      "refund": "Refund",
+      "collection": "Installment collection",
+      "expense": "Expense",
+      "adjustment": "Closing difference",
+      "other": "Other"
+    },
+    "cash": {
+      "inTitle": "Take cash from a safe",
+      "outTitle": "Drop cash into a safe",
+      "inHelp": "Change or extra float from the safe into the drawer.",
+      "outHelp": "Cash you take out of the drawer and put in the safe.",
+      "amount": "Amount",
+      "vault": "Safe",
+      "note": "Note",
+      "noteInvalid": "Write a note of 3 to 500 characters.",
+      "amountInvalid": "Enter an amount above 0.",
+      "submit": "Save",
+      "saved": "Cash movement saved."
+    },
+    "close": {
+      "title": "Close the shift",
+      "help": "Count the cash in the drawer. The counted cash goes back to a safe.",
+      "count": "How many {denomination}",
+      "counted": "Counted",
+      "expected": "Expected",
+      "difference": "Difference",
+      "reason": "Reason for the difference",
+      "reasonRequired": "Counted and expected differ: write a reason of 3 to 500 characters.",
+      "vault": "Safe the cash goes to",
+      "vaultRequired": "Choose the safe the counted cash goes to.",
+      "submit": "Close shift",
+      "closed": "Shift {number} closed."
+    },
+    "detail": {
+      "title": "Shift {number}",
+      "notFound": "Shift not found",
+      "notFoundHint": "It may belong to another cashier or a branch you do not work in.",
+      "loadFailed": "Could not load the shift.",
+      "cashier": "Cashier",
+      "branch": "Branch",
+      "device": "Device",
+      "openedAt": "Opened",
+      "closedAt": "Closed",
+      "closedBy": "Closed by",
+      "float": "Opening float",
+      "expected": "Expected",
+      "counted": "Counted",
+      "difference": "Difference",
+      "reason": "Reason for the difference",
+      "breakdown": "Count"
+    },
+    "errors": {
+      "notFound": "Shift not found.",
+      "alreadyOpen": "There is already an open shift. Close it first.",
+      "closed": "This shift is closed.",
+      "differenceReason": "Expected {expected}, counted {counted}: write a reason for the difference.",
+      "deviceInvalid": "This device cannot be used in this branch.",
+      "vaultInvalid": "This safe cannot be used for this branch.",
+      "accountInactive": "This safe is inactive.",
+      "insufficientFunds": "There is not enough cash for this.",
+      "dayClosed": "The day is closed for this branch.",
+      "branchDenied": "You do not work in this branch.",
+      "permission": "You do not have permission for this.",
+      "validation": "Check the entered values.",
+      "failed": "Could not save. Try again."
+    }
+  },
+  "expenses": {
+    "title": "Expenses",
+    "description": "What the shop spends, by category, paid from a vault or from the open shift.",
+    "new": "New expense",
+    "categories": "Categories",
+    "list": "Expenses",
+    "empty": "No expenses yet",
+    "emptyHint": "Recorded expenses appear here.",
+    "filters": {
+      "branch": "Branch",
+      "allBranches": "All branches",
+      "category": "Category",
+      "allCategories": "All categories",
+      "from": "From",
+      "to": "To",
+      "includeReversals": "Show reversals and reversed expenses"
+    },
+    "columns": {
+      "number": "Number",
+      "date": "Date",
+      "category": "Category",
+      "source": "Paid from",
+      "note": "Note",
+      "by": "By",
+      "amount": "Amount",
+      "actions": "Actions"
+    },
+    "status": {
+      "reversed": "Reversed",
+      "reversal": "Reversal"
+    },
+    "source": {
+      "shift": "Shift {number}"
+    },
+    "receipt": {
+      "view": "Receipt",
+      "failed": "The receipt could not be opened."
+    },
+    "report": {
+      "title": "Spent by category",
+      "help": "For the dates and branch chosen below. Reversed expenses are left out.",
+      "empty": "Nothing was spent in this period.",
+      "category": "Category",
+      "count": "Expenses",
+      "total": "Total",
+      "all": "All categories"
+    },
+    "form": {
+      "title": "New expense",
+      "help": "The money leaves the vault or the drawer of your open shift right away.",
+      "category": "Category",
+      "chooseCategory": "Choose a category",
+      "noCategories": "Add a category first.",
+      "amount": "Amount",
+      "source": "Paid from",
+      "fromVault": "A vault or bank",
+      "fromShift": "My open shift",
+      "shiftInfo": "Shift {number}: the drawer should hold {amount}.",
+      "noShift": "You have no open shift.",
+      "branch": "Branch",
+      "vault": "Vault or bank",
+      "chooseVault": "Choose a vault",
+      "noVaults": "This branch has no active vault.",
+      "note": "Note",
+      "receipt": "Receipt photo",
+      "uploadReceipt": "Attach a receipt",
+      "receiptSet": "Receipt attached",
+      "removeReceipt": "Remove",
+      "submit": "Record expense",
+      "saved": "Expense {number} recorded"
+    },
+    "reverse": {
+      "action": "Reverse",
+      "title": "Reverse expense {number}",
+      "help": "The expense stays in the list with a linked reversal, and the money goes back.",
+      "reason": "Reason",
+      "reasonInvalid": "Write a reason of 3 to 500 characters.",
+      "vault": "Vault the money goes back to",
+      "vaultHelp": "This expense was paid from a shift. If that shift is closed, choose a vault.",
+      "sameAccount": "Back to where it was paid from",
+      "submit": "Reverse expense",
+      "saved": "Expense reversed"
+    },
+    "cats": {
+      "title": "Expense categories",
+      "help": "An archived category keeps its expenses and takes no new one.",
+      "name": "Category name",
+      "add": "Add",
+      "added": "Category added",
+      "rename": "Rename",
+      "save": "Save",
+      "cancel": "Cancel",
+      "renamed": "Category renamed",
+      "archive": "Archive",
+      "archived": "Category archived",
+      "restore": "Restore",
+      "restored": "Category restored",
+      "archivedBadge": "Archived",
+      "empty": "No categories yet.",
+      "nameInvalid": "Write a name of 1 to 80 characters."
+    },
+    "errors": {
+      "categoryRequired": "Choose a category.",
+      "amountInvalid": "Enter an amount above zero.",
+      "vaultRequired": "Choose the vault the money leaves.",
+      "categoryNotFound": "This category no longer exists.",
+      "nameTaken": "Another category already has this name.",
+      "categoryArchived": "This category is archived. Choose another one.",
+      "notFound": "This expense was not found.",
+      "alreadyReversed": "This expense was already reversed.",
+      "ownerOnly": "Only the shop owner can reverse an expense.",
+      "shiftRequired": "You have no open shift to pay from.",
+      "shiftClosed": "That shift is closed.",
+      "vaultInvalid": "Choose a vault of this branch.",
+      "accountInactive": "This vault is not active.",
+      "insufficientFunds": "There is not enough money there for this expense.",
+      "dayClosed": "This day is closed.",
+      "branchDenied": "You do not work in this branch.",
+      "permission": "You are not allowed to do this.",
+      "validation": "Check the entered values.",
+      "upload": "The receipt could not be uploaded. Use a photo or a PDF.",
+      "failed": "Something went wrong. Try again."
     }
   }
 }

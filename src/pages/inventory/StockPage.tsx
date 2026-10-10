@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Uuid, type StockRow } from '@ziadkhaled-wb/contracts';
@@ -12,6 +12,7 @@ import DataTable from '@/components/ui/DataTable';
 import SearchInput from '@/components/ui/SearchInput';
 import Select from '@/components/ui/Select';
 import { useBranches } from '@/features/me/useBranches';
+import Can from '@/features/me/Can';
 import { useCan } from '@/features/me/useCan';
 import { formatNumber } from '@/lib/format';
 import { categoriesApi, categoryKeys } from '@/services/categoriesApi';
@@ -180,7 +181,22 @@ export default function StockPage() {
 
   return (
     <PageContainer>
-      <PageHeader title={t('stock.title')} />
+      <PageHeader
+        title={t('stock.title')}
+        actions={
+          // U05 (D52): the low products of one branch start a purchase order.
+          lowOnly && branchId ? (
+            <Can permission="purchase.order_manage">
+              <Link
+                to={`/purchasing/orders/new?branch_id=${branchId}&from=low`}
+                className="btn btn-primary"
+              >
+                {t('purchases.orders.lowStock')}
+              </Link>
+            </Can>
+          ) : undefined
+        }
+      />
       <p className="type-caption mb-4">{t('stock.subtitle')}</p>
       <div className="mb-4 grid gap-3 md:grid-cols-[2fr_1fr_1fr] md:items-end">
         <SearchInput

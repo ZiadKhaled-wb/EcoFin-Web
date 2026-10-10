@@ -4,6 +4,7 @@ import Badge from '@/components/ui/Badge';
 import Card from '@/components/ui/Card';
 import ErrorState from '@/components/ui/ErrorState';
 import Skeleton from '@/components/ui/Skeleton';
+import Can from '@/features/me/Can';
 import { useBranches } from '@/features/me/useBranches';
 import { formatNumber } from '@/lib/format';
 import { stockApi, stockKeys } from '@/services/stockApi';
@@ -60,6 +61,17 @@ export default function LowStockCard() {
                   <span>{branchName.get(b.branch_id) ?? ''}</span>
                   <Badge tone={b.low > 0 ? 'danger' : 'success'}>{formatNumber(b.low)}</Badge>
                 </Link>
+                {b.low > 0 && (
+                  <Can permission="purchase.order_manage">
+                    <Link
+                      to={`/purchasing/orders/new?branch_id=${b.branch_id}&from=low`}
+                      className="btn btn-ghost ms-1"
+                      aria-label={`${t('purchases.orders.lowStock')}: ${branchName.get(b.branch_id) ?? ''}`}
+                    >
+                      {t('purchases.orders.lowStock')}
+                    </Link>
+                  </Can>
+                )}
               </li>
             ))}
           </ul>
