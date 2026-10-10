@@ -43,6 +43,8 @@ import VaultsPage from '@/pages/accounting/VaultsPage';
 import VaultLedgerPage from '@/pages/accounting/VaultLedgerPage';
 import ShiftsPage from '@/pages/accounting/ShiftsPage';
 import ExpensesPage from '@/pages/accounting/ExpensesPage';
+import PosPage from '@/pages/sales/PosPage';
+import SalePage from '@/pages/sales/SalePage';
 import ShiftPage from '@/pages/accounting/ShiftPage';
 import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
@@ -94,6 +96,7 @@ const REAL_ROUTES = new Set([
   '/accounting/vaults',
   '/accounting/shifts',
   '/accounting/expenses',
+  '/sales/pos',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
  * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
@@ -110,6 +113,8 @@ const PURCHASE_ORDERS_ITEM = navLeaves().find((i) => i.id === 'purchase-orders')
 const SHIFTS_ITEM = navLeaves().find((i) => i.id === 'shifts')!;
 /** K03: the expenses page follows its menu item (expense.create). */
 const EXPENSES_ITEM = navLeaves().find((i) => i.id === 'expenses')!;
+/** S01: the sale screen follows its menu item (sale.create). */
+const POS_ITEM = navLeaves().find((i) => i.id === 'pos')!;
 
 export default function App() {
   return (
@@ -233,6 +238,16 @@ export default function App() {
                       </RequireNavItem>
                     }
                   />
+                  <Route
+                    path="/sales/pos"
+                    element={
+                      <RequireNavItem item={POS_ITEM}>
+                        <PosPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  {/* S01: a sale's details; the server decides who may read it (D62). */}
+                  <Route path="/sales/:id" element={<SalePage />} />
                   <Route
                     path="/accounting/expenses"
                     element={
