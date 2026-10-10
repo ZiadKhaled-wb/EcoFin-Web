@@ -52,7 +52,8 @@ export const NAV: NavItem[] = [
         id: 'pos',
         labelKey: 'nav.pos',
         to: '/sales/pos',
-        roles: [OWNER, BRANCH_MANAGER, 'CASHIER'],
+        // S01 (D62): whoever may sell (sale.create: owner, managers, cashiers).
+        permission: 'sale.create',
       },
       {
         id: 'orders',
