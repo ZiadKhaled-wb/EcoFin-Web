@@ -1,6 +1,7 @@
 {
   "nav": {
-    "vaults": "Vaults and banks"
+    "vaults": "Vaults and banks",
+    "shifts": "Shifts"
   },
   "title": "Vaults and banks",
   "description": "Where the shop keeps its money: safes in each branch and bank accounts.",
@@ -120,6 +121,137 @@
       "settlement": "Settlement",
       "adjustment": "Adjustment",
       "opening": "Opening balance"
+    }
+  },
+  "shifts": {
+    "title": "Shifts",
+    "description": "The cash each cashier handles during a shift: float, drawer and closing count.",
+    "back": "Shifts",
+    "mine": "My shift",
+    "none": "You have no open shift.",
+    "history": "Shift history",
+    "empty": "No shifts yet",
+    "emptyHint": "Shifts appear here once a cashier opens one.",
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "filters": {
+      "branch": "Branch",
+      "allBranches": "All branches",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "from": "From",
+      "to": "To"
+    },
+    "columns": {
+      "number": "Number",
+      "cashier": "Cashier",
+      "branch": "Branch",
+      "opened": "Opened",
+      "status": "Status",
+      "expected": "Expected",
+      "counted": "Counted",
+      "difference": "Difference"
+    },
+    "open": {
+      "title": "Open a shift",
+      "branch": "Branch",
+      "float": "Opening float",
+      "floatHelp": "Cash taken from a safe to start with. Leave 0 for none.",
+      "vault": "Safe",
+      "chooseVault": "Choose a safe",
+      "noVaults": "This branch has no active safe.",
+      "vaultRequired": "Choose the safe the float comes from.",
+      "submit": "Open shift",
+      "opened": "Shift {number} opened."
+    },
+    "current": {
+      "number": "Shift",
+      "openedAt": "Opened",
+      "float": "Opening float",
+      "expected": "Cash that should be in the drawer",
+      "expectedHelp": "The float plus every cash movement of this shift.",
+      "movements": "Drawer movements",
+      "noMovements": "No cash has moved in this shift yet.",
+      "cashIn": "Cash in",
+      "cashOut": "Cash out",
+      "close": "Close shift"
+    },
+    "movement": {
+      "time": "Time",
+      "type": "Type",
+      "document": "Document",
+      "note": "Note",
+      "amount": "Amount",
+      "float_in": "Cash in from the safe",
+      "float_out": "Cash out to the safe",
+      "sale": "Sale",
+      "refund": "Refund",
+      "collection": "Installment collection",
+      "expense": "Expense",
+      "adjustment": "Closing difference",
+      "other": "Other"
+    },
+    "cash": {
+      "inTitle": "Take cash from a safe",
+      "outTitle": "Drop cash into a safe",
+      "inHelp": "Change or extra float from the safe into the drawer.",
+      "outHelp": "Cash you take out of the drawer and put in the safe.",
+      "amount": "Amount",
+      "vault": "Safe",
+      "note": "Note",
+      "noteInvalid": "Write a note of 3 to 500 characters.",
+      "amountInvalid": "Enter an amount above 0.",
+      "submit": "Save",
+      "saved": "Cash movement saved."
+    },
+    "close": {
+      "title": "Close the shift",
+      "help": "Count the cash in the drawer. The counted cash goes back to a safe.",
+      "count": "How many {denomination}",
+      "counted": "Counted",
+      "expected": "Expected",
+      "difference": "Difference",
+      "reason": "Reason for the difference",
+      "reasonRequired": "Counted and expected differ: write a reason of 3 to 500 characters.",
+      "vault": "Safe the cash goes to",
+      "vaultRequired": "Choose the safe the counted cash goes to.",
+      "submit": "Close shift",
+      "closed": "Shift {number} closed."
+    },
+    "detail": {
+      "title": "Shift {number}",
+      "notFound": "Shift not found",
+      "notFoundHint": "It may belong to another cashier or a branch you do not work in.",
+      "loadFailed": "Could not load the shift.",
+      "cashier": "Cashier",
+      "branch": "Branch",
+      "device": "Device",
+      "openedAt": "Opened",
+      "closedAt": "Closed",
+      "closedBy": "Closed by",
+      "float": "Opening float",
+      "expected": "Expected",
+      "counted": "Counted",
+      "difference": "Difference",
+      "reason": "Reason for the difference",
+      "breakdown": "Count"
+    },
+    "errors": {
+      "notFound": "Shift not found.",
+      "alreadyOpen": "There is already an open shift. Close it first.",
+      "closed": "This shift is closed.",
+      "differenceReason": "Expected {expected}, counted {counted}: write a reason for the difference.",
+      "deviceInvalid": "This device cannot be used in this branch.",
+      "vaultInvalid": "This safe cannot be used for this branch.",
+      "accountInactive": "This safe is inactive.",
+      "insufficientFunds": "There is not enough cash for this.",
+      "dayClosed": "The day is closed for this branch.",
+      "branchDenied": "You do not work in this branch.",
+      "permission": "You do not have permission for this.",
+      "validation": "Check the entered values.",
+      "failed": "Could not save. Try again."
     }
   }
 }

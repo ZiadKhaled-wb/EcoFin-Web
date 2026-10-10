@@ -206,6 +206,14 @@ export const NAV: NavItem[] = [
         to: '/accounting/vaults',
         permission: 'cash.view',
       },
+      // K02 (D60): cashiers run their shift here (shift.operate); accountants read the history.
+      {
+        id: 'shifts',
+        labelKey: 'cash.nav.shifts',
+        to: '/accounting/shifts',
+        roles: ['ACCOUNTANT'],
+        permission: 'shift.operate',
+      },
     ],
   },
   {

@@ -41,6 +41,8 @@ import SuppliersPage from '@/pages/suppliers/SuppliersPage';
 import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
 import VaultsPage from '@/pages/accounting/VaultsPage';
 import VaultLedgerPage from '@/pages/accounting/VaultLedgerPage';
+import ShiftsPage from '@/pages/accounting/ShiftsPage';
+import ShiftPage from '@/pages/accounting/ShiftPage';
 import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
 import PurchaseInvoiceFormPage from '@/pages/purchasing/PurchaseInvoiceFormPage';
@@ -89,6 +91,7 @@ const REAL_ROUTES = new Set([
   '/purchasing/payments',
   '/purchasing/orders',
   '/accounting/vaults',
+  '/accounting/shifts',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
  * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
@@ -101,6 +104,8 @@ const PURCHASE_RETURNS_ITEM = navLeaves().find((i) => i.id === 'purchase-returns
 const SUPPLIER_PAYMENTS_ITEM = navLeaves().find((i) => i.id === 'supplier-payments')!;
 /** U05: the purchase order pages follow their menu item (same roles as purchasing). */
 const PURCHASE_ORDERS_ITEM = navLeaves().find((i) => i.id === 'purchase-orders')!;
+/** K02: the shift pages follow their menu item (shift.operate, or the accountant's history). */
+const SHIFTS_ITEM = navLeaves().find((i) => i.id === 'shifts')!;
 
 export default function App() {
   return (
@@ -213,6 +218,22 @@ export default function App() {
                     element={
                       <RequireNavItem item={SUPPLIERS_ITEM}>
                         <SupplierStatementPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/accounting/shifts"
+                    element={
+                      <RequireNavItem item={SHIFTS_ITEM}>
+                        <ShiftsPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/accounting/shifts/:id"
+                    element={
+                      <RequireNavItem item={SHIFTS_ITEM}>
+                        <ShiftPage />
                       </RequireNavItem>
                     }
                   />
