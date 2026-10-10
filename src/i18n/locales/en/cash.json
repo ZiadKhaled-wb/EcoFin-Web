@@ -1,7 +1,8 @@
 {
   "nav": {
     "vaults": "Vaults and banks",
-    "shifts": "Shifts"
+    "shifts": "Shifts",
+    "expenses": "Expenses"
   },
   "title": "Vaults and banks",
   "description": "Where the shop keeps its money: safes in each branch and bank accounts.",
@@ -252,6 +253,130 @@
       "permission": "You do not have permission for this.",
       "validation": "Check the entered values.",
       "failed": "Could not save. Try again."
+    }
+  },
+  "expenses": {
+    "title": "Expenses",
+    "description": "What the shop spends, by category, paid from a vault or from the open shift.",
+    "new": "New expense",
+    "categories": "Categories",
+    "list": "Expenses",
+    "empty": "No expenses yet",
+    "emptyHint": "Recorded expenses appear here.",
+    "filters": {
+      "branch": "Branch",
+      "allBranches": "All branches",
+      "category": "Category",
+      "allCategories": "All categories",
+      "from": "From",
+      "to": "To",
+      "includeReversals": "Show reversals and reversed expenses"
+    },
+    "columns": {
+      "number": "Number",
+      "date": "Date",
+      "category": "Category",
+      "source": "Paid from",
+      "note": "Note",
+      "by": "By",
+      "amount": "Amount",
+      "actions": "Actions"
+    },
+    "status": {
+      "reversed": "Reversed",
+      "reversal": "Reversal"
+    },
+    "source": {
+      "shift": "Shift {number}"
+    },
+    "receipt": {
+      "view": "Receipt",
+      "failed": "The receipt could not be opened."
+    },
+    "report": {
+      "title": "Spent by category",
+      "help": "For the dates and branch chosen below. Reversed expenses are left out.",
+      "empty": "Nothing was spent in this period.",
+      "category": "Category",
+      "count": "Expenses",
+      "total": "Total",
+      "all": "All categories"
+    },
+    "form": {
+      "title": "New expense",
+      "help": "The money leaves the vault or the drawer of your open shift right away.",
+      "category": "Category",
+      "chooseCategory": "Choose a category",
+      "noCategories": "Add a category first.",
+      "amount": "Amount",
+      "source": "Paid from",
+      "fromVault": "A vault or bank",
+      "fromShift": "My open shift",
+      "shiftInfo": "Shift {number}: the drawer should hold {amount}.",
+      "noShift": "You have no open shift.",
+      "branch": "Branch",
+      "vault": "Vault or bank",
+      "chooseVault": "Choose a vault",
+      "noVaults": "This branch has no active vault.",
+      "note": "Note",
+      "receipt": "Receipt photo",
+      "uploadReceipt": "Attach a receipt",
+      "receiptSet": "Receipt attached",
+      "removeReceipt": "Remove",
+      "submit": "Record expense",
+      "saved": "Expense {number} recorded"
+    },
+    "reverse": {
+      "action": "Reverse",
+      "title": "Reverse expense {number}",
+      "help": "The expense stays in the list with a linked reversal, and the money goes back.",
+      "reason": "Reason",
+      "reasonInvalid": "Write a reason of 3 to 500 characters.",
+      "vault": "Vault the money goes back to",
+      "vaultHelp": "This expense was paid from a shift. If that shift is closed, choose a vault.",
+      "sameAccount": "Back to where it was paid from",
+      "submit": "Reverse expense",
+      "saved": "Expense reversed"
+    },
+    "cats": {
+      "title": "Expense categories",
+      "help": "An archived category keeps its expenses and takes no new one.",
+      "name": "Category name",
+      "add": "Add",
+      "added": "Category added",
+      "rename": "Rename",
+      "save": "Save",
+      "cancel": "Cancel",
+      "renamed": "Category renamed",
+      "archive": "Archive",
+      "archived": "Category archived",
+      "restore": "Restore",
+      "restored": "Category restored",
+      "archivedBadge": "Archived",
+      "empty": "No categories yet.",
+      "nameInvalid": "Write a name of 1 to 80 characters."
+    },
+    "errors": {
+      "categoryRequired": "Choose a category.",
+      "amountInvalid": "Enter an amount above zero.",
+      "vaultRequired": "Choose the vault the money leaves.",
+      "categoryNotFound": "This category no longer exists.",
+      "nameTaken": "Another category already has this name.",
+      "categoryArchived": "This category is archived. Choose another one.",
+      "notFound": "This expense was not found.",
+      "alreadyReversed": "This expense was already reversed.",
+      "ownerOnly": "Only the shop owner can reverse an expense.",
+      "shiftRequired": "You have no open shift to pay from.",
+      "shiftClosed": "That shift is closed.",
+      "vaultInvalid": "Choose a vault of this branch.",
+      "accountInactive": "This vault is not active.",
+      "insufficientFunds": "There is not enough money there for this expense.",
+      "dayClosed": "This day is closed.",
+      "branchDenied": "You do not work in this branch.",
+      "permission": "You are not allowed to do this.",
+      "validation": "Check the entered values.",
+      "upload": "The receipt could not be uploaded. Use a photo or a PDF.",
+      "failed": "Something went wrong. Try again."
     }
   }
 }

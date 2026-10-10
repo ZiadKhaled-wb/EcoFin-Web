@@ -214,6 +214,13 @@ export const NAV: NavItem[] = [
         roles: ['ACCOUNTANT'],
         permission: 'shift.operate',
       },
+      // K03 (D61): whoever records expenses (expense.create: owner, managers, accountants).
+      {
+        id: 'expenses',
+        labelKey: 'cash.nav.expenses',
+        to: '/accounting/expenses',
+        permission: 'expense.create',
+      },
     ],
   },
   {
