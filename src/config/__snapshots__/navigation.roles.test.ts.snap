@@ -28,6 +28,7 @@ exports[`menu by role (TEST-2) > BRANCH_MANAGER sees these pages 1`] = `
 [
   "/dashboard",
   "/sales/pos",
+  "/sales/approvals",
   "/sales/orders",
   "/sales/invoices",
   "/inventory/products",
@@ -88,6 +89,7 @@ exports[`menu by role (TEST-2) > OWNER sees these pages 1`] = `
 [
   "/dashboard",
   "/sales/pos",
+  "/sales/approvals",
   "/sales/orders",
   "/sales/invoices",
   "/inventory/products",

@@ -16,6 +16,7 @@ function Leaf({
 }) {
   if (!item.to) return null;
   const Icon = item.icon;
+  const Badge = item.badge;
   return (
     <NavLink
       to={item.to}
@@ -26,6 +27,7 @@ function Leaf({
     >
       {Icon && !nested && <Icon />}
       <span className="truncate">{t(item.labelKey)}</span>
+      {Badge && <Badge />}
     </NavLink>
   );
 }

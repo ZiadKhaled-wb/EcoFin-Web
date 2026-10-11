@@ -100,7 +100,16 @@
     "paymentTotalMismatch": "The payments must add up to the total.",
     "insufficientCredit": "The customer's store credit is not enough.",
     "vaultInvalid": "This bank account can not take this payment.",
-    "accountInactive": "This bank account is inactive."
+    "accountInactive": "This bank account is inactive.",
+    "discountAboveCap": "This discount is above your limit. Ask a manager to approve it.",
+    "discountInvalid": "The discount is not valid for this cart.",
+    "discountReasonRequired": "Write a reason for the discount (3 to 200 characters).",
+    "approvalInvalid": "This approval does not fit the sale: it may be used, expired, or for another cart.",
+    "approvalNotNeeded": "This discount is within your limit: no approval is needed.",
+    "approvalNotPending": "This request was already decided or taken back.",
+    "approvalSelf": "You can not decide your own request.",
+    "approvalNotFound": "This request was not found.",
+    "branchDenied": "You do not work in this branch."
   },
   "pay": {
     "title": "Payment",
@@ -124,5 +133,32 @@
     "addCash": "Add cash",
     "addTransfer": "Add bank transfer",
     "addCredit": "Add store credit"
+  },
+  "approvals": {
+    "title": "Pending approvals",
+    "description": "Discounts above a cashier limit, waiting for your decision. The list refreshes every few seconds.",
+    "badge": "{count} waiting",
+    "empty": "Nothing is waiting",
+    "emptyHint": "New discount requests from your branches show up here.",
+    "loadFailed": "The requests could not be loaded.",
+    "requestedBy": "Requested by {name}",
+    "branch": "Branch",
+    "requested": "Requested",
+    "cap": "Limit",
+    "discountTotal": "Discount",
+    "lines": "Items",
+    "line": "{name} × {quantity}: −{discount} ({pct}%)",
+    "reason": "Reason",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approveTitle": "Approve this discount?",
+    "rejectTitle": "Reject this discount?",
+    "dialogDescription": "{name} asks for {pct}% off; the limit is {cap}%. The approval is good for one sale of this exact cart, for 15 minutes.",
+    "note": "Note (optional)",
+    "confirmApprove": "Approve",
+    "confirmReject": "Reject",
+    "cancel": "Cancel",
+    "approved": "The discount was approved.",
+    "rejected": "The discount was rejected."
   }
 }
