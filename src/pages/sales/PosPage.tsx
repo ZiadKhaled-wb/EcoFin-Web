@@ -1,50 +1,53 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   Uuid,
   compareMoney,
   type Product,
-  type ProductUnit,
+  type Sale,
+  type SalePaymentInput,
   type Shift,
+  type UnitDetail,
 } from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
-import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import Checkbox from '@/components/ui/Checkbox';
-import Dialog from '@/components/ui/Dialog';
 import ErrorState from '@/components/ui/ErrorState';
-import FormError from '@/components/ui/FormError';
-import MoneyInput from '@/components/ui/MoneyInput';
 import Notice from '@/components/ui/Notice';
-import NumberInput from '@/components/ui/NumberInput';
-import SearchInput from '@/components/ui/SearchInput';
 import Skeleton from '@/components/ui/Skeleton';
-import Can from '@/features/me/Can';
-import { formatMoney, formatNumber } from '@/lib/format';
-import { productKeys, productsApi } from '@/services/productsApi';
+import { ApiError } from '@/lib/api';
+import { formatMoney } from '@/lib/format';
 import { shiftKeys, shiftsApi } from '@/services/shiftsApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
 import PaymentDialog from './PaymentDialog';
+import CartPane from './pos/CartPane';
+import CustomerPicker from './pos/CustomerPicker';
+import { HeldCartsDialog, HoldDialog, ShortcutsDialog } from './pos/HeldCarts';
+import ProductPane from './pos/ProductPane';
+import UnitPicker from './pos/UnitPicker';
+import { posScope } from './pos/posStorage';
+import { useCartApproval } from './pos/useCartApproval';
+import { useHeldCarts } from './pos/useHeldCarts';
+import { POS_SHORTCUTS, inputIn, useEvent, usePosShortcuts } from './pos/usePosShortcuts';
 import { saleError } from './saleShared';
-import { productName, usePosCart } from './usePosCart';
+import { usePosCart } from './usePosCart';
 
-const th = 'type-label py-2 text-start';
-const thNum = 'type-label py-2 text-end';
-const tdNum = 'type-body whitespace-nowrap py-2 text-end';
+type OpenDialog = 'units' | 'customer' | 'hold' | 'held' | 'keys' | 'pay' | null;
 
 /**
- * S01: the smallest screen that sells. The cashier finds products, the server prices the cart
- * after every change, and Confirm opens the payment dialog (S02): cash, bank transfers and store
- * credit, which must add up to the total. S06 turns this into the full POS (scanner, shortcuts,
- * held carts, the customer picker: until then `?customer=<id>` names the sale's customer).
+ * S06 (D66): the cashier's screen. Products on one side (search, scanner, category chips, tiles),
+ * the cart on the other (customer, lines, discounts, totals), and everything reachable from the
+ * keyboard. The server prices every cart (S01), takes the payment lines (S02) and checks the
+ * discounts (S03); the screen only shows what the quote and the sale answer.
  */
 export default function PosPage() {
   const orgId = useAuthStore((s) => s.orgId);
+  const employeeId = useAuthStore((s) => s.user?.id);
   const current = useQuery({ queryKey: shiftKeys.current(orgId), queryFn: shiftsApi.current });
+  const scope = posScope(orgId, employeeId);
 
   return (
     <PageContainer>
@@ -63,310 +66,274 @@ export default function PosPage() {
           </div>
         </Card>
       ) : (
-        <Sell shift={current.data} />
+        // Carts belong to one employee of one shop: another user starts from nothing.
+        <Sell key={scope} shift={current.data} scope={scope} />
       )}
     </PageContainer>
   );
 }
 
-function Sell({ shift }: { shift: Shift }) {
-  const orgId = useAuthStore((s) => s.orgId);
-  const cart = usePosCart(true);
+function Sell({ shift, scope }: { shift: Shift; scope: string }) {
+  const cart = usePosCart(true, scope);
+  const held = useHeldCarts(scope);
+  const approval = useCartApproval(cart.key);
   const [params] = useSearchParams();
-  const customerParam = Uuid.safeParse(params.get('customer')).data ?? null;
-  const { setCustomer } = cart;
-  useEffect(() => setCustomer(customerParam), [customerParam]); // eslint-disable-line react-hooks/exhaustive-deps
-  const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState('');
+  const [dialog, setDialog] = useState<OpenDialog>(null);
   const [unitsFor, setUnitsFor] = useState<Product | null>(null);
-  const [picked, setPicked] = useState<Set<string>>(new Set());
   const [error, setError] = useState('');
-  const [paying, setPaying] = useState(false);
+  const [approvalError, setApprovalError] = useState('');
+  const [customersOn, setCustomersOn] = useState(true);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const discountRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
 
+  // `?customer=<id>` names the sale's customer when the page opens (the customer's page links here).
+  const customerParam = Uuid.safeParse(params.get('customer')).data ?? null;
+  const takeCustomer = useEvent((id: string) => {
+    if (id !== cart.customerId) cart.setCustomer({ id, name: null, phone: null });
+  });
   useEffect(() => {
-    const id = setTimeout(() => setSearch(searchInput.trim()), 300);
+    if (customerParam) takeCustomer(customerParam);
+  }, [customerParam, takeCustomer]);
+
+  // The search box has the focus when the page opens and gets it back when a dialog closes; an
+  // open approval panel takes it instead, so the cashier can ask with Enter.
+  const done = cart.done !== null;
+  const panelOpen = approval.open;
+  useEffect(() => {
+    if (dialog !== null || done) return;
+    const id = setTimeout(() => {
+      const target = panelOpen ? panelRef.current?.querySelector('button') : inputIn(searchRef);
+      target?.focus();
+    }, 0);
     return () => clearTimeout(id);
-  }, [searchInput]);
-  const listParams = { ...(search ? { search } : {}), status: 'active' as const, pageSize: 8 };
-  const results = useQuery({
-    queryKey: productKeys.list(orgId, listParams),
-    queryFn: () => productsApi.list(listParams),
-    placeholderData: keepPreviousData,
-    enabled: search.length > 0,
-  });
-  const units = useQuery({
-    queryKey: [...productKeys.units(orgId, unitsFor?.id ?? ''), 'in_stock'],
-    queryFn: () => productsApi.units(unitsFor!.id, 'in_stock'),
-    enabled: !!unitsFor,
-  });
-  // A unit is sold from the branch of the shift, once.
-  const unitChoices: ProductUnit[] = (units.data ?? []).filter(
-    (u) => u.branch_id === shift.branch_id && !cart.lines.some((l) => l.unit_id === u.id),
-  );
-
-  function add(product: Product) {
-    setError('');
-    if (product.is_serialized) {
-      setPicked(new Set());
-      setUnitsFor(product);
-    } else {
-      cart.addProduct(product);
-    }
-  }
-  function addUnits() {
-    if (!unitsFor) return;
-    cart.addUnits(
-      unitsFor,
-      unitChoices.filter((u) => picked.has(u.id)),
-    );
-    setUnitsFor(null);
-  }
-
-  if (cart.done) {
-    return (
-      <Card>
-        <div className="space-y-3" role="status">
-          <h2 className="type-section-title">
-            {t('sales.pos.done.title', { number: cart.done.number })}
-          </h2>
-          <p className="type-body" data-testid="sale-paid">
-            {t('sales.pos.done.total', { amount: formatMoney(cart.done.total) })}
-          </p>
-          <ul className="type-body space-y-1">
-            {cart.done.payments.map((p) => (
-              <li key={p.id}>
-                {t(`sales.detail.methods.${p.method}`)}:{' '}
-                <span className="num">{formatMoney(p.amount)}</span>
-              </li>
-            ))}
-          </ul>
-          {compareMoney(cart.done.change_total, '0.00') > 0 && (
-            <p className="type-section-title" data-testid="sale-change">
-              {t('sales.pos.done.change', { amount: formatMoney(cart.done.change_total) })}
-            </p>
-          )}
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={cart.reset}>{t('sales.pos.done.newSale')}</Button>
-            <Link to={`/sales/${cart.done.id}`} className="btn btn-secondary">
-              {t('sales.pos.done.view')}
-            </Link>
-          </div>
-        </div>
-      </Card>
-    );
-  }
+  }, [dialog, done, panelOpen]);
 
   const quote = cart.quote;
-  const over = (index: number) => {
-    const q = quote?.lines[index];
-    return cart.current && q !== undefined && q.quantity > q.available ? q.available : null;
-  };
-  const anyOver = cart.lines.some((_, i) => over(i) !== null);
+  const anyOver = cart.current && (quote?.lines.some((q) => q.quantity > q.available) ?? false);
+  const canPay =
+    !cart.busy && cart.current && !anyOver && cart.reasonOk && approval.status !== 'pending';
+  const hasLines = cart.lines.length > 0;
 
+  const addProduct = useEvent((product: Product) => {
+    setError('');
+    cart.addProduct(product);
+  });
+  const chooseUnits = useEvent((product: Product) => {
+    setError('');
+    setUnitsFor(product);
+    setDialog('units');
+  });
+  const addUnit = useEvent((unit: UnitDetail) => {
+    if (cart.lines.some((l) => l.unit_id === unit.id)) return false;
+    setError('');
+    cart.addUnits(
+      { id: unit.product_id, name_ar: unit.name_ar, name_en: unit.name_en, sku: unit.sku },
+      [unit],
+    );
+    return true;
+  });
+
+  function openPay() {
+    if (!canPay) return;
+    setError('');
+    setDialog('pay');
+  }
+  /** Sells; an over-cap discount closes the payment and opens the approval panel instead. */
+  async function pay(payments: SalePaymentInput[]): Promise<unknown> {
+    const refused = await cart.confirm(payments, approval.approvedId ?? undefined);
+    if (!refused) {
+      setDialog(null);
+      return null;
+    }
+    if (approval.refused(refused)) {
+      setApprovalError('');
+      setDialog(null);
+      return null;
+    }
+    if (refused instanceof ApiError && refused.code === 'APPROVAL_INVALID') {
+      approval.drop();
+      setError(saleError(refused));
+      setDialog(null);
+      return null;
+    }
+    return refused;
+  }
+  async function ask() {
+    if (!cart.request || approval.asking) return;
+    setApprovalError('');
+    const answer = await approval.request({
+      branch_id: shift.branch_id,
+      ...cart.request,
+      reason: cart.reason.trim(),
+    });
+    if (answer === 'not_needed') setDialog('pay');
+    else if (answer !== 'asked') setApprovalError(saleError(answer));
+  }
+  function startHold() {
+    if (!hasLines || cart.busy) return;
+    if (held.full) setError(t('sales.pos.hold.full'));
+    else {
+      setError('');
+      setDialog('hold');
+    }
+  }
+  function hold(note: string) {
+    if (held.hold(cart.content, note)) cart.reset();
+    else setError(t('sales.pos.hold.full'));
+    setDialog(null);
+  }
+  function resume(id: string) {
+    if (hasLines) return;
+    const taken = held.take(id);
+    if (taken) {
+      setError('');
+      cart.load({
+        lines: taken.lines,
+        customer: taken.customer,
+        saleDiscount: taken.saleDiscount,
+        reason: taken.reason,
+      });
+    }
+    setDialog(null);
+  }
+
+  usePosShortcuts(
+    done
+      ? {}
+      : {
+          [POS_SHORTCUTS.search]: () => inputIn(searchRef)?.focus(),
+          [POS_SHORTCUTS.customer]: () => customersOn && setDialog('customer'),
+          [POS_SHORTCUTS.discount]: () => inputIn(discountRef)?.focus(),
+          [POS_SHORTCUTS.hold]: startHold,
+          [POS_SHORTCUTS.held]: () => setDialog('held'),
+          [POS_SHORTCUTS.pay]: openPay,
+        },
+    done
+      ? {}
+      : {
+          onEscape: () => approval.open && approval.drop(),
+          onType: () => inputIn(searchRef)?.focus(),
+        },
+  );
+
+  if (cart.done) return <DoneCard sale={cart.done} onNew={cart.reset} />;
+
+  const close = () => setDialog(null);
   return (
-    <div className="space-y-4">
-      <Card>
-        <div className="space-y-2">
-          <p className="type-caption">
-            <span dir="ltr">{t('sales.pos.shift', { number: shift.number })}</span>
-          </p>
-          <SearchInput
-            value={searchInput}
-            onValueChange={setSearchInput}
-            label={t('sales.pos.search')}
-            placeholder={t('sales.pos.search')}
-          />
-          {search && results.data?.items.length === 0 && (
-            <p className="type-caption">{t('sales.pos.noResults')}</p>
-          )}
-          {search && (results.data?.items.length ?? 0) > 0 && (
-            <ul className="divide-y divide-line rounded-control border border-line">
-              {(results.data?.items ?? []).map((p) => (
-                <li key={p.id} className="flex items-center justify-between gap-2 px-3 py-2">
-                  <span className="min-w-0">
-                    <span className="block truncate" dir="auto">
-                      {productName(p)}
-                    </span>
-                    <span className="type-caption block" dir="ltr">
-                      {p.sku}
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-3">
-                    <span className="num type-body">{formatMoney(p.cash_price)}</span>
-                    <Button type="button" size="sm" variant="secondary" onClick={() => add(p)}>
-                      {t(p.is_serialized ? 'sales.pos.chooseUnit' : 'sales.pos.add')}
-                    </Button>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </Card>
+    <div className="grid gap-4 lg:h-[calc(100dvh-13rem)] lg:min-h-[30rem] lg:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_28rem]">
+      <ProductPane
+        shiftNumber={shift.number}
+        branchId={shift.branch_id}
+        searchRef={searchRef}
+        onAddProduct={addProduct}
+        onChooseUnits={chooseUnits}
+        onAddUnit={addUnit}
+      />
+      <CartPane
+        cart={cart}
+        canPay={canPay}
+        customersOn={customersOn}
+        heldCount={held.carts.length}
+        error={error}
+        approval={approval}
+        approvalError={approvalError}
+        panelRef={panelRef}
+        discountRef={discountRef}
+        onCustomer={() => setDialog('customer')}
+        onModuleMissing={() => setCustomersOn(false)}
+        onHold={startHold}
+        onHeld={() => setDialog('held')}
+        onPay={openPay}
+        onAsk={() => void ask()}
+        onHelp={() => setDialog('keys')}
+      />
 
-      <Card title={t('sales.pos.cart')}>
-        {cart.lines.length === 0 ? (
-          <p className="type-caption">{t('sales.pos.emptyCart')}</p>
-        ) : (
-          <div className="space-y-4">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-start">
-                <caption className="sr-only">{t('sales.pos.cart')}</caption>
-                <thead>
-                  <tr>
-                    <th className={th}>{t('sales.pos.product')}</th>
-                    <th className={th}>{t('sales.pos.quantity')}</th>
-                    <th className={thNum}>{t('sales.pos.unitPrice')}</th>
-                    <th className={thNum}>{t('sales.pos.vat')}</th>
-                    <th className={thNum}>{t('sales.pos.lineTotal')}</th>
-                    <th className="sr-only">{t('sales.pos.remove')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cart.lines.map((line, i) => {
-                    const q = quote?.lines[i];
-                    const available = over(i);
-                    return (
-                      <tr key={line.key} className="border-t border-line align-top">
-                        <td className="py-2">
-                          <span className="block" dir="auto">
-                            {line.name}
-                          </span>
-                          <span className="type-caption block" dir="ltr">
-                            {line.serial ?? line.sku}
-                          </span>
-                          {available !== null && (
-                            <Badge tone="danger">
-                              {t('sales.pos.onlyAvailable', { count: formatNumber(available) })}
-                            </Badge>
-                          )}
-                          {q?.overridden && (
-                            <Badge tone="warning">
-                              {t('sales.pos.overridden', { price: formatMoney(q.list_price) })}
-                            </Badge>
-                          )}
-                        </td>
-                        <td className="w-28 py-2 [&_.field-label]:sr-only">
-                          {line.unit_id ? (
-                            '1'
-                          ) : (
-                            <NumberInput
-                              label={t('sales.pos.quantityOf', { name: line.name })}
-                              value={line.quantity}
-                              decimals={0}
-                              maxLength={6}
-                              onValueChange={(v) => cart.setQuantity(line.key, v)}
-                            />
-                          )}
-                        </td>
-                        <td className={`${tdNum} [&_.field-label]:sr-only`}>
-                          <span className="block">{q ? formatMoney(q.unit_price) : ''}</span>
-                          <Can permission="price.override">
-                            <span className="mt-1 block w-36 ms-auto">
-                              <MoneyInput
-                                label={t('sales.pos.priceOf', { name: line.name })}
-                                value={line.price}
-                                onValueChange={(v) => cart.setPrice(line.key, v)}
-                              />
-                            </span>
-                          </Can>
-                        </td>
-                        <td className={tdNum}>{q ? formatMoney(q.tax_amount) : ''}</td>
-                        <td className={tdNum}>{q ? formatMoney(q.line_total) : ''}</td>
-                        <td className="py-2 text-end">
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="ghost"
-                            aria-label={t('sales.pos.removeOf', { name: line.name })}
-                            onClick={() => cart.remove(line.key)}
-                          >
-                            {t('sales.pos.remove')}
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            <dl className="ms-auto grid max-w-xs grid-cols-2 gap-x-4 gap-y-1">
-              <dt className="type-caption">{t('sales.pos.subtotal')}</dt>
-              <dd className="num text-end">{quote ? formatMoney(quote.subtotal) : ''}</dd>
-              <dt className="type-caption">{t('sales.pos.vatTotal')}</dt>
-              <dd className="num text-end">{quote ? formatMoney(quote.tax_total) : ''}</dd>
-              <dt className="type-label">{t('sales.pos.total')}</dt>
-              <dd className="num type-section-title text-end" data-testid="sale-total">
-                {quote ? formatMoney(quote.total) : ''}
-              </dd>
-            </dl>
-            <p className="type-caption">
-              {cart.quoting
-                ? t('sales.pos.quoting')
-                : quote
-                  ? t(quote.prices_include_vat ? 'sales.pos.vatIncluded' : 'sales.pos.vatAdded')
-                  : ''}
-            </p>
-            <FormError message={error || (cart.quoteError ? saleError(cart.quoteError) : '')} />
-            <div className="flex justify-end">
-              <Button
-                loading={cart.busy}
-                disabled={cart.busy || !cart.current || anyOver}
-                onClick={() => {
-                  setError('');
-                  setPaying(true);
-                }}
-              >
-                {t('sales.pos.confirm')}
-              </Button>
-            </div>
-          </div>
-        )}
-      </Card>
-
-      {paying && quote && (
+      {dialog === 'pay' && quote && (
         <PaymentDialog
           total={quote.total}
           customerId={cart.customerId}
           storeCreditBalance={quote.store_credit_balance}
           busy={cart.busy}
-          onPay={cart.confirm}
-          onClose={() => setPaying(false)}
+          onPay={pay}
+          onClose={close}
         />
       )}
-
-      <Dialog
-        open={!!unitsFor}
-        onOpenChange={(v) => !v && setUnitsFor(null)}
-        title={t('sales.pos.unitsTitle', { name: unitsFor ? productName(unitsFor) : '' })}
-        description={t('sales.pos.unitsHelp')}
-      >
-        <div className="space-y-3">
-          {units.isError && <p role="alert">{t('sales.pos.unitsFailed')}</p>}
-          {units.data && unitChoices.length === 0 && (
-            <p className="type-caption">{t('sales.pos.noUnits')}</p>
-          )}
-          {unitChoices.map((u) => (
-            <Checkbox
-              key={u.id}
-              label={<span dir="ltr">{u.serial}</span>}
-              checked={picked.has(u.id)}
-              onChange={(e) =>
-                setPicked((set) => {
-                  const next = new Set(set);
-                  if (e.target.checked) next.add(u.id);
-                  else next.delete(u.id);
-                  return next;
-                })
-              }
-            />
-          ))}
-          <Button type="button" disabled={picked.size === 0} onClick={addUnits}>
-            {t('sales.pos.addUnits')}
-          </Button>
-        </div>
-      </Dialog>
+      {dialog === 'units' && unitsFor && (
+        <UnitPicker
+          product={unitsFor}
+          branchId={shift.branch_id}
+          inCart={new Set(cart.lines.flatMap((l) => (l.unit_id ? [l.unit_id] : [])))}
+          onAdd={(units) => {
+            cart.addUnits(unitsFor, units);
+            close();
+          }}
+          onClose={close}
+        />
+      )}
+      {dialog === 'customer' && customersOn && (
+        <CustomerPicker
+          onPick={(customer) => {
+            cart.setCustomer(customer);
+            close();
+          }}
+          onClose={close}
+          onModuleMissing={() => {
+            setCustomersOn(false);
+            close();
+          }}
+        />
+      )}
+      {dialog === 'hold' && <HoldDialog onHold={hold} onClose={close} />}
+      {dialog === 'held' && (
+        <HeldCartsDialog
+          carts={held.carts}
+          canResume={!hasLines}
+          onResume={resume}
+          onDelete={held.remove}
+          onClose={close}
+        />
+      )}
+      {dialog === 'keys' && <ShortcutsDialog onClose={close} />}
     </div>
+  );
+}
+
+/** After the sale: the number, what was paid and the change. Enter starts the next cart. */
+function DoneCard({ sale, onNew }: { sale: Sale; onNew: () => void }) {
+  const actions = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const id = setTimeout(() => actions.current?.querySelector('button')?.focus(), 0);
+    return () => clearTimeout(id);
+  }, []);
+  return (
+    <Card>
+      <div className="space-y-3" role="status">
+        <h2 className="type-section-title">{t('sales.pos.done.title', { number: sale.number })}</h2>
+        <p className="type-body" data-testid="sale-paid">
+          {t('sales.pos.done.total', { amount: formatMoney(sale.total) })}
+        </p>
+        <ul className="type-body space-y-1">
+          {sale.payments.map((p) => (
+            <li key={p.id}>
+              {t(`sales.detail.methods.${p.method}`)}:{' '}
+              <span className="num">{formatMoney(p.amount)}</span>
+            </li>
+          ))}
+        </ul>
+        {compareMoney(sale.change_total, '0.00') > 0 && (
+          <p className="type-section-title" data-testid="sale-change">
+            {t('sales.pos.done.change', { amount: formatMoney(sale.change_total) })}
+          </p>
+        )}
+        <div ref={actions} className="flex flex-wrap gap-2">
+          <Button onClick={onNew}>{t('sales.pos.done.newSale')}</Button>
+          <Link to={`/sales/${sale.id}`} className="btn btn-secondary">
+            {t('sales.pos.done.view')}
+          </Link>
+          {/* S04 (EC-71): the print receipt button goes here. */}
+        </div>
+      </div>
+    </Card>
   );
 }

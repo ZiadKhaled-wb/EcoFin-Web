@@ -12,6 +12,8 @@ import type {
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from '@/lib/api';
 import { meApi } from '@/features/me/meApi';
+import { categoriesApi } from '@/services/categoriesApi';
+import { customersApi } from '@/services/customersApi';
 import { productsApi } from '@/services/productsApi';
 import { salesApi } from '@/services/salesApi';
 import { shiftsApi } from '@/services/shiftsApi';
@@ -218,10 +220,12 @@ describe('S01 sale screen', () => {
       unit(UNIT, 'IMEI-0001', MAIN),
       unit(UNIT_ELSEWHERE, 'IMEI-0002', OTHER),
     ]);
+    vi.spyOn(categoriesApi, 'list').mockResolvedValue([]);
     quote = vi.spyOn(salesApi, 'quote').mockImplementation(async (body) => quoteOf(body));
   });
 
   afterEach(() => {
+    sessionStorage.clear();
     signOut();
     vi.restoreAllMocks();
   });
@@ -244,14 +248,14 @@ describe('S01 sale screen', () => {
     const user = userEvent.setup();
     expect(await screen.findByText('Shift MAIN-SH-26-000003')).toBeInTheDocument();
     expect(screen.getByText('The cart is empty. Find a product to start.')).toBeInTheDocument();
-    await addFromSearch(user, 'cha', 'Add');
+    await addFromSearch(user, 'cha', 'Add Chair');
     await waitFor(() =>
       expect(quote).toHaveBeenLastCalledWith({ lines: [{ product_id: CHAIR, quantity: 1 }] }),
     );
     expect(await screen.findByTestId('sale-total')).toHaveTextContent('250.00');
     expect(screen.getByText('Prices include VAT.')).toBeInTheDocument();
-    // Adding the same product again doesn't make a second line.
-    await user.click(screen.getByRole('button', { name: 'Add' }));
+    // Adding the same product again doesn't make a second line (S06: it raises the quantity).
+    await user.click(screen.getByRole('button', { name: 'Add Chair' }));
     expect(screen.getAllByRole('row')).toHaveLength(2);
 
     const quantity = screen.getByLabelText('Quantity: Chair');
@@ -269,7 +273,7 @@ describe('S01 sale screen', () => {
     await renderApp(<PosPage />, { lang: 'en' });
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
-    await addFromSearch(user, 'pho', 'Choose serial');
+    await addFromSearch(user, 'pho', 'Choose serial: Phone');
     const dialog = await screen.findByRole('dialog', { name: 'Serials of Phone' });
     expect(await within(dialog).findByText('IMEI-0001')).toBeInTheDocument();
     expect(within(dialog).queryByText('IMEI-0002')).not.toBeInTheDocument();
@@ -292,7 +296,7 @@ describe('S01 sale screen', () => {
     await renderApp(<PosPage />, { lang: 'en' });
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
-    await addFromSearch(user, 'cha', 'Add');
+    await addFromSearch(user, 'cha', 'Add Chair');
     const dialog = await openPay(user);
     expect(create).not.toHaveBeenCalled();
     expect(within(dialog).getByTestId('pay-remaining')).toHaveTextContent('0.00');
@@ -329,7 +333,7 @@ describe('S01 sale screen', () => {
     await renderApp(<PosPage />, { lang: 'en' });
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
-    await addFromSearch(user, 'cha', 'Add');
+    await addFromSearch(user, 'cha', 'Add Chair');
     const dialog = await openPay(user);
     // The price rises on the server between the quote and the sale.
     quote.mockImplementation(async (body: SaleQuoteBody) => ({
@@ -368,7 +372,7 @@ describe('S01 sale screen', () => {
     await renderApp(<PosPage />, { lang: 'en' });
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
-    await addFromSearch(user, 'cha', 'Add');
+    await addFromSearch(user, 'cha', 'Add Chair');
     const confirm = screen.getByRole('button', { name: 'Confirm and pay' });
     await waitFor(() => expect(confirm).toBeEnabled());
     const quantity = screen.getByLabelText('Quantity: Chair');
@@ -389,7 +393,7 @@ describe('S01 sale screen', () => {
     await renderApp(<PosPage />, { lang: 'en' });
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
-    await addFromSearch(user, 'cha', 'Add');
+    await addFromSearch(user, 'cha', 'Add Chair');
     const dialog = await openPay(user);
     const pay = within(dialog).getByRole('button', { name: 'Pay' });
     await user.click(pay);
@@ -407,7 +411,7 @@ describe('S01 sale screen', () => {
     await renderApp(<PosPage />, { lang: 'en' });
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
-    await addFromSearch(user, 'cha', 'Add');
+    await addFromSearch(user, 'cha', 'Add Chair');
     await user.type(await screen.findByLabelText('Price: Chair'), '200');
     await waitFor(() => {
       const last = quote.mock.calls.at(-1)![0] as SaleQuoteBody;
@@ -422,7 +426,7 @@ describe('S01 sale screen', () => {
     await renderApp(<PosPage />, { lang: 'en' });
     const user = userEvent.setup();
     await screen.findByText('Shift MAIN-SH-26-000003');
-    await addFromSearch(user, 'cha', 'Add');
+    await addFromSearch(user, 'cha', 'Add Chair');
     expect(
       await screen.findByText('This serial is no longer in stock in this branch.'),
     ).toBeInTheDocument();
@@ -451,10 +455,13 @@ describe('S02 payment dialog', () => {
     });
     vi.spyOn(salesApi, 'quote').mockImplementation(async (body) => quoteOf(body));
     vi.spyOn(salesApi, 'paymentAccounts').mockResolvedValue({ items: [{ id: BANK, name: 'NBE' }] });
+    vi.spyOn(categoriesApi, 'list').mockResolvedValue([]);
+    vi.spyOn(customersApi, 'get').mockRejectedValue(new ApiError(404, 'CUSTOMER_NOT_FOUND', 'no'));
     create = vi.spyOn(salesApi, 'create').mockResolvedValue(sale());
   });
 
   afterEach(() => {
+    sessionStorage.clear();
     signOut();
     vi.restoreAllMocks();
   });
@@ -464,7 +471,7 @@ describe('S02 payment dialog', () => {
     const user = userEvent.setup();
     await screen.findByText(/MAIN-SH-26-000003/);
     if (lang === 'en') {
-      await addFromSearch(user, 'cha', 'Add');
+      await addFromSearch(user, 'cha', 'Add Chair');
     } else {
       await user.type(screen.getByRole('searchbox'), 'cha');
       const [first] = await screen.findAllByRole('listitem');
@@ -544,6 +551,8 @@ describe('S02 payment dialog', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Back' }));
     await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Payment' })).toBeNull());
     cleanup();
+    // S06 keeps the cart for a refresh: this is a new visit, not a refresh.
+    sessionStorage.clear();
 
     const second = await start(`/sales/pos?customer=${CUSTOMER}`);
     dialog = await openPay(second);
