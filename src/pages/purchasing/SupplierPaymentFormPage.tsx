@@ -264,7 +264,7 @@ export default function SupplierPaymentFormPage() {
               {t('purchases.payments.form.allocated')}:{' '}
               <span className="num">{formatMoney(allocated)}</span>
               {validAmount !== null && !matches && (
-                <span className="ms-3 text-danger-700">
+                <span className="ms-3 text-danger-600">
                   {t('purchases.payments.form.mismatch')}
                 </span>
               )}

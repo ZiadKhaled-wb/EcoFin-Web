@@ -56,7 +56,7 @@ export default function LowStockCard() {
               <li key={b.branch_id}>
                 <Link
                   to={lowListHref(b.branch_id)}
-                  className="inline-flex items-center gap-2 rounded-card border border-line px-3 py-1.5 hover:border-brand-700"
+                  className="inline-flex items-center gap-2 rounded-control border border-line px-3 py-1.5 hover:border-brand-700"
                 >
                   <span>{branchName.get(b.branch_id) ?? ''}</span>
                   <Badge tone={b.low > 0 ? 'danger' : 'success'}>{formatNumber(b.low)}</Badge>

@@ -275,7 +275,7 @@ export default function LabelsPage() {
       {labels.length > 0 && (
         <section className="mt-6 space-y-2" aria-label={t('labels.preview')}>
           <h2 className="type-label">{t('labels.preview')}</h2>
-          <div className="overflow-auto rounded-card border border-line bg-paper p-4" dir="ltr">
+          <div className="overflow-auto rounded-control border border-line bg-paper p-4" dir="ltr">
             <LabelSheet labels={labels} template={template} />
           </div>
         </section>

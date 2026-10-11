@@ -88,7 +88,7 @@ export default function SalePage() {
           </dl>
         </Card>
 
-        <div className="overflow-x-auto rounded-card border border-line">
+        <div className="overflow-x-auto rounded-control border border-line">
           <table className="w-full border-collapse text-start">
             <caption className="sr-only">{t('sales.detail.lines')}</caption>
             <thead className="border-b border-line bg-paper">
@@ -144,7 +144,7 @@ export default function SalePage() {
           </p>
         </Card>
 
-        <div className="overflow-x-auto rounded-card border border-line">
+        <div className="overflow-x-auto rounded-control border border-line">
           <table className="w-full border-collapse text-start">
             <caption className="sr-only">{t('sales.detail.payments')}</caption>
             <thead className="border-b border-line bg-paper">

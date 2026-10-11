@@ -309,7 +309,7 @@ export default function PurchaseInvoicePage() {
 
         {pending && inv.approval && (
           <Card>
-            <p role="status" className="text-warning-700">
+            <p role="status" className="text-ochre-700">
               {t('purchases.approval.pendingBanner', {
                 name: inv.approval.requested_by_name ?? '',
                 when: formatDateTime(inv.approval.requested_at),

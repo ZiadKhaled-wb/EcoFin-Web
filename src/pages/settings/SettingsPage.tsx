@@ -393,7 +393,7 @@ function TaxFields({ form, set, saved }: FieldProps & { saved: ShopSettings }) {
         help={saved.tax_class_options.length === 0 ? t('settings.tax.noTaxClasses') : undefined}
         options={saved.tax_class_options.map((c) => ({
           value: c.id,
-          label: `${c.name} (${Number(c.rate)}%)`,
+          label: `${c.name} (⁦${Number(c.rate)}%⁩)`,
         }))}
         onChange={(e) => set('default_tax_class_id', e.target.value)}
       />
@@ -417,7 +417,7 @@ function TaxFields({ form, set, saved }: FieldProps & { saved: ShopSettings }) {
           placeholder={t('settings.tax.none')}
           options={saved.tax_class_options.map((c) => ({
             value: c.id,
-            label: `${c.name} (${Number(c.rate)}%)`,
+            label: `${c.name} (⁦${Number(c.rate)}%⁩)`,
           }))}
           onChange={(e) => set('delivery_fee_tax_class_id', e.target.value)}
         />

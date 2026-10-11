@@ -37,7 +37,7 @@ export default function DashboardPage() {
           description={t(setup.dismissed ? 'onboarding.resumeNote' : 'onboarding.description')}
           className="mt-6"
         >
-          <Link to="/onboarding" className="btn-primary inline-flex">
+          <Link to="/onboarding" className="btn btn-primary">
             {t(setup.started ? 'onboarding.resumeSetup' : 'onboarding.title')}
           </Link>
         </Card>

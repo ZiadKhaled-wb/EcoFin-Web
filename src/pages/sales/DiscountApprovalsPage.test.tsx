@@ -74,7 +74,7 @@ describe('S03 manager approvals page', () => {
     expect(screen.getByText(/Main branch/)).toBeInTheDocument();
     expect(screen.getByText('8.00%')).toBeInTheDocument();
     expect(screen.getByText('5.00%')).toBeInTheDocument();
-    expect(screen.getByText(/TV × 1: −.*91\.20.* \(8\.00%\)/)).toBeInTheDocument();
+    expect(screen.getByText(/TV × 1: −.*91\.20.* \(.?8\.00%.?\)/)).toBeInTheDocument();
     expect(screen.getByText('Regular customer, 8% agreed')).toBeInTheDocument();
   });
 

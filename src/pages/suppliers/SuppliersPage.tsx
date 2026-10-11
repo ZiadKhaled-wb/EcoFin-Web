@@ -135,7 +135,7 @@ export default function SuppliersPage() {
       header: t('suppliers.columns.balance'),
       meta: { numeric: true },
       cell: ({ row }) => (
-        <span className={cn(owesSupplier(row.original.balance) && 'text-danger-700')}>
+        <span className={cn(owesSupplier(row.original.balance) && 'text-danger-600')}>
           {formatMoney(row.original.balance)}
         </span>
       ),

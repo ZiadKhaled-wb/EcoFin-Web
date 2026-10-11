@@ -358,7 +358,7 @@ function ProductFilter({
     return (
       <div className="md:col-span-2 lg:col-span-3">
         <span className="type-label mb-1 block">{t('stock.history.product')}</span>
-        <div className="flex items-center justify-between gap-2 rounded-card border border-line px-3 py-2">
+        <div className="flex items-center justify-between gap-2 rounded-control border border-line px-3 py-2">
           <span className="min-w-0 truncate">
             {chosen.data ? (
               <>
@@ -399,7 +399,7 @@ function ProductFilter({
         <p className="type-caption">{t('stock.history.noProducts')}</p>
       )}
       {items.length > 0 && (
-        <ul className="divide-y divide-line rounded-card border border-line">
+        <ul className="divide-y divide-line rounded-control border border-line">
           {items.map((p) => (
             <li key={p.id} className="flex items-center justify-between gap-2 px-3 py-2">
               <span className="min-w-0">

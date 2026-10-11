@@ -92,7 +92,7 @@ export default function OnboardingWizardPage() {
           title={t('onboarding.completeTitle')}
           description={t('onboarding.completeDescription')}
         >
-          <Link className="btn-primary inline-flex" to="/dashboard">
+          <Link className="btn btn-primary" to="/dashboard">
             {t('onboarding.goToDashboard')}
           </Link>
         </Card>
@@ -165,7 +165,7 @@ export default function OnboardingWizardPage() {
               </p>
             )}
             <div className="flex flex-wrap gap-3">
-              <Link className="btn-primary inline-flex" to={destinations[current]}>
+              <Link className="btn btn-primary" to={destinations[current]}>
                 {t(`onboarding.steps.${current}.action`)}
               </Link>
               <Button variant="secondary" onClick={() => markComplete(current)}>

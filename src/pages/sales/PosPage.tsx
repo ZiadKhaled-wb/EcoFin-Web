@@ -180,7 +180,7 @@ function Sell({ shift }: { shift: Shift }) {
             <p className="type-caption">{t('sales.pos.noResults')}</p>
           )}
           {search && (results.data?.items.length ?? 0) > 0 && (
-            <ul className="divide-y divide-line rounded-card border border-line">
+            <ul className="divide-y divide-line rounded-control border border-line">
               {(results.data?.items ?? []).map((p) => (
                 <li key={p.id} className="flex items-center justify-between gap-2 px-3 py-2">
                   <span className="min-w-0">

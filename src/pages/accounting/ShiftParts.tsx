@@ -405,7 +405,7 @@ export function CloseShiftDialog({ shift, onClose }: { shift: Shift; onClose: ()
           <div>
             <dt className="type-caption">{t('cash.shifts.close.difference')}</dt>
             <dd
-              className={`num ${differs ? 'text-danger-700' : ''}`}
+              className={`num ${differs ? 'text-danger-600' : ''}`}
               data-testid="shift-difference"
             >
               {formatMoney(difference)}

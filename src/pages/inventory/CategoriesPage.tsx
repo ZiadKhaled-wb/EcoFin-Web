@@ -260,7 +260,7 @@ export default function CategoriesPage() {
             </li>
           </ul>
           {archiveError && (
-            <p role="alert" className="text-danger">
+            <p role="alert" className="text-danger-600">
               {archiveError}
             </p>
           )}
