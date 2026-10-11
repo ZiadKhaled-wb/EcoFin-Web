@@ -253,6 +253,13 @@
       "permission": "You do not have permission for this.",
       "validation": "Check the entered values.",
       "failed": "Could not save. Try again."
+    },
+    "takings": {
+      "title": "Taken this shift",
+      "sales": "Sales",
+      "cash": "Cash",
+      "bank": "Bank transfers",
+      "credit": "Store credit"
     }
   },
   "expenses": {

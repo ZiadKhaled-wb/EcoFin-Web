@@ -1,7 +1,7 @@
 {
   "pos": {
     "title": "New sale",
-    "description": "A cash sale in your open shift. Prices and VAT come from the server.",
+    "description": "Sell in your open shift. Prices and VAT come from the server.",
     "noShift": "You need an open shift to sell.",
     "noShiftAction": "Open a shift",
     "shift": "Shift {number}",
@@ -33,13 +33,14 @@
     "vatIncluded": "Prices include VAT.",
     "vatAdded": "VAT is added to the prices.",
     "quoting": "Updating prices…",
-    "confirm": "Confirm cash sale",
+    "confirm": "Confirm and pay",
     "priceChanged": "Prices changed. Check the new total, then confirm again.",
     "done": {
       "title": "Sale {number} completed",
-      "total": "Paid in cash: {amount}",
+      "total": "Total: {amount}",
       "view": "View the sale",
-      "newSale": "New sale"
+      "newSale": "New sale",
+      "change": "Change to give back: {amount}"
     }
   },
   "detail": {
@@ -74,7 +75,10 @@
       "cash": "Cash",
       "bank_transfer": "Bank transfer",
       "store_credit": "Store credit"
-    }
+    },
+    "reference": "Reference",
+    "received": "Received",
+    "change": "Change"
   },
   "errors": {
     "shiftRequired": "You have no open shift. Open one first.",
@@ -92,6 +96,33 @@
     "expired": "The subscription has expired. Sales are stopped.",
     "permission": "You are not allowed to do this.",
     "validation": "Check the cart and try again.",
-    "failed": "Something went wrong. Try again."
+    "failed": "Something went wrong. Try again.",
+    "paymentTotalMismatch": "The payments must add up to the total.",
+    "insufficientCredit": "The customer's store credit is not enough.",
+    "vaultInvalid": "This bank account can not take this payment.",
+    "accountInactive": "This bank account is inactive."
+  },
+  "pay": {
+    "title": "Payment",
+    "description": "Add payment lines until nothing remains.",
+    "cancel": "Back",
+    "pay": "Pay",
+    "total": "Total",
+    "paid": "Paid",
+    "remaining": "Remaining",
+    "removeLine": "Remove {method}",
+    "remove": "Remove",
+    "amountOf": "Amount: {method}",
+    "received": "Received from the customer",
+    "receivedShort": "Received must be at least the amount.",
+    "account": "Bank account",
+    "accountPlaceholder": "Choose an account",
+    "reference": "Transfer reference",
+    "change": "Change to give back: {amount}",
+    "noAccounts": "No bank account is available for this branch. Ask the owner to add one.",
+    "creditBalance": "Store credit balance: {amount}",
+    "addCash": "Add cash",
+    "addTransfer": "Add bank transfer",
+    "addCredit": "Add store credit"
   }
 }

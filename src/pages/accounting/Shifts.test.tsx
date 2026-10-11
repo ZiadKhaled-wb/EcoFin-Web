@@ -38,6 +38,8 @@ const shift = (over: Partial<Shift> = {}): Shift => ({
   difference: null,
   count_breakdown: null,
   difference_reason: null,
+  sales_total: '0.00',
+  payment_totals: { cash: '0.00', bank_transfer: '0.00', store_credit: '0.00' },
   movements: [
     {
       id: 'a0600000-0000-4000-8000-000000000011',
@@ -239,6 +241,24 @@ describe('K02 shifts', () => {
     );
     expect(screen.queryByText(t('cash.shifts.mine'))).not.toBeInTheDocument();
     expect(current).not.toHaveBeenCalled();
+  });
+
+  it('S02: the shift page and the current shift show what it took by method', async () => {
+    const taken = {
+      sales_total: '1000.00',
+      payment_totals: { cash: '500.00', bank_transfer: '400.00', store_credit: '100.00' },
+    };
+    vi.spyOn(shiftsApi, 'current').mockResolvedValue(shift(taken));
+    vi.spyOn(shiftsApi, 'get').mockResolvedValue(shift(taken));
+    const first = await renderApp(<ShiftsPage />, { lang: 'en' });
+    expect(await screen.findByTestId('taken-sales')).toHaveTextContent('1,000.00');
+    expect(screen.getByTestId('taken-cash')).toHaveTextContent('500.00');
+    expect(screen.getByTestId('taken-bank')).toHaveTextContent('400.00');
+    expect(screen.getByTestId('taken-credit')).toHaveTextContent('100.00');
+    first.unmount();
+    await renderApp(detail, { lang: 'en', route: `/accounting/shifts/${SHIFT}` });
+    expect(await screen.findByText('Taken this shift')).toBeInTheDocument();
+    expect(screen.getByTestId('taken-bank')).toHaveTextContent('400.00');
   });
 
   it('the detail shows a closed shift with its count; a non-UUID id makes no call', async () => {

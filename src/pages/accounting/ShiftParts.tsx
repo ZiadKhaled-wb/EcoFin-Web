@@ -51,6 +51,41 @@ function useVaults(branchId: string, enabled = true) {
 }
 
 /** The drawer ledger of a shift, oldest first. */
+/** S02: what the shift took: its sales and the payments by method. */
+export function ShiftTakings({ shift }: { shift: Pick<Shift, 'sales_total' | 'payment_totals'> }) {
+  return (
+    <dl
+      className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+      aria-label={t('cash.shifts.takings.title')}
+    >
+      <div>
+        <dt className="type-caption">{t('cash.shifts.takings.sales')}</dt>
+        <dd className="num" data-testid="taken-sales">
+          {formatMoney(shift.sales_total)}
+        </dd>
+      </div>
+      <div>
+        <dt className="type-caption">{t('cash.shifts.takings.cash')}</dt>
+        <dd className="num" data-testid="taken-cash">
+          {formatMoney(shift.payment_totals.cash)}
+        </dd>
+      </div>
+      <div>
+        <dt className="type-caption">{t('cash.shifts.takings.bank')}</dt>
+        <dd className="num" data-testid="taken-bank">
+          {formatMoney(shift.payment_totals.bank_transfer)}
+        </dd>
+      </div>
+      <div>
+        <dt className="type-caption">{t('cash.shifts.takings.credit')}</dt>
+        <dd className="num" data-testid="taken-credit">
+          {formatMoney(shift.payment_totals.store_credit)}
+        </dd>
+      </div>
+    </dl>
+  );
+}
+
 export function ShiftMovementsTable({ movements }: { movements: ShiftMovement[] }) {
   if (movements.length === 0) {
     return <p className="type-caption px-4 py-3">{t('cash.shifts.current.noMovements')}</p>;
@@ -377,6 +412,10 @@ export function CloseShiftDialog({ shift, onClose }: { shift: Shift; onClose: ()
             </dd>
           </div>
         </dl>
+        <div className="space-y-1">
+          <p className="type-caption">{t('cash.shifts.takings.title')}</p>
+          <ShiftTakings shift={shift} />
+        </div>
         {differs && (
           <Textarea
             label={t('cash.shifts.close.reason')}
