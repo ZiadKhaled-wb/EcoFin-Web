@@ -22,5 +22,6 @@
   "accounting": "Accounting",
   "reports": "Reports",
   "audit": "Audit log",
-  "settings": "Settings"
+  "settings": "Settings",
+  "discountApprovals": "Pending approvals"
 }

@@ -100,7 +100,16 @@
     "paymentTotalMismatch": "يجب أن يساوي مجموع المدفوعات الإجمالي.",
     "insufficientCredit": "رصيد العميل لا يكفي.",
     "vaultInvalid": "هذا الحساب البنكي لا يقبل هذه الدفعة.",
-    "accountInactive": "هذا الحساب البنكي غير نشط."
+    "accountInactive": "هذا الحساب البنكي غير نشط.",
+    "discountAboveCap": "هذا الخصم أعلى من حدك. اطلب موافقة المدير.",
+    "discountInvalid": "الخصم غير صالح لهذه السلة.",
+    "discountReasonRequired": "اكتب سبب الخصم (من 3 إلى 200 حرف).",
+    "approvalInvalid": "هذه الموافقة لا تناسب البيع: قد تكون استُخدمت أو انتهت أو لسلة أخرى.",
+    "approvalNotNeeded": "هذا الخصم داخل حدك: لا حاجة لموافقة.",
+    "approvalNotPending": "تم البت في هذا الطلب أو سحبه من قبل.",
+    "approvalSelf": "لا يمكنك البت في طلبك أنت.",
+    "approvalNotFound": "لم يتم العثور على هذا الطلب.",
+    "branchDenied": "أنت لا تعمل في هذا الفرع."
   },
   "pay": {
     "title": "الدفع",
@@ -124,5 +133,32 @@
     "addCash": "إضافة نقدي",
     "addTransfer": "إضافة تحويل بنكي",
     "addCredit": "إضافة رصيد العميل"
+  },
+  "approvals": {
+    "title": "الموافقات المعلقة",
+    "description": "خصومات أعلى من حد الكاشير بانتظار قرارك. تتحدث القائمة كل بضع ثوانٍ.",
+    "badge": "{count} في الانتظار",
+    "empty": "لا شيء في الانتظار",
+    "emptyHint": "طلبات الخصم الجديدة من فروعك تظهر هنا.",
+    "loadFailed": "تعذر تحميل الطلبات.",
+    "requestedBy": "طلبها {name}",
+    "branch": "الفرع",
+    "requested": "المطلوب",
+    "cap": "الحد",
+    "discountTotal": "الخصم",
+    "lines": "الأصناف",
+    "line": "{name} × {quantity}: −{discount} ({pct}%)",
+    "reason": "السبب",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "approveTitle": "الموافقة على هذا الخصم؟",
+    "rejectTitle": "رفض هذا الخصم؟",
+    "dialogDescription": "يطلب {name} خصم {pct}% والحد {cap}%. الموافقة صالحة لبيع واحد بنفس السلة تمامًا ولمدة 15 دقيقة.",
+    "note": "ملاحظة (اختياري)",
+    "confirmApprove": "موافقة",
+    "confirmReject": "رفض",
+    "cancel": "إلغاء",
+    "approved": "تمت الموافقة على الخصم.",
+    "rejected": "تم رفض الخصم."
   }
 }

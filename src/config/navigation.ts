@@ -11,8 +11,10 @@ import {
   UsersIcon,
   type IconComponent,
 } from '@/components/ui/Icons';
+import DiscountApprovalsBadge from '@/features/approvals/DiscountApprovalsBadge';
 import type { TranslationKey } from '@/i18n';
 import type { AuthUser, Role } from '@/types/auth';
+import type { ComponentType } from 'react';
 
 /**
  * THE app menu. Edit this file to add modules or change who sees what.
@@ -35,6 +37,8 @@ export interface NavItem {
   children?: NavItem[];
   roles?: Role[];
   permission?: string;
+  /** Drawn at the end of the menu line (a count of what waits). */
+  badge?: ComponentType;
 }
 
 const OWNER: Role = 'OWNER';
@@ -54,6 +58,14 @@ export const NAV: NavItem[] = [
         to: '/sales/pos',
         // S01 (D62): whoever may sell (sale.create: owner, managers, cashiers).
         permission: 'sale.create',
+      },
+      {
+        id: 'discount-approvals',
+        labelKey: 'nav.discountApprovals',
+        to: '/sales/approvals',
+        // S03 (D65): over-cap discount requests waiting for a manager; the count is the badge.
+        permission: 'discount.above_cap',
+        badge: DiscountApprovalsBadge,
       },
       {
         id: 'orders',

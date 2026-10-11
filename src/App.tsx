@@ -52,6 +52,7 @@ import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
 import PurchaseInvoiceFormPage from '@/pages/purchasing/PurchaseInvoiceFormPage';
 import PurchaseApprovalsPage from '@/pages/purchasing/PurchaseApprovalsPage';
+import DiscountApprovalsPage from '@/pages/sales/DiscountApprovalsPage';
 import PurchaseReturnsPage from '@/pages/purchasing/PurchaseReturnsPage';
 import PurchaseReturnPage from '@/pages/purchasing/PurchaseReturnPage';
 import PurchaseReturnFormPage from '@/pages/purchasing/PurchaseReturnFormPage';
@@ -357,6 +358,10 @@ export default function App() {
                   </Route>
                   <Route element={<RequirePermission permission="purchase.invoice_approve" />}>
                     <Route path="/purchasing/approvals" element={<PurchaseApprovalsPage />} />
+                  </Route>
+                  {/* S03: a manager decides over-cap discount requests (D65). */}
+                  <Route element={<RequirePermission permission="discount.above_cap" />}>
+                    <Route path="/sales/approvals" element={<DiscountApprovalsPage />} />
                   </Route>
                   <Route element={<RequirePermission permission="stock.count" />}>
                     <Route path="/inventory/counts" element={<CountsPage />} />

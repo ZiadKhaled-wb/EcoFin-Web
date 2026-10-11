@@ -73,6 +73,8 @@ function quoteOf(body: SaleQuoteBody, available = 10): SaleQuote {
       tax_rate: '14.00',
       tax_amount: (Number(total) - Number(total) / 1.14).toFixed(2),
       line_total: total,
+      discount_amount: '0.00',
+      effective_pct: '0.00',
       available,
     };
   });
@@ -81,6 +83,8 @@ function quoteOf(body: SaleQuoteBody, available = 10): SaleQuote {
     prices_include_vat: true,
     lines,
     subtotal: total,
+    discount_total: '0.00',
+    max_effective_pct: '0.00',
     tax_total: lines.reduce((sum, l) => sum + Number(l.tax_amount), 0).toFixed(2),
     total,
     paid: total,
@@ -100,6 +104,7 @@ const sale = (over: Partial<Sale> = {}): Sale => ({
   prices_include_vat: true,
   subtotal: '5500.00',
   discount_total: '0.00',
+  discount_reason: null,
   tax_total: '675.44',
   total: '5500.00',
   business_date: '2026-10-12',
@@ -121,6 +126,7 @@ const sale = (over: Partial<Sale> = {}): Sale => ({
       tax_rate: '14.00',
       tax_amount: '61.40',
       line_total: '500.00',
+      discount_amount: '0.00',
       warranty_until: null,
     },
     {
@@ -138,6 +144,7 @@ const sale = (over: Partial<Sale> = {}): Sale => ({
       tax_rate: '14.00',
       tax_amount: '614.04',
       line_total: '5000.00',
+      discount_amount: '0.00',
       warranty_until: '2027-10-12',
     },
   ],
