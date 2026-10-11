@@ -72,6 +72,12 @@
   body {
     @apply bg-paper font-sans text-ink antialiased;
   }
+  /* A scrolling wrapper must contain its sr-only (absolute) cells too, or a hidden table header
+     such as the POS cart's "Remove" widens the whole page on a phone. */
+  .overflow-x-auto,
+  .overflow-auto {
+    position: relative;
+  }
   :focus-visible {
     outline: 2px solid var(--color-brand-500);
     outline-offset: 2px;

@@ -93,7 +93,7 @@ export default function InviteAcceptPage() {
     <AuthLayout title={t('shops.invite.title')} subtitle={person?.shop_name}>
       {status === 'checking' && <p role="status">{t('shops.invite.checking')}</p>}
       {(status === 'invalid' || status === 'expired') && (
-        <p role="alert" className="notice notice-danger">
+        <p role="alert" className="notice notice-error">
           {t(`shops.invite.${status}`)}
         </p>
       )}

@@ -106,7 +106,7 @@ export default function SupplierStatementPage() {
   const branchName = new Map((branches.data ?? []).map((b) => [b.id, b.name]));
   const money = (value: string) => <span className="num">{formatMoney(value)}</span>;
   const balance = (value: string) => (
-    <span className={cn('num', owesSupplier(value) && 'text-danger-700')}>
+    <span className={cn('num', owesSupplier(value) && 'text-danger-600')}>
       {formatMoney(value)}
     </span>
   );

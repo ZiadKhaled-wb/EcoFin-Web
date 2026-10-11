@@ -153,7 +153,7 @@ export default function RegisterUnitsDialog({
     >
       <div className="space-y-4">
         {product ? (
-          <div className="flex items-center justify-between gap-2 rounded-card border border-line px-3 py-2">
+          <div className="flex items-center justify-between gap-2 rounded-control border border-line px-3 py-2">
             <span>{t('stock.units.register.chosen', { name: productName(product) })}</span>
             <Button size="sm" variant="ghost" onClick={() => setProduct(null)}>
               {t('stock.units.register.change')}
@@ -171,7 +171,7 @@ export default function RegisterUnitsDialog({
               <p className="type-caption">{t('stock.units.register.noProducts')}</p>
             )}
             {serialized.length > 0 && (
-              <ul className="divide-y divide-line rounded-card border border-line">
+              <ul className="divide-y divide-line rounded-control border border-line">
                 {serialized.map((p) => (
                   <li key={p.id} className="flex items-center justify-between gap-2 px-3 py-2">
                     <span className="min-w-0">

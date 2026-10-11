@@ -240,7 +240,7 @@ export default function AdjustmentForm({
             <p className="type-caption">{t('stock.adjustments.form.noResults')}</p>
           )}
           {search && (results.data?.items.length ?? 0) > 0 && (
-            <ul className="divide-y divide-line rounded-card border border-line">
+            <ul className="divide-y divide-line rounded-control border border-line">
               {(results.data?.items ?? []).map((p) => (
                 <li key={p.id} className="flex items-center justify-between gap-2 px-3 py-2">
                   <span className="min-w-0">

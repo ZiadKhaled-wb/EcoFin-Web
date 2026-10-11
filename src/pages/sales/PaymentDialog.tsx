@@ -179,7 +179,7 @@ export default function PaymentDialog({
           <div>
             <dt className="type-caption">{t('sales.pay.remaining')}</dt>
             <dd
-              className={`num type-section-title ${settled ? '' : 'text-danger-700'}`}
+              className={`num type-section-title ${settled ? '' : 'text-danger-600'}`}
               data-testid="pay-remaining"
             >
               {formatMoney(remaining)}
@@ -198,7 +198,7 @@ export default function PaymentDialog({
               (!tendered || compareMoney(tendered, amount) < 0);
             const lineChange = l.method === 'cash' ? changeOf(l) : null;
             return (
-              <li key={l.id} className="rounded-card border border-line p-3">
+              <li key={l.id} className="rounded-control border border-line p-3">
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <span className="type-label">{t(`sales.detail.methods.${l.method}`)}</span>
                   {lines.length > 1 && (

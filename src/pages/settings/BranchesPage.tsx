@@ -316,7 +316,7 @@ export default function BranchesPage() {
       >
         <form onSubmit={(e) => void deactivate(e)} className="space-y-4">
           {counts && hasWarning(counts) && (
-            <div role="alert" className="rounded-control border border-warning-300 p-3">
+            <div role="alert" className="rounded-control border border-ochre-500 p-3">
               <p>{t('branches.warning')}</p>
               <p>
                 {t('branches.counts', {

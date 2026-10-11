@@ -146,7 +146,7 @@ export default function SupplierPaymentPage() {
       <div className="space-y-4">
         {state !== 'paid' && (
           <Card>
-            <p role="status" className="text-warning-700">
+            <p role="status" className="text-ochre-700">
               {state === 'reversed'
                 ? t('purchases.payments.detail.reversedBy')
                 : t('purchases.payments.detail.reversalOf')}{' '}

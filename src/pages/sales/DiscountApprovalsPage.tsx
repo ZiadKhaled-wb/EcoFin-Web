@@ -19,6 +19,8 @@ import { getLanguage, t } from '@/i18n';
 import { saleError } from './saleShared';
 
 const NOTE_MAX = 500;
+/** A number with its percent sign keeps its own direction inside Arabic text. */
+const ltr = (text: string) => `⁦${text}⁩`;
 
 /**
  * S03 (D65): the over-cap discount requests of the manager's branches, waiting for a decision.
@@ -100,8 +102,8 @@ export default function DiscountApprovalsPage() {
           ? {
               description: t('sales.approvals.dialogDescription', {
                 name: deciding.item.requested_by_name ?? '',
-                pct: deciding.item.max_effective_pct,
-                cap: deciding.item.cap_pct,
+                pct: ltr(`${deciding.item.max_effective_pct}%`),
+                cap: ltr(`${deciding.item.cap_pct}%`),
               }),
             }
           : {})}
@@ -152,7 +154,7 @@ function ApprovalCard({
         <div className="space-y-1">
           <p className="font-medium">{t('sales.approvals.requestedBy', { name: who })}</p>
           <p className="type-caption">
-            {item.branch_name ?? ''} · {formatDateTime(item.requested_at)}
+            <bdi>{item.branch_name ?? ''}</bdi> · <bdi>{formatDateTime(item.requested_at)}</bdi>
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -176,7 +178,7 @@ function ApprovalCard({
                 name: lang === 'ar' ? l.name_ar : (l.name_en ?? l.name_ar),
                 quantity: l.quantity,
                 discount: formatMoney(l.discount_amount),
-                pct: l.effective_pct,
+                pct: ltr(`${l.effective_pct}%`),
               })}
             </li>
           ))}

@@ -446,13 +446,13 @@ export function ExpenseCategoriesDialog({ onClose }: { onClose: () => void }) {
         {list.isSuccess && list.data.length === 0 ? (
           <p className="type-caption">{t('cash.expenses.cats.empty')}</p>
         ) : (
-          <ul className="divide-y divide-line rounded-card border border-line">
+          <ul className="divide-y divide-line rounded-control border border-line">
             {(list.data ?? []).map((c) => (
               <li key={c.id} className="flex flex-wrap items-center gap-2 px-3 py-2">
                 {editing?.id === c.id ? (
                   <>
                     <input
-                      className="input grow"
+                      className="field-input grow"
                       aria-label={t('cash.expenses.cats.name')}
                       value={editing.name}
                       maxLength={80}

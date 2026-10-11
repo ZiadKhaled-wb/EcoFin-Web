@@ -220,7 +220,7 @@ export default function CountSheetPage() {
         if (value === '') return '';
         const diff = Number(value) - row.original.expected_qty;
         return (
-          <span className={diff < 0 ? 'text-danger-700' : diff > 0 ? 'text-success-700' : ''}>
+          <span className={diff < 0 ? 'text-danger-600' : diff > 0 ? 'text-success-700' : ''}>
             {diff > 0 ? '+' : ''}
             {formatNumber(diff)}
           </span>

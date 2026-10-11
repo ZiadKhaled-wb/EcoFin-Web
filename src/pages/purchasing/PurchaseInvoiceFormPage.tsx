@@ -348,7 +348,7 @@ function PurchaseInvoiceForm({ invoice }: { invoice?: PurchaseInvoice | undefine
               <p className="type-caption">{t('purchases.form.noResults')}</p>
             )}
             {search && (results.data?.items.length ?? 0) > 0 && (
-              <ul className="divide-y divide-line rounded-card border border-line">
+              <ul className="divide-y divide-line rounded-control border border-line">
                 {(results.data?.items ?? []).map((p) => {
                   const added = lines.some((l) => l.product_id === p.id);
                   return (
@@ -548,7 +548,7 @@ function LineRow({
       )}
       {!line.is_serialized && error && (
         <tr>
-          <td colSpan={8} className="pb-2 text-danger-700" role="alert">
+          <td colSpan={8} className="pb-2 text-danger-600" role="alert">
             {error}
           </td>
         </tr>

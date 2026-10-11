@@ -252,7 +252,7 @@ function MyShift() {
               {t('cash.shifts.current.close')}
             </Button>
           </div>
-          <div className="rounded-card border border-line">
+          <div className="rounded-control border border-line">
             <ShiftMovementsTable movements={shift.movements} />
           </div>
           {moving && (

@@ -7,7 +7,7 @@ import { authApi } from '@/services/authApi';
 export default function AdminLayout() {
   const navigate = useNavigate();
   return (
-    <div className="min-h-dvh bg-canvas text-ink">
+    <div className="min-h-dvh bg-paper text-ink">
       <header className="border-b border-line bg-surface">
         <PageContainer className="flex flex-wrap items-center justify-between gap-4">
           <Link to="/admin" className="font-bold">

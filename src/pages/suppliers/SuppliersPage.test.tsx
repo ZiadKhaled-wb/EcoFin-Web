@@ -63,7 +63,7 @@ describe('U01 suppliers page', () => {
     expect(within(row).getByText('01012345678')).toHaveAttribute('dir', 'ltr');
     expect(within(row).getByText('123-456-789')).toHaveAttribute('dir', 'ltr');
     expect(within(row).getByText('30 يوم')).toBeInTheDocument();
-    expect(within(row).getByText('1,050.25 ج.م')).toHaveClass('text-danger-700');
+    expect(within(row).getByText('1,050.25 ج.م')).toHaveClass('text-danger-600');
     expect(within(row).getByRole('link', { name: 'شركة النيل للتجارة' })).toHaveAttribute(
       'href',
       `/suppliers/${SUPPLIER_ID}`,
@@ -78,7 +78,7 @@ describe('U01 suppliers page', () => {
     const row = await supplierRow();
     expect(within(row).getByText('Nile Traders')).toBeInTheDocument();
     expect(within(row).getByText('Cash')).toBeInTheDocument();
-    expect(within(row).getByText('0.00 EGP')).not.toHaveClass('text-danger-700');
+    expect(within(row).getByText('0.00 EGP')).not.toHaveClass('text-danger-600');
     expect(within(row).getByText(t('suppliers.status.active'))).toBeInTheDocument();
   });
 

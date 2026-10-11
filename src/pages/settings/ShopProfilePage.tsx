@@ -83,7 +83,7 @@ export default function ShopProfilePage() {
           <label className="block space-y-1">
             <span className="type-body">{t('settings.profile.legalName')}</span>
             <input
-              className="input"
+              className="field-input"
               maxLength={200}
               value={values.legal_name}
               onChange={(e) => set('legal_name', e.target.value)}
@@ -92,7 +92,7 @@ export default function ShopProfilePage() {
           <label className="block space-y-1">
             <span className="type-body">{t('settings.profile.commercialRegister')}</span>
             <input
-              className="input"
+              className="field-input"
               maxLength={50}
               value={values.commercial_register}
               onChange={(e) => set('commercial_register', e.target.value)}
@@ -101,7 +101,7 @@ export default function ShopProfilePage() {
           <label className="block space-y-1">
             <span className="type-body">{t('settings.profile.taxRegistration')}</span>
             <input
-              className="input"
+              className="field-input"
               maxLength={50}
               value={values.tax_registration_no}
               onChange={(e) => set('tax_registration_no', e.target.value)}
@@ -110,7 +110,7 @@ export default function ShopProfilePage() {
           <label className="block space-y-1">
             <span className="type-body">{t('settings.profile.consumerStatus')}</span>
             <textarea
-              className="input min-h-24"
+              className="field-input min-h-24"
               maxLength={500}
               value={values.consumer_finance_legal_status}
               onChange={(e) => set('consumer_finance_legal_status', e.target.value)}
@@ -119,7 +119,7 @@ export default function ShopProfilePage() {
           </label>
           <label className="block space-y-1">
             <span className="type-body">{t('settings.profile.financingModel')}</span>
-            <input className="input" readOnly value={t('settings.profile.inHouse')} />
+            <input className="field-input" readOnly value={t('settings.profile.inHouse')} />
           </label>
           <Switch
             label={t('settings.profile.installments')}
@@ -128,7 +128,7 @@ export default function ShopProfilePage() {
             onChange={(e) => set('installments_enabled', e.target.checked)}
           />
           {error && (
-            <p role="alert" className="text-danger">
+            <p role="alert" className="text-danger-600">
               {error}
             </p>
           )}

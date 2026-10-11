@@ -313,7 +313,7 @@ function PurchaseOrderForm({
               <p className="type-caption">{t('purchases.orders.form.noResults')}</p>
             )}
             {search && (results.data?.items.length ?? 0) > 0 && (
-              <ul className="divide-y divide-line rounded-card border border-line">
+              <ul className="divide-y divide-line rounded-control border border-line">
                 {(results.data?.items ?? []).map((p) => {
                   const added = lines.some((l) => l.product_id === p.id);
                   return (

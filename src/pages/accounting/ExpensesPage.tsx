@@ -247,7 +247,7 @@ export default function ExpensesPage() {
         ) : report.data.items.length === 0 ? (
           <p className="type-body">{t('cash.expenses.report.empty')}</p>
         ) : (
-          <div className="overflow-x-auto rounded-card border border-line">
+          <div className="overflow-x-auto rounded-control border border-line">
             <table className="w-full border-collapse text-start">
               <caption className="sr-only">{t('cash.expenses.report.title')}</caption>
               <thead className="border-b border-line bg-paper">
