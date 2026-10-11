@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState, type KeyboardEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   PositiveMoney,
@@ -103,6 +103,9 @@ export default function PaymentDialog({
   const orgId = useAuthStore((s) => s.orgId);
   const [lines, setLines] = useState<PayLine[]>(() => [newLine('cash', total)]);
   const [error, setError] = useState('');
+  // S06: the dialog opens with the focus in the cash line's Received field (the field takes it as
+  // it is mounted, so the dialog's own focus handling leaves it there).
+  const receivedRef = useCallback((field: HTMLInputElement | null) => field?.focus(), []);
   const accounts = useQuery({
     queryKey: saleKeys.accounts(orgId),
     queryFn: salesApi.paymentAccounts,
@@ -137,6 +140,13 @@ export default function PaymentDialog({
     if (refused) setError(saleError(refused));
   }
 
+  /** S06: Enter in a field pays, when Pay is enabled. */
+  function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.key !== 'Enter' || !(e.target instanceof HTMLInputElement)) return;
+    e.preventDefault();
+    void pay();
+  }
+
   const options = (accounts.data?.items ?? []).map((a) => ({ value: a.id, label: a.name }));
 
   return (
@@ -162,7 +172,7 @@ export default function PaymentDialog({
         </>
       }
     >
-      <div className="space-y-4">
+      <div className="space-y-4" onKeyDown={onKeyDown}>
         <dl className="grid grid-cols-3 gap-3" aria-live="polite">
           <div>
             <dt className="type-caption">{t('sales.pay.total')}</dt>
@@ -225,6 +235,7 @@ export default function PaymentDialog({
                   />
                   {l.method === 'cash' && (
                     <MoneyInput
+                      ref={receivedRef}
                       label={t('sales.pay.received')}
                       value={l.tendered}
                       onValueChange={(v) => update(l.id, { tendered: v })}
