@@ -37,6 +37,7 @@ export interface NavItem {
   children?: NavItem[];
   roles?: Role[];
   permission?: string;
+  permissionsAny?: string[];
   /** Drawn at the end of the menu line (a count of what waits). */
   badge?: ComponentType;
 }
@@ -52,6 +53,12 @@ export const NAV: NavItem[] = [
     labelKey: 'nav.sales',
     icon: CartIcon,
     children: [
+      {
+        id: 'sales-history',
+        labelKey: 'sales.history.title',
+        to: '/sales/history',
+        permissionsAny: ['sale.create', 'report.view'],
+      },
       {
         id: 'pos',
         labelKey: 'nav.pos',
@@ -280,10 +287,11 @@ export const NAV: NavItem[] = [
 
 /** The one visibility rule: the menu (filterNav) and the route guard (RequireNavItem) both use it. */
 export function canSee(item: NavItem, user: AuthUser): boolean {
-  if (!item.roles && !item.permission) return true;
+  if (!item.roles && !item.permission && !item.permissionsAny) return true;
   return !!(
     item.roles?.includes(user.role) ||
-    (item.permission && user.permissions.includes(item.permission))
+    (item.permission && user.permissions.includes(item.permission)) ||
+    item.permissionsAny?.some((key) => user.permissions.includes(key))
   );
 }
 

@@ -1,3 +1,5 @@
+import { SaleHistoryDetails } from '@ziadkhaled-wb/contracts';
+import { salesHistoryApi } from '@/services/salesHistoryApi';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
@@ -664,7 +666,18 @@ describe('S01 sale details', () => {
   });
 
   it('shows the lines with serial and warranty, the totals and the payment', async () => {
-    const get = vi.spyOn(salesApi, 'get').mockResolvedValue(sale());
+    const get = vi.spyOn(salesHistoryApi, 'get').mockResolvedValue(
+      SaleHistoryDetails.parse({
+        ...sale(),
+        branch: { id: MAIN, name: 'Main' },
+        cashier: { id: OTHER, name: 'Mona Cashier' },
+        customer: null,
+        status: 'completed',
+        voidable: false,
+        void_block_reason: 'PERMISSION_DENIED',
+        returns: [],
+      }),
+    );
     await renderApp(detail, { lang: 'en', route: `/sales/${SALE}` });
     expect(
       await screen.findByRole('heading', { name: 'Sale MAIN-SL-26-000001' }),
@@ -672,6 +685,8 @@ describe('S01 sale details', () => {
     expect(get).toHaveBeenCalledWith(SALE);
     const items = screen.getByRole('table', { name: 'Items' });
     expect(within(items).getByText('IMEI-0001')).toBeInTheDocument();
+    expect(within(items).getByText('S01-PH')).toBeInTheDocument();
+    expect(within(items).getByRole('columnheader', { name: 'Discount' })).toBeInTheDocument();
     expect(within(items).getByText(/Warranty until/)).toBeInTheDocument();
     expect(screen.getByTestId('sale-total')).toHaveTextContent(/5[,٬]?500\.00/);
     expect(screen.getByText('Walk-in customer')).toBeInTheDocument();
@@ -681,7 +696,18 @@ describe('S01 sale details', () => {
   });
 
   it('in Arabic; a sale that is not the caller’s is not found; a bad id makes no call', async () => {
-    const get = vi.spyOn(salesApi, 'get').mockResolvedValue(sale());
+    const get = vi.spyOn(salesHistoryApi, 'get').mockResolvedValue(
+      SaleHistoryDetails.parse({
+        ...sale(),
+        branch: { id: MAIN, name: 'Main' },
+        cashier: { id: OTHER, name: 'Mona Cashier' },
+        customer: null,
+        status: 'completed',
+        voidable: false,
+        void_block_reason: 'PERMISSION_DENIED',
+        returns: [],
+      }),
+    );
     const first = await renderApp(detail, { lang: 'ar', route: `/sales/${SALE}` });
     expect(
       await screen.findByRole('heading', { name: 'فاتورة بيع MAIN-SL-26-000001' }),

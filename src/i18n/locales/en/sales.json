@@ -242,5 +242,50 @@
     "cancel": "Cancel",
     "approved": "The discount was approved.",
     "rejected": "The discount was rejected."
+  },
+  "history": {
+    "title": "Sales history",
+    "search": "Number, serial or phone",
+    "from": "From date",
+    "to": "To date",
+    "branch": "Branch",
+    "cashier": "Cashier",
+    "customer": "Customer",
+    "total": "Total",
+    "number": "Number",
+    "time": "Time",
+    "state": "Status",
+    "all": "All",
+    "empty": "No sales found",
+    "loadFailed": "Could not load sales history",
+    "dateInvalid": "The end date must be on or after the start date.",
+    "void": "Void sale",
+    "reason": "Reason",
+    "confirm": "Confirm void",
+    "confirmDescription": "Reverse sale {number} in full. Stock, payments and tax will be reversed.",
+    "reasonInvalid": "Enter a reason of 3–200 characters.",
+    "voidFailed": "Could not void the sale. Refresh the details and try again.",
+    "voided": "Sale voided",
+    "blocked": "This sale cannot be voided.",
+    "returns": "Returns and voids",
+    "by": "By and date",
+    "status": {
+      "completed": "Completed",
+      "voided": "Voided",
+      "returned": "Returned",
+      "partially_returned": "Partially returned"
+    },
+    "blocks": {
+      "permission": "You do not have permission to void this sale.",
+      "voided": "This sale is already voided.",
+      "day": "Only sales from today can be voided.",
+      "shift": "The sale shift is closed.",
+      "returns": "This sale already has a return.",
+      "claims": "This sale has a warranty claim.",
+      "contract": "This sale has an installment contract.",
+      "fiscal": "The ETA receipt has been issued. Use a return.",
+      "expired": "The subscription has expired. Sales history is read-only."
+    },
+    "discount": "Discount"
   }
 }
