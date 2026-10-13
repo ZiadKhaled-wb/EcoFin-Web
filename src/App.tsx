@@ -24,6 +24,8 @@ import CreateShopPage from '@/pages/admin/CreateShopPage';
 import InviteAcceptPage from '@/pages/auth/InviteAcceptPage';
 import SubscriptionPage from '@/pages/admin/SubscriptionPage';
 import BranchesPage from '@/pages/settings/BranchesPage';
+import EtaSettingsPage from '@/pages/settings/EtaSettingsPage';
+import DevicesPage from '@/pages/settings/DevicesPage';
 import SettingsPage from '@/pages/settings/SettingsPage';
 import CategoriesPage from '@/pages/inventory/CategoriesPage';
 import ProductsPage from '@/pages/inventory/ProductsPage';
@@ -79,6 +81,8 @@ const REAL_ROUTES = new Set([
   '/settings',
   '/settings/profile',
   '/settings/branches',
+  '/settings/eta',
+  '/settings/devices',
   '/settings/employees',
   '/employees',
   '/inventory/categories',
@@ -176,6 +180,12 @@ export default function App() {
                   </Route>
                   <Route element={<RequirePermission permission="branch.manage" />}>
                     <Route path="/settings/branches" element={<BranchesPage />} />
+                  </Route>
+                  <Route element={<RequirePermission permission="org.settings_manage" />}>
+                    <Route path="/settings/eta" element={<EtaSettingsPage />} />
+                  </Route>
+                  <Route element={<RequirePermission permission="device.manage" />}>
+                    <Route path="/settings/devices" element={<DevicesPage />} />
                   </Route>
                   <Route path="/inventory/categories" element={<CategoriesPage />} />
                   <Route path="/inventory/products" element={<ProductsPage />} />

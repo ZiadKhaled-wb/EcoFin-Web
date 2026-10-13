@@ -53,6 +53,7 @@ exports[`menu by role (TEST-2) > BRANCH_MANAGER sees these pages 1`] = `
   "/accounting/expenses",
   "/reports",
   "/audit",
+  "/settings/devices",
 ]
 `;
 
@@ -118,6 +119,8 @@ exports[`menu by role (TEST-2) > OWNER sees these pages 1`] = `
   "/settings",
   "/settings/profile",
   "/settings/branches",
+  "/settings/eta",
+  "/settings/devices",
 ]
 `;
 
