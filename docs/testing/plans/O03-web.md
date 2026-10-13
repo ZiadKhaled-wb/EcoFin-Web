@@ -1,6 +1,6 @@
 # Test plan O03 (POS devices, client, EC-146)
 
-Decision D69. Contracts **0.38.0** (`vendor/ziadkhaled-wb-contracts-0.38.0.tgz`). Server plan: `EcoFin-API/docs/testing/plans/O03.md`.
+Decision D69. Contracts **0.39.0** (`vendor/ziadkhaled-wb-contracts-0.39.0.tgz`). Server plan: `EcoFin-API/docs/testing/plans/O03.md`.
 Unit tests: `npx vitest run src/pages/settings src/pages/accounting src/lib/api.test.ts src/components/layout`. e2e: `RUN_E2E=1 npx playwright test e2e/pos-device.spec.ts` with the API, local Supabase and the dev server (env as in `e2e/auth.spec.ts` plus `E2E_CASHIER_EMAIL` / `E2E_CASHIER_PASSWORD`).
 
 ## Shared test helper changed to pair a device

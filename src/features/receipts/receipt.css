@@ -1,0 +1,166 @@
+/* S04 (D68): the printed receipt. Always black on white, whatever the app theme; sizes in mm. */
+.receipt {
+  box-sizing: border-box;
+  background: #fff;
+  color: #000;
+  font-family: var(--font-sans);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+.receipt *,
+.receipt *::before,
+.receipt *::after {
+  box-sizing: border-box;
+  color: #000;
+}
+.receipt .r-ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
+.receipt .r-mono {
+  font-family: var(--font-mono);
+}
+.receipt .r-pre {
+  white-space: pre-wrap;
+}
+.receipt .r-center {
+  text-align: center;
+}
+.receipt .r-bold {
+  font-weight: 700;
+}
+.receipt .r-small {
+  font-size: 0.85em;
+}
+.receipt .r-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2mm;
+}
+.receipt .r-row > :last-child {
+  flex-shrink: 0;
+  text-align: end;
+}
+.receipt .r-rule {
+  margin-block: 1.5mm;
+  border-top: 1px dashed #000;
+}
+.receipt .r-mark {
+  margin-block: 1.5mm;
+  border: 0.5mm solid #000;
+  padding: 0.5mm 2mm;
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.receipt .r-logo {
+  display: block;
+  max-width: 30mm;
+  max-height: 22mm;
+  margin: 0 auto 1.5mm;
+  object-fit: contain;
+}
+.receipt .r-shop {
+  font-size: 1.3em;
+  font-weight: 700;
+}
+.receipt .r-total {
+  font-size: 1.45em;
+  font-weight: 700;
+}
+.receipt .r-qr {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5mm;
+}
+
+/* Thermal roll: one continuous strip; a line never splits over a cut. */
+.receipt-thermal {
+  width: var(--receipt-width);
+  margin: 0 auto;
+  padding-block: 2mm;
+  font-size: 3.2mm;
+}
+.receipt-thermal.receipt-58 {
+  font-size: 2.9mm;
+}
+.receipt-thermal .r-line {
+  padding-block: 0.8mm;
+  break-inside: avoid;
+}
+
+/* A4 invoice */
+.receipt-a4 {
+  width: 186mm;
+  margin: 0 auto;
+  font-size: 3.6mm;
+}
+.receipt-a4 .r-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8mm;
+  margin-bottom: 5mm;
+}
+.receipt-a4 .r-head > * {
+  flex: 1;
+}
+.receipt-a4 .r-logo {
+  margin-inline: 0;
+}
+.receipt-a4 table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: 3mm;
+}
+.receipt-a4 thead {
+  display: table-header-group;
+}
+.receipt-a4 tr {
+  break-inside: avoid;
+}
+.receipt-a4 th,
+.receipt-a4 td {
+  border: 0.2mm solid #000;
+  padding: 1mm 1.5mm;
+  text-align: start;
+  vertical-align: top;
+}
+.receipt-a4 th {
+  font-weight: 700;
+}
+.receipt-a4 .r-num {
+  text-align: end;
+  white-space: nowrap;
+}
+.receipt-a4 .r-totals {
+  width: 80mm;
+  margin-inline-start: auto;
+  break-inside: avoid;
+}
+.receipt-a4 .r-eta {
+  break-inside: avoid;
+}
+
+/* The preview in the print dialog: the paper on a grey desk. */
+.receipt-preview {
+  max-height: 55dvh;
+  overflow: auto;
+  background: #e5e7eb;
+  padding: 3mm;
+}
+.receipt-preview .receipt {
+  padding-inline: 3mm;
+  box-shadow: 0 0 0 1px #d1d5db;
+}
+.receipt-preview .receipt-thermal {
+  width: calc(var(--receipt-width) + 6mm);
+}
+.receipt-preview .receipt-a4 {
+  zoom: 0.55;
+  width: 192mm;
+  padding-block: 4mm;
+}
