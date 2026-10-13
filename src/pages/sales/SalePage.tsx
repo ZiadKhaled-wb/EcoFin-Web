@@ -9,7 +9,9 @@ import ErrorState from '@/components/ui/ErrorState';
 import LoadingState from '@/components/ui/LoadingState';
 import { ApiError } from '@/lib/api';
 import { formatBusinessDate, formatDateTime, formatMoney, formatNumber } from '@/lib/format';
-import { saleKeys, salesApi } from '@/services/salesApi';
+import { saleKeys } from '@/services/salesApi';
+import { salesHistoryApi } from '@/services/salesHistoryApi';
+import SaleHistoryActions from './SaleHistoryActions';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
 import { productName } from './usePosCart';
@@ -38,7 +40,7 @@ export default function SalePage() {
   const orgId = useAuthStore((s) => s.orgId);
   const query = useQuery({
     queryKey: saleKeys.one(orgId, id),
-    queryFn: () => salesApi.get(id),
+    queryFn: () => salesHistoryApi.get(id),
     enabled: validId,
   });
 
@@ -65,8 +67,13 @@ export default function SalePage() {
         }
       />
       <div className="space-y-4">
+        <SaleHistoryActions sale={sale} />
         <Card>
-          <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <div>
+              <dt className="type-caption">{t('sales.history.branch')}</dt>
+              <dd dir="auto">{sale.branch.name}</dd>
+            </div>
             <div>
               <dt className="type-caption">{t('sales.detail.date')}</dt>
               <dd>{formatDateTime(sale.issued_at)}</dd>
@@ -96,6 +103,7 @@ export default function SalePage() {
                 <th className={th}>{t('sales.detail.product')}</th>
                 <th className={thNum}>{t('sales.detail.quantity')}</th>
                 <th className={thNum}>{t('sales.detail.unitPrice')}</th>
+                <th className={thNum}>{t('sales.history.discount')}</th>
                 <th className={thNum}>{t('sales.detail.vat')}</th>
                 <th className={thNum}>{t('sales.detail.lineTotal')}</th>
               </tr>
@@ -108,8 +116,13 @@ export default function SalePage() {
                       {productName(l)}
                     </span>
                     <span className="type-caption block" dir="ltr">
-                      {l.serial ?? l.sku}
+                      {l.sku}
                     </span>
+                    {l.serial && (
+                      <span className="type-caption block" dir="ltr">
+                        {l.serial}
+                      </span>
+                    )}
                     {l.warranty_until !== null && (
                       <span className="type-caption block">
                         {t('sales.detail.warranty', {
@@ -120,6 +133,7 @@ export default function SalePage() {
                   </td>
                   <td className={tdNum}>{formatNumber(l.quantity)}</td>
                   <td className={tdNum}>{formatMoney(l.unit_price)}</td>
+                  <td className={tdNum}>{formatMoney(l.discount_amount)}</td>
                   <td className={tdNum}>{formatMoney(l.tax_amount)}</td>
                   <td className={tdNum}>{formatMoney(l.line_total)}</td>
                 </tr>
