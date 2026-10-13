@@ -1,3 +1,7 @@
+import WarrantyPage from '@/pages/sales/WarrantyPage';
+import WarrantyClaimPage from '@/pages/sales/WarrantyClaimPage';
+import WarrantyClaimPrintPage from '@/pages/sales/WarrantyClaimPrintPage';
+import SalesHistoryPage from '@/pages/sales/SalesHistoryPage';
 import EmployeesPage from '@/pages/settings/EmployeesPage';
 import SetPasswordPage from '@/pages/auth/SetPasswordPage';
 import { lazy, Suspense } from 'react';
@@ -126,6 +130,8 @@ const SHIFTS_ITEM = navLeaves().find((i) => i.id === 'shifts')!;
 const EXPENSES_ITEM = navLeaves().find((i) => i.id === 'expenses')!;
 /** S01: the sale screen follows its menu item (sale.create). */
 const POS_ITEM = navLeaves().find((i) => i.id === 'pos')!;
+const WARRANTY_ITEM = navLeaves().find((i) => i.id === 'sales-warranty')!;
+const HISTORY_ITEM = navLeaves().find((i) => i.id === 'sales-history')!;
 
 export default function App() {
   return (
@@ -279,8 +285,47 @@ export default function App() {
                       </RequireNavItem>
                     }
                   />
+                  <Route
+                    path="/sales/warranty"
+                    element={
+                      <RequireNavItem item={WARRANTY_ITEM}>
+                        <WarrantyPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/warranty/claims/:id"
+                    element={
+                      <RequireNavItem item={WARRANTY_ITEM}>
+                        <WarrantyClaimPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/warranty/claims/:id/print"
+                    element={
+                      <RequireNavItem item={WARRANTY_ITEM}>
+                        <WarrantyClaimPrintPage />
+                      </RequireNavItem>
+                    }
+                  />
                   {/* S01: a sale's details; the server decides who may read it (D62). */}
-                  <Route path="/sales/:id" element={<SalePage />} />
+                  <Route
+                    path="/sales/history"
+                    element={
+                      <RequireNavItem item={HISTORY_ITEM}>
+                        <SalesHistoryPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/sales/:id"
+                    element={
+                      <RequireNavItem item={HISTORY_ITEM}>
+                        <SalePage />
+                      </RequireNavItem>
+                    }
+                  />
                   <Route
                     path="/accounting/expenses"
                     element={

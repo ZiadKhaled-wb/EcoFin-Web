@@ -1,0 +1,38 @@
+.warranty-receipt {
+  width: 80mm;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 4mm;
+  color: #000;
+  background: #fff;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.warranty-receipt h1 {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+}
+.warranty-receipt h2 {
+  font-weight: 700;
+  margin-top: 3mm;
+}
+.warranty-receipt dl {
+  margin-block: 3mm;
+  border-block: 1px dashed #000;
+  padding-block: 3mm;
+}
+.warranty-receipt dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 3mm;
+  margin-block: 1mm;
+}
+.warranty-receipt .signature {
+  margin-top: 15mm;
+  border-top: 1px solid #000;
+  padding-top: 2mm;
+}
+.print-root .warranty-receipt {
+  margin: 0;
+}
