@@ -12,10 +12,20 @@ import FormError from '@/components/ui/FormError';
 import FormField from '@/components/ui/FormField';
 import Select from '@/components/ui/Select';
 import { notify } from '@/components/ui/notify';
+import { deviceErrorText } from '@/features/devices/deviceErrors';
 import { etaErrorText } from '@/features/eta/etaErrors';
+import { formatDateTime } from '@/lib/format';
+import { devicesApi } from '@/services/devicesApi';
 import { etaApi, etaKeys } from '@/services/etaApi';
+import { ApiError } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
+import {
+  DeactivateDeviceDialog,
+  DeviceFormDialog,
+  PairingCodeDialog,
+  UnpairDeviceDialog,
+} from './DeviceDialogs';
 
 const STATUS_TONE: Record<DeviceEtaStatus, BadgeTone> = {
   unregistered: 'neutral',
@@ -33,10 +43,16 @@ type DeviceForm = {
   eta_status: DeviceEtaStatus;
 };
 
+/** Which O03 dialog is open, and for which device (`add` has none). */
+type Action = { kind: 'add' } | { kind: 'edit' | 'deactivate' | 'unpair' | 'code'; device: Device };
+
 /**
- * T02 (D67): Settings → Devices. The shop's POS devices and each one's registration with the tax
- * authority: serial, OS version, model framework, pre-shared key and status. The key is
- * write-only: the dialog shows only whether one is saved.
+ * Settings → Devices. The shop's POS devices.
+ * O03 (D69): add a device, rename or move it, turn it off (with a reason) and on, and pair it
+ * with a computer: the pairing code is shown once, large, with the time it has left.
+ * T02 (D67): each one's registration with the tax authority: serial, OS version, model
+ * framework, pre-shared key and status. The key is write-only: the dialog shows only whether
+ * one is saved.
  */
 export default function DevicesPage() {
   const org = useAuthStore((s) => s.orgId);
@@ -46,6 +62,25 @@ export default function DevicesPage() {
   const [form, setForm] = useState<DeviceForm | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [action, setAction] = useState<Action | null>(null);
+  const [turningOn, setTurningOn] = useState('');
+  const reload = () => cache.invalidateQueries({ queryKey: etaKeys.devices(org) });
+
+  /** Turning a device on again counts against the plan: the limit shows as a toast (P05). */
+  async function turnOn(device: Device) {
+    setTurningOn(device.id);
+    try {
+      await devicesApi.setActive(device.id, { active: true });
+      await reload();
+      notify.success(t('devices.reactivate.done'));
+    } catch (e) {
+      if (!(e instanceof ApiError && e.code === 'PLAN_LIMIT_REACHED')) {
+        notify.error(deviceErrorText(e));
+      }
+    } finally {
+      setTurningOn('');
+    }
+  }
 
   function edit(device: Device) {
     setEditing(device);
@@ -106,19 +141,93 @@ export default function DevicesPage() {
       ),
     },
     {
+      id: 'state',
+      header: t('devices.state'),
+      cell: ({ row }) => (
+        <Badge tone={row.original.is_active ? 'success' : 'neutral'}>
+          {t(row.original.is_active ? 'devices.active' : 'devices.inactive')}
+        </Badge>
+      ),
+    },
+    {
+      id: 'paired',
+      header: t('devices.pairing'),
+      cell: ({ row }) => (
+        <Badge tone={row.original.paired ? 'brand' : 'neutral'}>
+          {t(row.original.paired ? 'devices.paired' : 'devices.unpaired')}
+        </Badge>
+      ),
+    },
+    {
+      id: 'lastSeen',
+      header: t('devices.lastSeen'),
+      cell: ({ row }) =>
+        row.original.last_seen_at ? formatDateTime(row.original.last_seen_at) : t('devices.never'),
+    },
+    {
       id: 'actions',
       header: t('eta.devices.actions'),
-      cell: ({ row }) => (
-        <Button size="sm" variant="secondary" onClick={() => edit(row.original)}>
-          {t('eta.devices.edit')}
-        </Button>
-      ),
+      cell: ({ row }) => {
+        const device = row.original;
+        return (
+          <div className="flex flex-wrap gap-2">
+            {device.is_active && (
+              <Button size="sm" onClick={() => setAction({ kind: 'code', device })}>
+                {t('devices.code.open')}
+              </Button>
+            )}
+            {device.paired && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setAction({ kind: 'unpair', device })}
+              >
+                {t('devices.unpair.open')}
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => setAction({ kind: 'edit', device })}
+            >
+              {t('devices.edit.open')}
+            </Button>
+            <Button size="sm" variant="secondary" onClick={() => edit(device)}>
+              {t('eta.devices.edit')}
+            </Button>
+            {device.is_active ? (
+              <Button
+                size="sm"
+                variant="danger"
+                onClick={() => setAction({ kind: 'deactivate', device })}
+              >
+                {t('devices.deactivate.open')}
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="secondary"
+                loading={turningOn === device.id}
+                onClick={() => void turnOn(device)}
+              >
+                {t('devices.reactivate.open')}
+              </Button>
+            )}
+          </div>
+        );
+      },
     },
   ];
 
   return (
     <PageContainer>
-      <PageHeader title={t('eta.devices.title')} description={t('eta.devices.description')} />
+      <PageHeader
+        title={t('eta.devices.title')}
+        description={t('eta.devices.description')}
+        actions={
+          <Button onClick={() => setAction({ kind: 'add' })}>{t('devices.add.open')}</Button>
+        }
+      />
       <DataTable
         caption={t('eta.devices.title')}
         columns={columns}
@@ -126,7 +235,31 @@ export default function DevicesPage() {
         loading={devices.isPending}
         error={devices.isError}
         getRowId={(row) => row.id}
+        empty={{ title: t('eta.devices.empty') }}
       />
+      {action?.kind === 'add' && (
+        <DeviceFormDialog device={null} onClose={() => setAction(null)} onDone={reload} />
+      )}
+      {action?.kind === 'edit' && (
+        <DeviceFormDialog device={action.device} onClose={() => setAction(null)} onDone={reload} />
+      )}
+      {action?.kind === 'deactivate' && (
+        <DeactivateDeviceDialog
+          device={action.device}
+          onClose={() => setAction(null)}
+          onDone={reload}
+        />
+      )}
+      {action?.kind === 'unpair' && (
+        <UnpairDeviceDialog
+          device={action.device}
+          onClose={() => setAction(null)}
+          onDone={reload}
+        />
+      )}
+      {action?.kind === 'code' && (
+        <PairingCodeDialog device={action.device} onClose={() => setAction(null)} onDone={reload} />
+      )}
       <Dialog
         open={!!editing}
         onOpenChange={(open) => {

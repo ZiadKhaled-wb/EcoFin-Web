@@ -32,6 +32,9 @@ const device: Device = {
   eta_status: 'active',
   has_preshared_key: true,
   is_active: true,
+  paired: false,
+  paired_at: null,
+  last_seen_at: null,
 };
 
 beforeEach(() => {

@@ -3,13 +3,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const captureApiError = vi.hoisted(() => vi.fn());
 vi.mock('@/lib/monitoring', () => ({ captureApiError }));
 
+import { toast } from 'sonner';
 import { api, ApiError } from '@/lib/api';
+import { clearDeviceToken, getDeviceToken, setDeviceToken } from '@/features/devices/deviceToken';
+import { t } from '@/i18n';
 import { useAuthStore } from '@/store/authStore';
 import {
   httpError,
   httpOk,
   networkError,
   ORG_A,
+  ORG_B,
   refreshRejected,
   session,
 } from '@/test/authFixtures';
@@ -201,6 +205,80 @@ describe('error tracking (Q02)', () => {
     };
     await api.get('/api/a').catch(() => undefined);
     expect(captureApiError).not.toHaveBeenCalled();
+  });
+});
+
+describe('device token (O03)', () => {
+  const TOKEN = 'Dev1ce-T0ken_'.padEnd(43, 'a');
+  afterEach(() => {
+    clearDeviceToken(ORG_A);
+    clearDeviceToken(ORG_B);
+  });
+
+  it('is kept in localStorage under ecotech.deviceToken.<organization_id>', () => {
+    setDeviceToken(ORG_A, TOKEN);
+    expect(window.localStorage.getItem(`ecotech.deviceToken.${ORG_A}`)).toBe(TOKEN);
+    expect(getDeviceToken(ORG_A)).toBe(TOKEN);
+    expect(getDeviceToken(ORG_B)).toBeNull();
+    expect(getDeviceToken(null)).toBeNull();
+  });
+
+  it("sends the active shop's token as x-device-token and never a device id", async () => {
+    const seen: InternalAxiosRequestConfig[] = [];
+    api.defaults.adapter = async (config) => {
+      seen.push(config);
+      return httpOk(config, {});
+    };
+    setDeviceToken(ORG_A, TOKEN);
+    signedIn('tok');
+    await api.get('/api/anything', { headers: { 'x-device-token': 'made-up' } });
+    expect(seen[0]?.headers['x-device-token']).toBe(TOKEN);
+    expect(seen[0]?.headers['x-device-id']).toBeUndefined();
+
+    // Another shop's token is not this shop's; a public call carries none.
+    signedIn('tok', ORG_B);
+    await api.get('/api/anything');
+    expect(seen[1]?.headers['x-device-token']).toBeUndefined();
+    await api.post('/api/auth/login', {}, { skipAuth: true });
+    expect(seen[2]?.headers['x-device-token']).toBeUndefined();
+  });
+
+  it('403 DEVICE_REVOKED removes the token, says so once and sends the request again without it', async () => {
+    const error = vi.spyOn(toast, 'error').mockReturnValue('toast-id');
+    const tokens: unknown[] = [];
+    api.defaults.adapter = async (config) => {
+      tokens.push(config.headers['x-device-token']);
+      if (config.headers['x-device-token']) throw httpError(config, 403, 'DEVICE_REVOKED');
+      return httpOk(config, { shift: null });
+    };
+    setDeviceToken(ORG_A, TOKEN);
+    signedIn('tok');
+    const res = await api.get('/api/shifts/current');
+    expect(res.data).toEqual({ shift: null });
+    expect(tokens).toEqual([TOKEN, undefined]);
+    expect(getDeviceToken(ORG_A)).toBeNull();
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith(t('devices.revoked'));
+    expect(t('devices.revoked', undefined, 'en')).toBe('This computer is no longer a POS device');
+  });
+
+  it('a newer pairing made meanwhile is kept, and a second refusal is not retried for ever', async () => {
+    const error = vi.spyOn(toast, 'error').mockReturnValue('toast-id');
+    const NEWER = 'Newer-T0ken_'.padEnd(43, 'b');
+    let calls = 0;
+    api.defaults.adapter = async (config) => {
+      calls += 1;
+      // While the first request is on its way this computer is paired again.
+      if (calls === 1) setDeviceToken(ORG_A, NEWER);
+      throw httpError(config, 403, 'DEVICE_REVOKED');
+    };
+    setDeviceToken(ORG_A, TOKEN);
+    signedIn('tok');
+    await expect(api.get('/api/shifts/current')).rejects.toMatchObject({ code: 'DEVICE_REVOKED' });
+    expect(calls).toBe(2);
+    // The first refusal was about the old token: the new one stayed until it was refused itself.
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(getDeviceToken(ORG_A)).toBeNull();
   });
 });
 

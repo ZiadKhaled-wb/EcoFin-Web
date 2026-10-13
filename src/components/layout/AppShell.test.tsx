@@ -13,6 +13,7 @@ import {
   BRANCH_MAIN,
   BRANCH_TWO,
   meFixture,
+  pairDevice,
   permissionsFixture,
   renderApp,
   signIn,
@@ -149,6 +150,35 @@ describe('language switch', () => {
     expect(document.documentElement.lang).toBe('en');
     expect(window.localStorage.getItem('ecofin-lang')).toBe('en');
     expect(screen.getAllByRole('link', { name: 'Dashboard' }).length).toBeGreaterThan(0);
+  });
+});
+
+describe('POS device (O03)', () => {
+  const withPair = (
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route path="/dashboard" element={<p>dashboard body</p>} />
+        <Route path="/device/pair" element={<p>pair page</p>} />
+      </Route>
+    </Routes>
+  );
+
+  it('the header names the device this computer is paired with', async () => {
+    pairDevice({ name: 'POS-2' });
+    await renderApp(withPair, { lang: 'en', route: '/dashboard' });
+    const badge = await screen.findByTestId('topbar-device');
+    expect(badge).toHaveTextContent('POS-2');
+    expect(badge).toHaveAttribute('title', 'POS device: POS-2');
+  });
+
+  it('a computer that is no device shows none, and the account menu leads to pairing', async () => {
+    const user = userEvent.setup();
+    await renderApp(withPair, { lang: 'ar', route: '/dashboard' });
+    await screen.findByText('dashboard body');
+    expect(screen.queryByTestId('topbar-device')).not.toBeInTheDocument();
+    await user.click(await screen.findByRole('button', { name: t('shell.accountMenu') }));
+    await user.click(await screen.findByRole('menuitem', { name: 'اربط هذا الكمبيوتر' }));
+    expect(await screen.findByText('pair page')).toBeInTheDocument();
   });
 });
 
