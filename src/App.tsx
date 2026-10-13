@@ -1,3 +1,6 @@
+import WarrantyPage from '@/pages/sales/WarrantyPage';
+import WarrantyClaimPage from '@/pages/sales/WarrantyClaimPage';
+import WarrantyClaimPrintPage from '@/pages/sales/WarrantyClaimPrintPage';
 import SalesHistoryPage from '@/pages/sales/SalesHistoryPage';
 import EmployeesPage from '@/pages/settings/EmployeesPage';
 import SetPasswordPage from '@/pages/auth/SetPasswordPage';
@@ -123,6 +126,7 @@ const SHIFTS_ITEM = navLeaves().find((i) => i.id === 'shifts')!;
 const EXPENSES_ITEM = navLeaves().find((i) => i.id === 'expenses')!;
 /** S01: the sale screen follows its menu item (sale.create). */
 const POS_ITEM = navLeaves().find((i) => i.id === 'pos')!;
+const WARRANTY_ITEM = navLeaves().find((i) => i.id === 'sales-warranty')!;
 const HISTORY_ITEM = navLeaves().find((i) => i.id === 'sales-history')!;
 
 export default function App() {
@@ -268,6 +272,30 @@ export default function App() {
                     element={
                       <RequireNavItem item={POS_ITEM}>
                         <PosPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/sales/warranty"
+                    element={
+                      <RequireNavItem item={WARRANTY_ITEM}>
+                        <WarrantyPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/warranty/claims/:id"
+                    element={
+                      <RequireNavItem item={WARRANTY_ITEM}>
+                        <WarrantyClaimPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/warranty/claims/:id/print"
+                    element={
+                      <RequireNavItem item={WARRANTY_ITEM}>
+                        <WarrantyClaimPrintPage />
                       </RequireNavItem>
                     }
                   />

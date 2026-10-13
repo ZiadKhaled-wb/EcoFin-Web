@@ -60,6 +60,12 @@ export const NAV: NavItem[] = [
         permissionsAny: ['sale.create', 'report.view'],
       },
       {
+        id: 'sales-warranty',
+        labelKey: 'sales.warranty.title',
+        to: '/sales/warranty',
+        permission: 'warranty.manage',
+      },
+      {
         id: 'pos',
         labelKey: 'nav.pos',
         to: '/sales/pos',
