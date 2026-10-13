@@ -62,6 +62,7 @@
       "store_credit": "Store credit"
     },
     "eta": "ETA e-receipt",
-    "qr": "ETA receipt QR code"
+    "qr": "ETA receipt QR code",
+    "etaPending": "The e-receipt is being issued. Ask for a copy that carries the QR code."
   }
 }

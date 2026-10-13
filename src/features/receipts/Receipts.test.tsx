@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { formatMoney } from '@/lib/format';
 import { branchApi } from '@/services/branchApi';
 import { salesApi } from '@/services/salesApi';
+import { salesHistoryApi } from '@/services/salesHistoryApi';
 import { settingsApi } from '@/services/settingsApi';
 import { renderApp, signIn, signOut } from '@/test/renderApp';
 import { t, type Language } from '@/i18n';
@@ -275,6 +276,25 @@ describe('S04 sale receipt (paper)', () => {
     expect(voided.querySelector('[data-mark="copy"]')).toHaveTextContent('COPY');
   });
 
+  it('says on the paper that the e-receipt is still being issued, only while it is pending', () => {
+    const none = { uuid: null, qr_payload: null, last_error_code: null };
+    const pending = paperOf({ sale: sale({ eta: { ...none, status: 'pending' } }), lang: 'ar' });
+    expect(pending.querySelector('[data-part="eta-pending"]')).toHaveTextContent(
+      'الإيصال الإلكتروني قيد الإصدار',
+    );
+    expect(pending.querySelector('[data-qr]')).toBeNull();
+    for (const status of ['failed', 'rejected', 'cancelled'] as const)
+      expect(
+        paperOf({ sale: sale({ eta: { ...none, status } }) }).querySelector('[data-part="eta"]'),
+      ).toBeNull();
+    expect(paperOf().querySelector('[data-part="eta-pending"]')).toBeNull();
+    expect(
+      paperOf({
+        sale: sale({ status: 'voided', eta: { ...none, status: 'pending' } }),
+      }).querySelector('[data-part="eta-pending"]'),
+    ).toBeNull();
+  });
+
   it.each(['thermal', 'a4'] as const)('prints all 60 lines of a long sale on %s', (paper) => {
     const root = paperOf({
       paper,
@@ -332,6 +352,7 @@ describe('S04 QR code', () => {
 describe('S04 print dialog', () => {
   let print: ReturnType<typeof vi.spyOn>;
   let getSettings: ReturnType<typeof vi.spyOn>;
+  let record: ReturnType<typeof vi.spyOn>;
   const user = () => userEvent.setup();
   const openButton = () => screen.getByRole('button', { name: t('receipts.print') });
   // The dialog's own X is also named "Close": ours is the last one.
@@ -344,6 +365,13 @@ describe('S04 print dialog', () => {
     window.localStorage.clear();
     print = vi.spyOn(window, 'print').mockImplementation(() => undefined);
     getSettings = vi.spyOn(settingsApi, 'get').mockResolvedValue(shop());
+    // The server numbers the prints: the first of a sale is the original.
+    const counts = new Map<string, number>();
+    record = vi.spyOn(salesHistoryApi, 'recordReceiptPrint').mockImplementation(async (saleId) => {
+      const n = (counts.get(saleId) ?? 0) + 1;
+      counts.set(saleId, n);
+      return { print_no: n, copy: n > 1 };
+    });
     vi.spyOn(branchApi, 'list').mockResolvedValue([{ id: MAIN, name: 'Main branch' }] as Awaited<
       ReturnType<typeof branchApi.list>
     >);
@@ -373,7 +401,9 @@ describe('S04 print dialog', () => {
     );
 
     await u.keyboard('{Enter}');
-    expect(print).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(print).toHaveBeenCalledTimes(1));
+    expect(record).toHaveBeenCalledTimes(1);
+    expect(record).toHaveBeenCalledWith(id(2));
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(printRoot()).toBeNull();
     await waitFor(() => expect(openButton()).toHaveFocus());
@@ -415,6 +445,81 @@ describe('S04 print dialog', () => {
     expect(printRoot()!.querySelector('[data-mark="copy"]')).not.toBeNull();
     // The sale page's answer names the branch itself.
     expect(printRoot()).toHaveTextContent('From the sale');
+  });
+
+  it('the sale page prints the original when the sale was never printed, a copy otherwise', async () => {
+    const marks: boolean[] = [];
+    print.mockImplementation(() => {
+      marks.push(!!printRoot()!.querySelector('[data-mark="copy"]'));
+    });
+    const view = await renderApp(<PrintReceipt key="a" sale={sale({ receipt_prints: 0 })} />, {
+      lang: 'en',
+    });
+    const u = user();
+    await u.click(openButton());
+    await printButton();
+    expect(printRoot()!.querySelector('[data-mark="copy"]')).toBeNull();
+    await u.click(await printButton());
+    await waitFor(() => expect(marks).toEqual([false]));
+    // The same screen again: now a copy, without reading the sale again.
+    await u.click(openButton());
+    await printButton();
+    expect(printRoot()!.querySelector('[data-mark="copy"]')).not.toBeNull();
+    await u.click(closeButton());
+
+    view.rerender(<PrintReceipt key="b" sale={sale({ id: id(51), receipt_prints: 2 })} />);
+    await u.click(openButton());
+    await printButton();
+    expect(printRoot()!.querySelector('[data-mark="copy"]')).not.toBeNull();
+  });
+
+  it('the server has the last word: a receipt printed on another till comes out as a copy', async () => {
+    record.mockResolvedValue({ print_no: 2, copy: true });
+    const marks: boolean[] = [];
+    print.mockImplementation(() => {
+      marks.push(!!printRoot()!.querySelector('[data-mark="copy"]'));
+    });
+    await renderApp(<PrintReceipt sale={sale()} original />, { lang: 'en' });
+    const u = user();
+    await u.click(openButton());
+    await printButton();
+    // The done card expects an original...
+    expect(printRoot()!.querySelector('[data-mark="copy"]')).toBeNull();
+    await u.click(await printButton());
+    // ...but the paper carries what the server answered.
+    await waitFor(() => expect(marks).toEqual([true]));
+  });
+
+  it('prints anyway when the print cannot be logged, on what the screen knows', async () => {
+    record.mockRejectedValue(new Error('offline'));
+    const marks: boolean[] = [];
+    print.mockImplementation(() => {
+      marks.push(!!printRoot()!.querySelector('[data-mark="copy"]'));
+    });
+    await renderApp(<PrintReceipt sale={sale()} original />, { lang: 'en' });
+    const u = user();
+    await u.click(openButton());
+    await u.click(await printButton());
+    await waitFor(() => expect(marks).toEqual([false]));
+    await u.click(openButton());
+    await u.click(await printButton());
+    await waitFor(() => expect(marks).toEqual([false, true]));
+    expect(record).toHaveBeenCalledTimes(2);
+  });
+
+  it('one press logs and prints once, even when pressed twice', async () => {
+    let answer: (v: { print_no: number; copy: boolean }) => void = () => undefined;
+    record.mockImplementation(() => new Promise((resolve) => (answer = resolve)));
+    await renderApp(<PrintReceipt sale={sale()} original />, { lang: 'en' });
+    const u = user();
+    await u.click(openButton());
+    const button = await printButton();
+    await u.click(button);
+    fireEvent.keyDown(window, { key: 'p', code: 'KeyP', ctrlKey: true });
+    expect(print).not.toHaveBeenCalled();
+    answer({ print_no: 1, copy: false });
+    await waitFor(() => expect(print).toHaveBeenCalledTimes(1));
+    expect(record).toHaveBeenCalledTimes(1);
   });
 
   it('starts in the shop language, and remembers the paper and language on the device', async () => {
@@ -468,7 +573,7 @@ describe('S04 print dialog', () => {
     expect(print).not.toHaveBeenCalled();
     // An Arabic keyboard sends another letter for the same key.
     fireEvent.keyDown(window, { key: 'ح', code: 'KeyP', metaKey: true });
-    expect(print).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(print).toHaveBeenCalledTimes(1));
 
     const plain = new KeyboardEvent('keydown', { key: 'p', code: 'KeyP', cancelable: true });
     fireEvent(window, plain);
@@ -536,9 +641,13 @@ describe('S04 print dialog', () => {
     expect(get).toHaveBeenCalledTimes(5);
     // The note is for the screen, not the paper.
     expect(printRoot()).not.toHaveTextContent('not ready');
-    expect(printRoot()!.querySelector('[data-part="eta"]')).toBeNull();
+    // The paper itself says so (in the shop language, Arabic here).
+    expect(printRoot()!.querySelector('[data-part="eta-pending"]')).toHaveTextContent(
+      'الإيصال الإلكتروني قيد الإصدار',
+    );
+    expect(printRoot()!.querySelector('[data-qr]')).toBeNull();
     await u.click(screen.getByRole('button', { name: 'Print without QR code' }));
-    expect(print).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(print).toHaveBeenCalledTimes(1));
   });
 
   it('stops asking when the dialog closes', async () => {
@@ -589,7 +698,7 @@ describe('S04 print dialog', () => {
     expect(printRoot()!.querySelector('img')).toBeNull();
     expect(printRoot()).not.toHaveTextContent('Branch');
     await u.click(await printButton());
-    expect(print).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(print).toHaveBeenCalledTimes(1));
   });
 
   it('shows the logo and waits for it before printing', async () => {

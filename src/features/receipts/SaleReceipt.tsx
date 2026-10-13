@@ -154,12 +154,17 @@ export default function SaleReceipt(props: SaleReceiptProps) {
       <span data-amount="change_total">{money(sale.change_total)}</span>
     </div>
   );
-  const etaBlock = (eta.uuid || eta.qr) && (
+  const etaBlock = (eta.uuid || eta.qr || eta.pending) && (
     <div className="r-eta r-center" data-part="eta">
       <div className="r-bold">{tr('receipts.doc.eta')}</div>
       {eta.uuid && (
         <div className="r-small" data-part="eta-uuid">
           <Ltr mono>{eta.uuid}</Ltr>
+        </div>
+      )}
+      {eta.pending && (
+        <div className="r-small" data-part="eta-pending">
+          {tr('receipts.doc.etaPending')}
         </div>
       )}
       {eta.qr && (
