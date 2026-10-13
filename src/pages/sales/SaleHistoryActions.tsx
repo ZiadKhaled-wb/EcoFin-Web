@@ -9,6 +9,7 @@ import FormError from '@/components/ui/FormError';
 import Textarea from '@/components/ui/Textarea';
 import { notify } from '@/components/ui/notify';
 import { useCan } from '@/features/me/useCan';
+import PrintReceipt from '@/features/receipts/PrintReceipt';
 import { salesHistoryApi } from '@/services/salesHistoryApi';
 import { saleKeys } from '@/services/salesApi';
 import { useAuthStore } from '@/store/authStore';
@@ -69,7 +70,9 @@ export default function SaleHistoryActions({ sale }: { sale: SaleHistoryDetails 
           </p>
         )}
         {/* Future S04 and S05 action slots, without placeholder controls. */}
-        <div data-action-slot="sale-reprint" />
+        <div data-action-slot="sale-reprint">
+          <PrintReceipt sale={sale} />
+        </div>
         <div data-action-slot="sale-start-return" />
       </div>
       {!!sale.returns.length && (
