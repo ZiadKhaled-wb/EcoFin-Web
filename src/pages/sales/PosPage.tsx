@@ -18,6 +18,7 @@ import ErrorState from '@/components/ui/ErrorState';
 import Notice from '@/components/ui/Notice';
 import Skeleton from '@/components/ui/Skeleton';
 import { ApiError } from '@/lib/api';
+import PrintReceipt from '@/features/receipts/PrintReceipt';
 import { formatMoney } from '@/lib/format';
 import { shiftKeys, shiftsApi } from '@/services/shiftsApi';
 import { useAuthStore } from '@/store/authStore';
@@ -331,7 +332,8 @@ function DoneCard({ sale, onNew }: { sale: Sale; onNew: () => void }) {
           <Link to={`/sales/${sale.id}`} className="btn btn-secondary">
             {t('sales.pos.done.view')}
           </Link>
-          {/* S04 (EC-71): the print receipt button goes here. */}
+          {/* S04 (D68): the first print is the original, every later one a copy. */}
+          <PrintReceipt sale={sale} original />
         </div>
       </div>
     </Card>
