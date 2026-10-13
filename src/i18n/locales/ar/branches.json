@@ -24,6 +24,7 @@
     "name": "اسم الفرع",
     "code": "كود الفرع",
     "address": "العنوان",
+    "building_number": "رقم المبنى",
     "city": "المدينة",
     "governorate": "المحافظة",
     "phone": "الهاتف",

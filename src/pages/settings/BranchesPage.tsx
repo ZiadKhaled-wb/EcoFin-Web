@@ -30,6 +30,7 @@ const empty = {
   name: '',
   code: '',
   address: '',
+  building_number: '',
   city: '',
   governorate: '',
   phone: '',
@@ -81,6 +82,7 @@ export default function BranchesPage() {
         name: detail.name,
         code: detail.code,
         address: detail.address ?? '',
+        building_number: detail.building_number ?? '',
         city: detail.city ?? '',
         governorate: detail.governorate ?? '',
         phone: detail.phone ?? '',
@@ -101,6 +103,7 @@ export default function BranchesPage() {
     const fields = {
       name: form.name,
       address: form.address || null,
+      building_number: form.building_number || null,
       city: form.city || null,
       governorate: form.governorate || null,
       phone: form.phone || null,
@@ -284,12 +287,23 @@ export default function BranchesPage() {
             error={codeError}
             onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
           />
-          {(['address', 'city', 'governorate', 'phone', 'eta_branch_code'] as const).map((key) => (
+          {(
+            [
+              'address',
+              'building_number',
+              'city',
+              'governorate',
+              'phone',
+              'eta_branch_code',
+            ] as const
+          ).map((key) => (
             <FormField
               key={key}
               label={t(`branches.fields.${key}`)}
               value={form[key]}
-              maxLength={key === 'eta_branch_code' ? 20 : undefined}
+              maxLength={
+                key === 'eta_branch_code' ? 20 : key === 'building_number' ? 100 : undefined
+              }
               onChange={(e) => setForm({ ...form, [key]: e.target.value })}
             />
           ))}
