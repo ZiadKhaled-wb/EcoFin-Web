@@ -3,7 +3,14 @@ import LanguageSwitch from '@/components/layout/LanguageSwitch';
 import SerialFindBox from '@/components/layout/SerialFindBox';
 import { t } from '@/i18n';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDownIcon, LogoutIcon, MenuIcon, StoreIcon } from '@/components/ui/Icons';
+import {
+  CalculatorIcon,
+  ChevronDownIcon,
+  LogoutIcon,
+  MenuIcon,
+  StoreIcon,
+} from '@/components/ui/Icons';
+import { useCurrentDevice } from '@/features/devices/useCurrentDevice';
 import Badge from '@/components/ui/Badge';
 import IconButton from '@/components/ui/IconButton';
 import Wordmark from '@/components/ui/Wordmark';
@@ -31,6 +38,8 @@ export default function Topbar({
   const shopCount = useAuthStore((s) => s.shops.length);
   const navigate = useNavigate();
   const name = user?.username ?? user?.email ?? '';
+  // O03: which POS device this computer is, when it is one.
+  const { device } = useCurrentDevice();
 
   return (
     <header className="sticky top-0 z-(--z-sticky) flex h-16 items-center gap-2 border-b border-line bg-surface px-4 sm:px-6">
@@ -51,6 +60,15 @@ export default function Topbar({
           <BranchSwitcher />
         </div>
         <LanguageSwitch />
+        {device && (
+          <span
+            data-testid="topbar-device"
+            title={t('devices.thisComputer', { name: device.name })}
+            className="hidden sm:inline-flex"
+          >
+            <Badge tone="brand">{device.name}</Badge>
+          </span>
+        )}
         {tenantSlug && (
           // No room for the shop code next to the branch switcher until the sidebar takes the menu (lg).
           <span
@@ -92,6 +110,12 @@ export default function Topbar({
             {shopCount > 1 && (
               <DropdownMenuItem icon={<StoreIcon />} onSelect={() => navigate('/select-shop')}>
                 {t('shell.switchShop')}
+              </DropdownMenuItem>
+            )}
+            {/* O03: any employee can turn this computer into a POS device with a pairing code. */}
+            {user && (
+              <DropdownMenuItem icon={<CalculatorIcon />} onSelect={() => navigate('/device/pair')}>
+                {t('devices.pair.menu')}
               </DropdownMenuItem>
             )}
             {/* Logout clears the session; route guards then redirect to /login. */}

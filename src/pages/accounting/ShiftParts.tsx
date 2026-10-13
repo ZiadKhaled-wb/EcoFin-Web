@@ -1,4 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   SHIFT_DENOMINATIONS,
@@ -15,6 +16,7 @@ import NumberInput from '@/components/ui/NumberInput';
 import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import { notify } from '@/components/ui/notify';
+import { useCurrentDevice } from '@/features/devices/useCurrentDevice';
 import { useBranches } from '@/features/me/useBranches';
 import { formatDateTime, formatMoney } from '@/lib/format';
 import { cashKeys } from '@/services/cashApi';
@@ -136,13 +138,16 @@ export function OpenShiftForm() {
   // One key per form: a double click opens one shift.
   const [key] = useState(() => crypto.randomUUID());
   const posting = useRef(false);
-  const branchId = pickedBranch || (branches.data ?? [])[0]?.id || '';
+  // O03: a shift is opened on the POS device this computer is paired with, in its branch.
+  const { device, loading: deviceLoading } = useCurrentDevice();
+  const branchId = pickedBranch || device?.branch_id || (branches.data ?? [])[0]?.id || '';
+  const otherBranch = !!device && branchId !== '' && device.branch_id !== branchId;
   const hasFloat = MONEY.test(float) && !isZero(float);
   const vaults = useVaults(branchId);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
-    if (posting.current) return;
+    if (posting.current || !device || otherBranch) return;
     setError('');
     setVaultError('');
     if (float !== '' && !MONEY.test(float)) {
@@ -178,6 +183,25 @@ export function OpenShiftForm() {
   return (
     <form className="space-y-3" noValidate onSubmit={(e) => void submit(e)}>
       <h3 className="type-section-title">{t('cash.shifts.open.title')}</h3>
+      {device ? (
+        <p className="type-body" data-testid="shift-device">
+          {t('devices.thisComputer', { name: device.name })}
+        </p>
+      ) : (
+        !deviceLoading && (
+          <div role="alert" className="space-y-2 rounded-control border border-ochre-500 p-3">
+            <p className="type-body">{t('devices.shift.required')}</p>
+            <Link to="/device/pair" className="btn btn-secondary">
+              {t('devices.pairThisComputer')}
+            </Link>
+          </div>
+        )
+      )}
+      {otherBranch && (
+        <p role="alert" className="type-body">
+          {t('devices.shift.otherBranch', { branch: device.branch_name })}
+        </p>
+      )}
       <div className="grid gap-3 md:grid-cols-3">
         <Select
           label={t('cash.shifts.open.branch')}
@@ -214,7 +238,11 @@ export function OpenShiftForm() {
         )}
       </div>
       <FormError message={error} />
-      <Button type="submit" loading={busy} disabled={busy || branchId === ''}>
+      <Button
+        type="submit"
+        loading={busy}
+        disabled={busy || branchId === '' || !device || otherBranch}
+      >
         {t('cash.shifts.open.submit')}
       </Button>
     </form>

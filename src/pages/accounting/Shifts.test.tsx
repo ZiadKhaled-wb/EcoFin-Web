@@ -7,7 +7,7 @@ import { ApiError } from '@/lib/api';
 import { meApi } from '@/features/me/meApi';
 import { branchApi } from '@/services/branchApi';
 import { shiftsApi } from '@/services/shiftsApi';
-import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
+import { pairDevice, permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
 import { t } from '@/i18n';
 import ShiftsPage from './ShiftsPage';
 import ShiftPage from './ShiftPage';
@@ -89,6 +89,8 @@ const detail = (
 describe('K02 shifts', () => {
   beforeEach(() => {
     signIn();
+    // O03: a shift is opened on the paired POS device of this computer.
+    pairDevice({ branch_id: MAIN, branch_name: 'Main' });
     setPermissions(['shift.operate']);
     vi.spyOn(branchApi, 'list').mockResolvedValue([
       { id: MAIN, code: 'B1', name: 'Main', is_main: true },
@@ -139,6 +141,67 @@ describe('K02 shifts', () => {
     await user.click(await screen.findByRole('button', { name: 'Open shift' }));
     await waitFor(() => expect(open).toHaveBeenCalledTimes(1));
     expect(open.mock.calls[0]![0]).toEqual({ branch_id: MAIN, opening_float: '0' });
+  });
+
+  it('O03: the form names the POS device of this computer', async () => {
+    vi.spyOn(shiftsApi, 'current').mockResolvedValue(null);
+    await renderApp(<ShiftsPage />, { lang: 'en' });
+    expect(await screen.findByTestId('shift-device')).toHaveTextContent('POS device: POS-1');
+    expect(screen.getByRole('button', { name: 'Open shift' })).toBeEnabled();
+    expect(screen.queryByRole('link', { name: 'Pair this computer' })).not.toBeInTheDocument();
+  });
+
+  it('O03: a computer that is no POS device cannot open a shift and is sent to pair', async () => {
+    signOut();
+    signIn();
+    setPermissions(['shift.operate']);
+    vi.spyOn(shiftsApi, 'current').mockResolvedValue(null);
+    const open = vi.spyOn(shiftsApi, 'open').mockResolvedValue(shift());
+    await renderApp(<ShiftsPage />, { lang: 'en' });
+    const user = userEvent.setup();
+    const button = await screen.findByRole('button', { name: 'Open shift' });
+    expect(button).toBeDisabled();
+    expect(
+      screen.getByText('Opening a shift needs a POS device. Pair this computer first.'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Pair this computer' })).toHaveAttribute(
+      'href',
+      '/device/pair',
+    );
+    await user.click(button);
+    expect(open).not.toHaveBeenCalled();
+  });
+
+  it('O03: a device of another branch blocks the shift in this one; the server refusals are explained', async () => {
+    signOut();
+    signIn();
+    pairDevice({ branch_id: SAFE, branch_name: 'North' });
+    setPermissions(['shift.operate']);
+    vi.spyOn(shiftsApi, 'current').mockResolvedValue(null);
+    await renderApp(<ShiftsPage />, { lang: 'en' });
+    const user = userEvent.setup();
+    // The form starts on the device's branch; picking another one is refused.
+    const branch = await screen.findByLabelText('Branch', { selector: 'form select' });
+    await user.selectOptions(branch, MAIN);
+    expect(
+      await screen.findByText(
+        'This computer is a POS device of North. Open the shift in that branch.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Open shift' })).toBeDisabled();
+  });
+
+  it('O03: DEVICE_REQUIRED from the server is shown in words', async () => {
+    vi.spyOn(shiftsApi, 'current').mockResolvedValue(null);
+    vi.spyOn(shiftsApi, 'open').mockRejectedValue(
+      new ApiError(409, 'DEVICE_REQUIRED', 'Device required.'),
+    );
+    await renderApp(<ShiftsPage />, { lang: 'ar' });
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'فتح الوردية' }));
+    expect(
+      await screen.findByText('فتح الوردية يحتاج جهاز نقطة بيع. اربط هذا الكمبيوتر أولاً.'),
+    ).toBeInTheDocument();
   });
 
   it('an open shift shows the cash it should hold and its drawer movements', async () => {

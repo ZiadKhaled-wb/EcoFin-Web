@@ -46,6 +46,7 @@ import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
 import VaultsPage from '@/pages/accounting/VaultsPage';
 import VaultLedgerPage from '@/pages/accounting/VaultLedgerPage';
 import ShiftsPage from '@/pages/accounting/ShiftsPage';
+import PairDevicePage from '@/pages/settings/PairDevicePage';
 import ExpensesPage from '@/pages/accounting/ExpensesPage';
 import PosPage from '@/pages/sales/PosPage';
 import SalePage from '@/pages/sales/SalePage';
@@ -187,6 +188,9 @@ export default function App() {
                   <Route element={<RequirePermission permission="device.manage" />}>
                     <Route path="/settings/devices" element={<DevicesPage />} />
                   </Route>
+                  {/* O03: any employee may type a pairing code; the server checks shift.operate
+                      or device.manage. */}
+                  <Route path="/device/pair" element={<PairDevicePage />} />
                   <Route path="/inventory/categories" element={<CategoriesPage />} />
                   <Route path="/inventory/products" element={<ProductsPage />} />
                   <Route path="/inventory/labels" element={<LabelsPage />} />

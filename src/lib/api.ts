@@ -1,5 +1,7 @@
 import { AuthRefreshResponse, type ErrorCode } from '@ziadkhaled-wb/contracts';
 import axios, { AxiosError } from 'axios';
+import { toast } from 'sonner';
+import { clearDeviceToken, getDeviceToken } from '@/features/devices/deviceToken';
 import { t } from '@/i18n';
 import { captureApiError } from '@/lib/monitoring';
 import { useAuthStore } from '@/store/authStore';
@@ -10,6 +12,8 @@ declare module 'axios' {
     /** Public endpoints (login, forgot-password…) must not send a Bearer token or x-org-id. */
     skipAuth?: boolean;
     _retried?: boolean;
+    /** Sent again once without a device token the server no longer knows. */
+    _deviceRetried?: boolean;
   }
 }
 
@@ -118,6 +122,11 @@ api.interceptors.request.use((config) => {
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
   // The active shop. The server still checks it against the token's memberships.
   if (orgId) config.headers['x-org-id'] = orgId;
+  // O03: a paired POS computer says which device it is. The server resolves the token; a
+  // device id is never sent from here.
+  const deviceToken = getDeviceToken(orgId);
+  if (deviceToken) config.headers['x-device-token'] = deviceToken;
+  else delete config.headers['x-device-token'];
   return config;
 });
 
@@ -187,6 +196,27 @@ api.interceptors.response.use(
       if (current && sentWith !== `Bearer ${current}`) return api(original);
       const token = await refreshAccessToken();
       if (token) return api(original);
+    }
+
+    // O03: the device of this computer was unpaired or turned off. Forget the token, say so
+    // once, and send the request again as a computer that is no device.
+    if (
+      apiError.status === 403 &&
+      apiError.code === 'DEVICE_REVOKED' &&
+      original &&
+      !original.skipAuth
+    ) {
+      const sentOrg = String(original.headers['x-org-id'] ?? '');
+      const sentToken = String(original.headers['x-device-token'] ?? '');
+      // Only the token this request carried: a newer pairing made meanwhile is kept.
+      if (sentOrg && sentToken && getDeviceToken(sentOrg) === sentToken) {
+        clearDeviceToken(sentOrg);
+        toast.error(t('devices.revoked'));
+      }
+      if (!original._deviceRetried) {
+        original._deviceRetried = true;
+        return api(original);
+      }
     }
 
     // Q02: a server failure goes to the error tracker with the API's request id.

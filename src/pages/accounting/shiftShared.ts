@@ -8,6 +8,11 @@ const ERRORS: Partial<Record<string, TranslationKey>> = {
   SHIFT_ALREADY_OPEN: 'cash.shifts.errors.alreadyOpen',
   SHIFT_CLOSED: 'cash.shifts.errors.closed',
   DEVICE_INVALID: 'cash.shifts.errors.deviceInvalid',
+  // O03: a shift is opened on the paired POS device of this computer.
+  DEVICE_REQUIRED: 'devices.errors.DEVICE_REQUIRED',
+  DEVICE_BRANCH_MISMATCH: 'devices.errors.DEVICE_BRANCH_MISMATCH',
+  DEVICE_MISMATCH: 'devices.errors.DEVICE_MISMATCH',
+  DEVICE_REVOKED: 'devices.revoked',
   VAULT_INVALID: 'cash.shifts.errors.vaultInvalid',
   CASH_ACCOUNT_INACTIVE: 'cash.shifts.errors.accountInactive',
   INSUFFICIENT_FUNDS: 'cash.shifts.errors.insufficientFunds',

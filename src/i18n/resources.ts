@@ -50,6 +50,8 @@ import arCustomers from './locales/ar/customers.json';
 import enCustomers from './locales/en/customers.json';
 import arEta from './locales/ar/eta.json';
 import enEta from './locales/en/eta.json';
+import arDevices from './locales/ar/devices.json';
+import enDevices from './locales/en/devices.json';
 
 /** One JSON file per namespace and language. The first segment of a key is its namespace. */
 export const ar = {
@@ -79,6 +81,7 @@ export const ar = {
   sales: arSales,
   customers: arCustomers,
   eta: arEta,
+  devices: arDevices,
 };
 
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
@@ -110,6 +113,7 @@ export const en: SameShape<typeof ar> = {
   sales: enSales,
   customers: enCustomers,
   eta: enEta,
+  devices: enDevices,
 };
 
 type Leaves<T, P extends string = ''> = {

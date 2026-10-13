@@ -1,0 +1,92 @@
+{
+  "revoked": "This computer is no longer a POS device",
+  "thisComputer": "POS device: {name}",
+  "notPaired": "This computer is not a POS device",
+  "pairThisComputer": "Pair this computer",
+  "active": "On",
+  "inactive": "Off",
+  "paired": "Paired",
+  "unpaired": "Not paired",
+  "pairing": "Pairing",
+  "lastSeen": "Last seen",
+  "never": "Never",
+  "state": "Device",
+  "add": {
+    "open": "Add device",
+    "title": "New POS device",
+    "name": "Device name",
+    "nameHelp": "For example POS-1. Each device of a branch has its own name.",
+    "branch": "Branch",
+    "save": "Add device",
+    "saved": "Device added. Pair it on its computer next."
+  },
+  "edit": {
+    "open": "Rename or move",
+    "title": "Rename or move the device",
+    "save": "Save",
+    "saved": "Device saved."
+  },
+  "deactivate": {
+    "open": "Turn off",
+    "title": "Turn this device off",
+    "description": "{name} stops working as a POS device and its computer is unpaired.",
+    "reason": "Reason",
+    "confirm": "Turn off",
+    "done": "Device turned off."
+  },
+  "reactivate": {
+    "open": "Turn on",
+    "done": "Device turned on. Pair it on its computer again."
+  },
+  "unpair": {
+    "open": "Unpair",
+    "title": "Unpair this device",
+    "description": "The computer paired with {name} stops being a POS device on its next request.",
+    "confirm": "Unpair",
+    "done": "Device unpaired."
+  },
+  "code": {
+    "open": "Pair",
+    "title": "Pair {name}",
+    "hint": "Enter this code on the POS computer",
+    "label": "Pairing code",
+    "expiresIn": "Valid for {time}",
+    "expired": "This code has expired.",
+    "again": "New code",
+    "replaces": "This device is already paired. Pairing again unpairs its current computer.",
+    "done": "Done"
+  },
+  "pair": {
+    "title": "Pair this computer",
+    "description": "Turn this computer into one of the shop's POS devices. Ask the owner or a manager for the pairing code shown on the devices page.",
+    "code": "Pairing code",
+    "codeHelp": "8 letters and digits. It is valid for 15 minutes and for one pairing.",
+    "submit": "Pair this computer",
+    "success": "This computer is now {name} ({branch})",
+    "current": "This computer is {name} ({branch}).",
+    "again": "Enter a new code to pair it with another device.",
+    "toShift": "Go to the shift",
+    "menu": "Pair this computer"
+  },
+  "shift": {
+    "device": "POS device",
+    "required": "Opening a shift needs a POS device. Pair this computer first.",
+    "otherBranch": "This computer is a POS device of {branch}. Open the shift in that branch."
+  },
+  "errors": {
+    "DEVICE_NAME_TAKEN": "Another device of this branch already has this name.",
+    "DEVICE_HAS_OPEN_SHIFT": "This device has an open shift. Close the shift first.",
+    "DEVICE_NOT_FOUND": "This device was not found.",
+    "DEVICE_INVALID": "This device is turned off.",
+    "PAIRING_CODE_INVALID": "This code is not valid. Check it, or ask for a new one.",
+    "REASON_REQUIRED": "Write the reason.",
+    "BRANCH_NOT_FOUND": "This branch was not found.",
+    "PLAN_LIMIT_REACHED": "The shop's plan allows no more devices.",
+    "TOO_MANY_REQUESTS": "Too many attempts. Wait a minute and try again.",
+    "PERMISSION_DENIED": "You are not allowed to do this.",
+    "VALIDATION_FAILED": "Check the fields. A device name has 1 to 50 characters.",
+    "DEVICE_REQUIRED": "Opening a shift needs a POS device. Pair this computer first.",
+    "DEVICE_BRANCH_MISMATCH": "This computer is a POS device of another branch.",
+    "DEVICE_MISMATCH": "This shift belongs to another POS device."
+  }
+}
