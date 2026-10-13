@@ -287,6 +287,19 @@ export const NAV: NavItem[] = [
         to: '/settings/branches',
         permission: 'branch.manage',
       },
+      // T02 (D67): the shop's ETA connection, and each POS's registration with the ETA.
+      {
+        id: 'settings-eta',
+        labelKey: 'eta.title',
+        to: '/settings/eta',
+        permission: 'org.settings_manage',
+      },
+      {
+        id: 'devices',
+        labelKey: 'eta.devices.title',
+        to: '/settings/devices',
+        permission: 'device.manage',
+      },
     ],
   },
 ];

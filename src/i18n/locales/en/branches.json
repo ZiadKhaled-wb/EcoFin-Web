@@ -24,6 +24,7 @@
     "name": "Branch name",
     "code": "Branch code",
     "address": "Address",
+    "building_number": "Building number",
     "city": "City",
     "governorate": "Governorate",
     "phone": "Phone",

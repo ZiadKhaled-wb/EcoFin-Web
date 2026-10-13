@@ -22,6 +22,7 @@ const main: BranchDetail = {
   is_main: true,
   is_active: true,
   address: null,
+  building_number: null,
   city: null,
   governorate: null,
   phone: null,
@@ -124,6 +125,26 @@ describe('O01 branch management', () => {
       }),
     );
     expect(await screen.findByLabelText(t('branches.fields.code'))).toHaveAttribute('readonly');
+  });
+  it('sends the building number the ETA receipt needs (T02)', async () => {
+    vi.spyOn(branchApi, 'detail').mockResolvedValue({ ...second, building_number: '7' });
+    const update = vi.spyOn(branchApi, 'update').mockResolvedValue(second);
+    await renderApp(<BranchesPage />, { lang: 'en' });
+    const u = userEvent.setup();
+    await u.click(
+      within((await screen.findByText('Second')).closest('tr')!).getByRole('button', {
+        name: t('branches.edit'),
+      }),
+    );
+    const field = await screen.findByLabelText(t('branches.fields.building_number'));
+    expect(field).toHaveValue('7');
+    await u.clear(field);
+    await u.type(field, '12');
+    await u.click(screen.getByRole('button', { name: t('branches.save') }));
+    expect(update).toHaveBeenCalledWith(
+      BRANCH_TWO,
+      expect.objectContaining({ building_number: '12' }),
+    );
   });
   it('warns with counts and submits explicit confirmation', async () => {
     vi.spyOn(branchApi, 'check').mockResolvedValue({

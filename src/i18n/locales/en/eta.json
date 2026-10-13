@@ -1,0 +1,64 @@
+{
+  "title": "ETA e-receipts",
+  "description": "The shop's connection to the Egyptian Tax Authority. Every consumer receipt is sent to it.",
+  "environment": "ETA system",
+  "environments": {
+    "preprod": "Pre-production (test)",
+    "prod": "Production (real receipts)"
+  },
+  "prodWarning": "Production sends real receipts to the tax authority. Switch only after the test receipts were accepted in pre-production.",
+  "clientId": "Client ID",
+  "clientSecret": "Client secret",
+  "clientSecretHelp": "Stored encrypted and never shown again. Leave empty to keep the saved one.",
+  "secretSaved": "Saved",
+  "secretMissing": "Not set",
+  "activityCode": "Activity code",
+  "activityCodeHelp": "One of the shop's activity codes registered with the tax authority.",
+  "enabled": "Send receipts to the ETA",
+  "enabledHelp": "When on, every consumer sale gets an ETA receipt.",
+  "save": "Save settings",
+  "saved": "ETA settings saved.",
+  "validation": "Check the fields. Turning ETA on needs the client ID, the client secret and the activity code.",
+  "test": {
+    "title": "Test connection",
+    "description": "Logs one POS device in at the ETA with the saved settings. Save your changes first.",
+    "device": "POS device",
+    "chooseDevice": "Choose a device",
+    "noDevices": "No POS device yet.",
+    "run": "Test connection",
+    "ok": "Connected: the ETA accepted this POS.",
+    "failed": "The ETA refused the connection: {reason}"
+  },
+  "errors": {
+    "ETA_ENV_BUSY": "Receipts are still on their way to the ETA. Change the system after they are done.",
+    "MODULE_NOT_IN_PLAN": "ETA e-receipts are not in the shop's plan.",
+    "VALIDATION_FAILED": "Check the fields. Turning ETA on needs the client ID, the client secret and the activity code.",
+    "DEVICE_NOT_FOUND": "This device was not found.",
+    "DEVICE_SERIAL_TAKEN": "Another device of the shop already has this serial.",
+    "PERMISSION_DENIED": "You are not allowed to do this."
+  },
+  "devices": {
+    "title": "POS devices",
+    "description": "Each POS device is registered with the tax authority before it can issue receipts.",
+    "empty": "No POS device yet.",
+    "name": "Device",
+    "branch": "Branch",
+    "serial": "ETA serial",
+    "status": "ETA status",
+    "actions": "Actions",
+    "edit": "ETA registration",
+    "osVersion": "OS version",
+    "modelFramework": "Model framework",
+    "presharedKey": "Pre-shared key",
+    "presharedKeyHelp": "Stored encrypted and never shown again. Leave empty to keep the saved one.",
+    "save": "Save registration",
+    "saved": "Device registration saved.",
+    "validation": "Check the fields. An active device needs its serial, OS version, model framework and key.",
+    "statuses": {
+      "unregistered": "Not registered",
+      "pending": "Pending",
+      "active": "Active",
+      "revoked": "Revoked"
+    }
+  }
+}
