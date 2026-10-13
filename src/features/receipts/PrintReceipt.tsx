@@ -8,11 +8,12 @@ import { branchKeys } from '@/features/me/useBranches';
 import { useSettings } from '@/features/settings/useSettings';
 import { branchApi } from '@/services/branchApi';
 import { salesApi } from '@/services/salesApi';
+import { salesHistoryApi } from '@/services/salesHistoryApi';
 import { settingsApi } from '@/services/settingsApi';
 import { useAuthStore } from '@/store/authStore';
 import { t, type Language } from '@/i18n';
 import SaleReceipt from './SaleReceipt';
-import { ETA_POLL, etaOnReceipt, type ReceiptSale } from './receiptRules';
+import { ETA_POLL, PRINT_LOG_WAIT_MS, etaOnReceipt, type ReceiptSale } from './receiptRules';
 import {
   readReceiptPrefs,
   receiptPageCss,
@@ -27,8 +28,8 @@ const MM_PER_PX = 25.4 / 96;
 type Props = {
   sale: ReceiptSale;
   /**
-   * True where the sale was just made (the POS done card): the first print is the original.
-   * Everywhere else, and every later print, is marked as a copy.
+   * True where the sale was just made (the POS done card): nothing was printed yet. Elsewhere the
+   * sale's own `receipt_prints` says so. The server has the last word when Print is pressed.
    */
   original?: boolean;
 };
@@ -39,7 +40,8 @@ type Props = {
  */
 export default function PrintReceipt({ sale, original = false }: Props) {
   const [open, setOpen] = useState(false);
-  const [printed, setPrinted] = useState(false);
+  /** Prints of this sale so far, as far as this screen knows; null = unknown (treated as a copy). */
+  const [prints, setPrints] = useState<number | null>(original ? 0 : (sale.receipt_prints ?? null));
   /** The ETA receipt read again while waiting; kept so a second print doesn't wait. */
   const [eta, setEta] = useState(sale.eta);
   const printNowRef = useRef<(() => void) | null>(null);
@@ -77,10 +79,10 @@ export default function PrintReceipt({ sale, original = false }: Props) {
       {open && (
         <PrintDialog
           sale={current}
-          copy={!original || printed}
+          copy={prints === null || prints > 0}
           printNowRef={printNowRef}
           onEta={setEta}
-          onPrinted={() => setPrinted(true)}
+          onPrinted={(printNo) => setPrints((was) => printNo ?? (was ?? 0) + 1)}
           onClose={close}
         />
       )}
@@ -100,7 +102,8 @@ function PrintDialog({
   copy: boolean;
   printNowRef: RefObject<(() => void) | null>;
   onEta: (eta: ReceiptSale['eta']) => void;
-  onPrinted: () => void;
+  /** The number the server gave this print; null when it could not be logged. */
+  onPrinted: (printNo: number | null) => void;
   onClose: () => void;
 }) {
   const orgId = useAuthStore((s) => s.orgId);
@@ -163,17 +166,45 @@ function PrintDialog({
   const preview = useRef<HTMLDivElement>(null);
   const [pageHeightMm, setPageHeightMm] = useState<number | null>(null);
   const ready = !!shop && !logoPending;
-  const print = () => {
-    if (!ready) return;
+  /** The server's answer for this print: a copy or the original. Until then, what the screen knows. */
+  const [stamped, setStamped] = useState<boolean | null>(null);
+  const marked = stamped ?? copy;
+  const [printing, setPrinting] = useState(false);
+  const aliveRef = useRef(true);
+  useEffect(
+    () => () => {
+      aliveRef.current = false;
+    },
+    [],
+  );
+  const print = async () => {
+    if (!ready || printing) return;
+    setPrinting(true);
+    // D68: the server numbers the prints of a sale (the first is the original) and logs each one.
+    // Without an answer (offline, an expired shop) the print still goes out on what this screen knows.
+    let isCopy = copy;
+    let printNo: number | null = null;
+    try {
+      const logged = await Promise.race([
+        salesHistoryApi.recordReceiptPrint(sale.id),
+        new Promise<never>((_, reject) => setTimeout(reject, PRINT_LOG_WAIT_MS)),
+      ]);
+      isCopy = logged.copy;
+      printNo = logged.print_no;
+    } catch {
+      /* not logged: printed anyway */
+    }
+    if (!aliveRef.current) return;
+    flushSync(() => setStamped(isCopy));
     // A roll has no page length: make the page as long as the receipt on screen.
     const px = preview.current?.querySelector<HTMLElement>('.receipt')?.offsetHeight ?? 0;
     flushSync(() => setPageHeightMm(px > 0 ? Math.ceil(px * MM_PER_PX) + 6 : null));
     window.print();
-    onPrinted();
+    onPrinted(printNo);
     onClose();
   };
   useEffect(() => {
-    printNowRef.current = print;
+    printNowRef.current = () => void print();
     return () => {
       printNowRef.current = null;
     };
@@ -195,7 +226,7 @@ function PrintDialog({
       logoUrl={logo.data?.url ?? null}
       lang={lang}
       paper={paper}
-      copy={copy}
+      copy={marked}
       onLogoSettled={() => setLogoSettled(true)}
     />
   );
@@ -213,7 +244,11 @@ function PrintDialog({
             {t('receipts.dialog.close')}
           </Button>
           <span ref={actions}>
-            <Button disabled={!ready} loading={!!shop && logoPending} onClick={print}>
+            <Button
+              disabled={!ready}
+              loading={(!!shop && logoPending) || printing}
+              onClick={() => void print()}
+            >
               {t(withoutQr ? 'receipts.dialog.printWithoutQr' : 'receipts.dialog.printNow')}
             </Button>
           </span>
@@ -256,7 +291,7 @@ function PrintDialog({
             }}
           />
         </div>
-        {copy && <p className="type-caption">{t('receipts.dialog.copyNote')}</p>}
+        {marked && <p className="type-caption">{t('receipts.dialog.copyNote')}</p>}
         {waiting && (
           <p className="type-caption" role="status">
             {t(
