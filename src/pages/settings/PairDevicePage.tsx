@@ -21,7 +21,7 @@ import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
 
 /**
- * O03 (D68): /device/pair. An employee types the code from the owner's devices page; the
+ * O03 (D69): /device/pair. An employee types the code from the owner's devices page; the
  * answer's device token is stored for this shop and this browser is that POS device from then
  * on. The token is never shown.
  */

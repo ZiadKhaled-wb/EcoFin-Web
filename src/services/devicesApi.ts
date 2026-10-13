@@ -19,7 +19,7 @@ export const deviceKeys = {
 };
 
 /**
- * O03 POS devices (D68): managing the shop's devices and pairing a computer with one. The list
+ * O03 POS devices (D69): managing the shop's devices and pairing a computer with one. The list
  * and the ETA registration stay in etaApi (T02). A pairing code and a device token are each
  * answered once: the code is shown and dropped, the token goes to localStorage (deviceToken).
  */

@@ -48,7 +48,7 @@ type Action = { kind: 'add' } | { kind: 'edit' | 'deactivate' | 'unpair' | 'code
 
 /**
  * Settings → Devices. The shop's POS devices.
- * O03 (D68): add a device, rename or move it, turn it off (with a reason) and on, and pair it
+ * O03 (D69): add a device, rename or move it, turn it off (with a reason) and on, and pair it
  * with a computer: the pairing code is shown once, large, with the time it has left.
  * T02 (D67): each one's registration with the tax authority: serial, OS version, model
  * framework, pre-shared key and status. The key is write-only: the dialog shows only whether

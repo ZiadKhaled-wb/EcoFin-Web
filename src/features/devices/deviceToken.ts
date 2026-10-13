@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 /**
- * O03 (D68): the device token of this computer, one per shop, kept in localStorage under
+ * O03 (D69): the device token of this computer, one per shop, kept in localStorage under
  * `ecotech.deviceToken.<organization_id>`. It is what makes this browser a POS device: the API
  * client sends it as `x-device-token`, and forgets it when the server answers DEVICE_REVOKED.
  * It outlives a logout on purpose: the computer stays the same device for the next cashier.
