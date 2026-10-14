@@ -1029,4 +1029,31 @@ describe('S06 POS screen', () => {
       }
     });
   });
+  it('EC147: DEVICE_REVOKED during payment stops the sale screen', async () => {
+    create.mockRejectedValue(refused(403, 'DEVICE_REVOKED'));
+    const { user } = await open();
+    await withChair(user);
+    await user.click(confirmButton());
+    const dialog = await screen.findByRole('dialog', { name: 'Payment' });
+    await user.click(within(dialog).getByRole('button', { name: 'Pay' }));
+    expect(
+      await screen.findByText('This POS device was revoked. Ask a manager to close the shift.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('searchbox')).toBeNull();
+    expect(screen.queryByRole('dialog', { name: 'Payment' })).toBeNull();
+    expect(create).toHaveBeenCalledTimes(1);
+  });
+  it('EC147: an already revoked shift stops the Arabic sale screen', async () => {
+    vi.spyOn(shiftsApi, 'current').mockResolvedValue({
+      id: OTHER,
+      number: 'MAIN-SH-26-000003',
+      branch_id: MAIN,
+      device_revoked: true,
+    } as Awaited<ReturnType<typeof shiftsApi.current>>);
+    await renderApp(<PosPage />, { lang: 'ar' });
+    expect(
+      await screen.findByText('تم إلغاء اقتران جهاز نقطة البيع هذا. اطلب من مدير إغلاق الوردية.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('searchbox')).toBeNull();
+  });
 });

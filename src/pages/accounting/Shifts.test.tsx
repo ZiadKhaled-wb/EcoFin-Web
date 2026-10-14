@@ -341,4 +341,63 @@ describe('K02 shifts', () => {
     );
     expect(get).not.toHaveBeenCalled();
   });
+  it.each([
+    { permission: true, revoked: true, status: 'open' as const, visible: true },
+    { permission: false, revoked: true, status: 'open' as const, visible: false },
+    { permission: true, revoked: false, status: 'open' as const, visible: false },
+    { permission: true, revoked: true, status: 'closed' as const, visible: false },
+  ])('EC147 force-close visibility: %j', async ({ permission, revoked, status, visible }) => {
+    setPermissions(permission ? ['cash.adjust', 'cash.view'] : ['cash.view']);
+    vi.spyOn(shiftsApi, 'list').mockResolvedValue({
+      items: [summary({ device_revoked: revoked, status })],
+      page: 1,
+      pageSize: 20,
+      total: 1,
+    });
+    await renderApp(<ShiftsPage />, { lang: 'en' });
+    await screen.findByText('Mona Cashier');
+    if (visible)
+      expect(await screen.findByRole('button', { name: 'Force close' })).toBeInTheDocument();
+    else expect(screen.queryByRole('button', { name: 'Force close' })).toBeNull();
+  });
+  it('EC147: force close requires a reason and sends the exact cash count once', async () => {
+    setPermissions(['cash.adjust', 'cash.view']);
+    vi.spyOn(shiftsApi, 'list').mockResolvedValue({
+      items: [summary({ device_revoked: true })],
+      page: 1,
+      pageSize: 20,
+      total: 1,
+    });
+    const force = vi.spyOn(shiftsApi, 'forceClose').mockResolvedValue(closedShift());
+    await renderApp(<ShiftsPage />, { lang: 'en' });
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'Force close' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Force close' });
+    await user.type(within(dialog).getByLabelText('Counted cash'), '640.00');
+    await user.click(within(dialog).getByRole('button', { name: 'Force close' }));
+    expect(await screen.findByText('Write a reason of 3 to 500 characters.')).toBeInTheDocument();
+    expect(force).not.toHaveBeenCalled();
+    await user.type(within(dialog).getByLabelText('Reason'), 'Lost device');
+    await user.dblClick(within(dialog).getByRole('button', { name: 'Force close' }));
+    await waitFor(() => expect(force).toHaveBeenCalledTimes(1));
+    expect(force).toHaveBeenCalledWith(SHIFT, { counted_cash: '640.00', reason: 'Lost device' });
+  });
+  it('EC147: a revoked cash move stops the cashier shift controls', async () => {
+    vi.spyOn(shiftsApi, 'cash').mockRejectedValue(new ApiError(403, 'DEVICE_REVOKED', 'Revoked'));
+    await renderApp(<ShiftsPage />, { lang: 'en' });
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole('button', { name: 'Cash out' }));
+    const dialog = await screen.findByRole('dialog');
+    await user.type(within(dialog).getByLabelText('Amount'), '10');
+    const vault = within(dialog).getByLabelText('Safe');
+    await waitFor(() => expect(vault.querySelector(`option[value="${SAFE}"]`)).not.toBeNull());
+    await user.selectOptions(vault, SAFE);
+    await user.type(within(dialog).getByLabelText('Note'), 'Drop cash');
+    vi.spyOn(shiftsApi, 'current').mockResolvedValue(shift({ device_revoked: true }));
+    await user.click(within(dialog).getByRole('button', { name: 'Save' }));
+    expect(
+      await screen.findByText('This POS device was revoked. Ask a manager to close the shift.'),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Cash out' })).toBeNull());
+  });
 });

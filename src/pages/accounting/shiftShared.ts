@@ -12,7 +12,7 @@ const ERRORS: Partial<Record<string, TranslationKey>> = {
   DEVICE_REQUIRED: 'devices.errors.DEVICE_REQUIRED',
   DEVICE_BRANCH_MISMATCH: 'devices.errors.DEVICE_BRANCH_MISMATCH',
   DEVICE_MISMATCH: 'devices.errors.DEVICE_MISMATCH',
-  DEVICE_REVOKED: 'devices.revoked',
+  DEVICE_REVOKED: 'cash.shifts.revoked',
   VAULT_INVALID: 'cash.shifts.errors.vaultInvalid',
   CASH_ACCOUNT_INACTIVE: 'cash.shifts.errors.accountInactive',
   INSUFFICIENT_FUNDS: 'cash.shifts.errors.insufficientFunds',

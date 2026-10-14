@@ -9,6 +9,7 @@ import {
   type ShiftMovement,
 } from '@ziadkhaled-wb/contracts';
 import Button from '@/components/ui/Button';
+import { ApiError } from '@/lib/api';
 import Dialog from '@/components/ui/Dialog';
 import FormError from '@/components/ui/FormError';
 import MoneyInput from '@/components/ui/MoneyInput';
@@ -295,6 +296,7 @@ export function ShiftCashDialog({
       onClose();
     } catch (err) {
       setError(shiftError(err));
+      if (err instanceof ApiError && err.code === 'DEVICE_REVOKED') await refresh();
       posting.current = false;
       setBusy(false);
     }

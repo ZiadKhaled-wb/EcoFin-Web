@@ -5,6 +5,7 @@ import {
   ShiftVaultList,
   type ShiftCashBody,
   type ShiftCloseBody,
+  type ShiftForceCloseBody,
   type ShiftOpenBody,
   type ShiftStatus,
 } from '@ziadkhaled-wb/contracts';
@@ -54,6 +55,9 @@ export const shiftsApi = {
       (await api.post(`/api/shifts/${id}/cash`, body, { headers: { 'Idempotency-Key': key } }))
         .data,
     ),
+  /** EC-147: a manager closes a shift without the lost device's token. */
+  forceClose: async (id: string, body: ShiftForceCloseBody) =>
+    Shift.parse((await api.post(`/api/shifts/${id}/force-close`, body)).data),
   /** A closed shift is answered unchanged, so a repeat is safe. */
   close: async (id: string, body: ShiftCloseBody) =>
     Shift.parse((await api.post(`/api/shifts/${id}/close`, body)).data),

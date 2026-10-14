@@ -696,6 +696,15 @@ test.describe('INT-4 cash sale end to end', () => {
         201,
       );
       saveRun({ deviceB, voidSaleId: String(sale['id']) });
+      // The manager performs this POS void on the cashier's paired computer.
+      const deviceToken = await cashierB.page.evaluate(
+        (org) => localStorage.getItem(`ecotech.deviceToken.${org}`),
+        ORG_B,
+      );
+      await ownerB.page.evaluate(
+        ([org, token]) => localStorage.setItem(`ecotech.deviceToken.${org}`, token!),
+        [ORG_B, deviceToken] as const,
+      );
       await ownerB.page.goto(`/sales/${String(sale['id'])}`);
       await ownerB.page.getByRole('button', { name: 'Void sale' }).click();
       await ownerB.page.getByLabel('Reason').fill('INT-4 void, ETA off');

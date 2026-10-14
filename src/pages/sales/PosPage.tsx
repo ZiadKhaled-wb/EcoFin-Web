@@ -53,7 +53,10 @@ export default function PosPage() {
   return (
     <PageContainer>
       <PageHeader title={t('sales.pos.title')} description={t('sales.pos.description')} />
-      {current.isPending ? (
+      {current.data?.device_revoked ||
+      (current.error instanceof ApiError && current.error.code === 'DEVICE_REVOKED') ? (
+        <Notice tone="error">{t('cash.shifts.revoked')}</Notice>
+      ) : current.isPending ? (
         <Skeleton className="h-40" />
       ) : current.isError ? (
         <ErrorState title={t('sales.errors.failed')} onRetry={() => void current.refetch()} />
@@ -82,6 +85,7 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
   const [dialog, setDialog] = useState<OpenDialog>(null);
   const [unitsFor, setUnitsFor] = useState<Product | null>(null);
   const [error, setError] = useState('');
+  const [revoked, setRevoked] = useState(false);
   const [approvalError, setApprovalError] = useState('');
   const [customersOn, setCustomersOn] = useState(true);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -147,6 +151,11 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
       setDialog(null);
       return null;
     }
+    if (refused instanceof ApiError && refused.code === 'DEVICE_REVOKED') {
+      setRevoked(true);
+      setDialog(null);
+      return null;
+    }
     if (approval.refused(refused)) {
       setApprovalError('');
       setDialog(null);
@@ -200,7 +209,7 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
   }
 
   usePosShortcuts(
-    done
+    done || revoked
       ? {}
       : {
           [POS_SHORTCUTS.search]: () => inputIn(searchRef)?.focus(),
@@ -218,6 +227,7 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
         },
   );
 
+  if (revoked) return <Notice tone="error">{t('cash.shifts.revoked')}</Notice>;
   if (cart.done) return <DoneCard sale={cart.done} onNew={cart.reset} />;
 
   const close = () => setDialog(null);
