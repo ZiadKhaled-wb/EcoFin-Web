@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { StrictMode } from 'react';
 import type { Sale, ShopSettings } from '@ziadkhaled-wb/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { formatMoney } from '@/lib/format';
@@ -407,6 +408,23 @@ describe('S04 print dialog', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(printRoot()).toBeNull();
     await waitFor(() => expect(openButton()).toHaveFocus());
+  });
+
+  // INT4-B1: in development React StrictMode mounts, unmounts and mounts again; the print must
+  // still reach the browser's print window (it used to stop after logging the print).
+  it('prints under StrictMode too: the print window opens and the dialog closes', async () => {
+    await renderApp(
+      <StrictMode>
+        <PrintReceipt sale={sale()} original />
+      </StrictMode>,
+      { lang: 'en' },
+    );
+    const u = user();
+    await u.click(openButton());
+    await u.click(await printButton());
+    await waitFor(() => expect(print).toHaveBeenCalledTimes(1));
+    expect(record).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   });
 
   it('the first print from the done card is the original, later ones are copies', async () => {

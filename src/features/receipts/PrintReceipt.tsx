@@ -171,12 +171,13 @@ function PrintDialog({
   const marked = stamped ?? copy;
   const [printing, setPrinting] = useState(false);
   const aliveRef = useRef(true);
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    // Set on every mount: StrictMode's dev re-mount runs the cleanup once in between.
+    aliveRef.current = true;
+    return () => {
       aliveRef.current = false;
-    },
-    [],
-  );
+    };
+  }, []);
   const print = async () => {
     if (!ready || printing) return;
     setPrinting(true);

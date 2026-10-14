@@ -86,11 +86,27 @@ jobs:
             echo "SUPABASE_SERVICE_ROLE_KEY=$(field SERVICE_ROLE_KEY)"
           } >> "$GITHUB_ENV"
 
+      # INT-4: the fake ETA (T02's, as a process) on 127.0.0.1 only; the API's job worker sends the
+      # receipts there. Never a real ETA host.
+      - name: Start the fake ETA on :4010 (controls on :4011)
+        working-directory: api
+        run: |
+          nohup npm run fake-eta > "$RUNNER_TEMP/fake-eta.log" 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4011/admin/state > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          echo "fake ETA did not start"; cat "$RUNNER_TEMP/fake-eta.log"; exit 1
+
       - name: Start the API on :3001
         working-directory: api
         env:
           NODE_ENV: development
           PORT: '3001'
+          ETA_PREPROD_ID_URL: http://127.0.0.1:4010
+          ETA_PREPROD_API_URL: http://127.0.0.1:4010
+          ETA_PREPROD_PORTAL_URL: https://portal.fake-eta.test
+          JOBS_POLL_SECONDS: '5'
           FRONTEND_URL: http://localhost:5173
           LOG_LEVEL: warn
           # Shop and staff invites (INT-2 e2e) go to the local Mailpit.
@@ -116,6 +132,7 @@ jobs:
           VITE_SUPABASE_URL: ${{ env.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ env.SUPABASE_ANON_KEY }}
           E2E_API_URL: http://localhost:3001
+          E2E_API_DIR: api
           E2E_MAILPIT_URL: http://127.0.0.1:54324
           E2E_OWNER_EMAIL: owner.one@ecotech.test
           E2E_OWNER_PASSWORD: LocalDev-Only-2026!
