@@ -29,7 +29,7 @@
     "@supabase/supabase-js": "^2.117.2",
     "@tanstack/react-query": "^5.104.0",
     "@tanstack/react-table": "^8.21.3",
-    "@ziadkhaled-wb/contracts": "file:vendor/ziadkhaled-wb-contracts-0.40.1.tgz",
+    "@ziadkhaled-wb/contracts": "file:vendor/ziadkhaled-wb-contracts-0.41.0.tgz",
     "axios": "^1.20.0",
     "i18next": "^26.4.2",
     "lucide-react": "^1.49.0",

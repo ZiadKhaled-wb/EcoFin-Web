@@ -193,6 +193,8 @@
     },
     "earlyPct": "Discount (%) of future profit",
     "guarantorAbove": "Guarantor required above",
+    "guarantorsCount": "Guarantors needed",
+    "guarantorsCountHelp": "How many guarantors a contract above that amount needs (1 to 3). Available once an amount is set.",
     "surveyAbove": "Field survey required above",
     "moduleMissing": "Your plan doesn't include installments."
   },
