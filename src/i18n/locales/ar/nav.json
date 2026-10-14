@@ -23,5 +23,7 @@
   "reports": "التقارير",
   "audit": "سجل التدقيق",
   "settings": "الإعدادات",
-  "discountApprovals": "الموافقات المعلقة"
+  "discountApprovals": "الموافقات المعلقة",
+  "tax": "الضرائب",
+  "etaReceipts": "إيصالات الضرائب (ETA)"
 }

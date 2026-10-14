@@ -23,5 +23,7 @@
   "reports": "Reports",
   "audit": "Audit log",
   "settings": "Settings",
-  "discountApprovals": "Pending approvals"
+  "discountApprovals": "Pending approvals",
+  "tax": "Tax",
+  "etaReceipts": "ETA receipts"
 }

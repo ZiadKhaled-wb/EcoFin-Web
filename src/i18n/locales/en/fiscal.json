@@ -1,0 +1,157 @@
+{
+  "title": "ETA receipts",
+  "subtitle": "Every receipt sent to the tax authority, and what to do about the ones that need you.",
+  "badge": "{count} ETA receipts need attention",
+  "cards": {
+    "blocked": "Blocked",
+    "send_failed": "Send failed",
+    "rejected": "Rejected",
+    "due_soon": "Due soon",
+    "overdue": "Overdue",
+    "accepted_today": "Accepted today"
+  },
+  "filters": {
+    "search": "Sale number or UUID",
+    "from": "From",
+    "to": "To",
+    "branch": "Branch",
+    "situation": "Situation",
+    "all": "All",
+    "problem": "Needs attention",
+    "dateInvalid": "The start date is after the end date."
+  },
+  "situation": {
+    "waiting": "Waiting",
+    "accepted": "Accepted",
+    "cancelled": "Cancelled",
+    "blocked": "Blocked",
+    "send_failed": "Send failed",
+    "rejected": "Rejected"
+  },
+  "columns": {
+    "details": "Details",
+    "select": "Select",
+    "sale": "Sale",
+    "time": "Time",
+    "branch": "Branch",
+    "device": "POS",
+    "total": "Total",
+    "situation": "Situation",
+    "error": "Error",
+    "deadline": "Deadline"
+  },
+  "deadline": {
+    "none": "None",
+    "in": "Due {when}",
+    "past": "Was due {when}",
+    "late": "Needs a Late Submission Request in the ETA portal"
+  },
+  "empty": "No receipts match.",
+  "noDevice": "No POS",
+  "retrySelected": "Retry selected",
+  "retrySelectedCount": "Retry selected ({count})",
+  "bulk": {
+    "done": "{count} receipts were queued.",
+    "skipped": "{count} were skipped:",
+    "skippedRow": "{sale}: {reason}",
+    "unknownSale": "A receipt"
+  },
+  "reasons": {
+    "NOT_READY": "its data still needs fixing",
+    "NOT_ELIGIBLE": "nothing to do for it",
+    "FISCAL_NOT_FOUND": "not found",
+    "CORRECTION_QUEUED": "a correction is already queued",
+    "NOT_REJECTED": "it is not rejected",
+    "USE_CORRECTION": "it must be corrected",
+    "FAILED": "it could not be retried"
+  },
+  "drawer": {
+    "title": "Receipt {sale}",
+    "sale": "Sale",
+    "openSale": "Open sale",
+    "situation": "Situation",
+    "deadline": "Deadline",
+    "uuid": "UUID",
+    "previous": "Previous UUID",
+    "replaced": "Corrects",
+    "attempts": "Attempts",
+    "problems": "What needs fixing",
+    "noProblems": "Nothing is wrong with the data.",
+    "etaError": "The ETA says",
+    "property": "Property",
+    "timeline": "History",
+    "noEvents": "No history yet.",
+    "actor": "By an employee",
+    "system": "System",
+    "loadFailed": "The receipt could not be loaded."
+  },
+  "problem": {
+    "NO_DEVICE": {
+      "missing": "This sale was made without a POS.",
+      "not_active": "The POS of this sale is not active with the ETA."
+    },
+    "ITEM_CODE": "These products have no ETA item code:",
+    "SELLER_DATA": "The shop or branch data the ETA needs is missing:",
+    "BUYER_ID": {
+      "national_id": "The customer needs a name and a 14-digit national ID (the sale is 150,000 EGP or more).",
+      "business_tax_number": "The business customer needs a name and a 9-digit tax number other than the shop's."
+    },
+    "BUYER_MISSING": "The sale is 150,000 EGP or more and has no customer. The sale cannot be changed: contact support.",
+    "ETA_REJECTED": "The ETA rejected this receipt."
+  },
+  "field": {
+    "rin": "Tax registration number",
+    "activity_code": "Activity code",
+    "branch_code": "Branch ETA code",
+    "governorate": "Branch governorate",
+    "city": "Branch city",
+    "street": "Branch street",
+    "building_number": "Branch building number"
+  },
+  "fix": {
+    "assign_device": "Assign a POS",
+    "device": "Open POS settings",
+    "product": "Open the product",
+    "eta_settings": "Open ETA settings",
+    "shop_profile": "Open the shop profile",
+    "branch": "Open the branch",
+    "customer": "Open the customer",
+    "support": "Contact support"
+  },
+  "action": {
+    "retry": "Retry",
+    "retry_now": "Retry now",
+    "correct": "Correct and resend",
+    "check_now": "Check now",
+    "assign_device": "Assign a POS"
+  },
+  "hint": {
+    "notReady": "Fix the problems above first.",
+    "correctionQueued": "Correction queued. This updates by itself.",
+    "nothingChanged": "The last attempt found nothing changed. Fix the data the ETA complained about, then try again.",
+    "nothingToDo": "Nothing to do for this receipt."
+  },
+  "queued": "Correction queued",
+  "checkQueued": "Check queued",
+  "retried": "Receipt queued again",
+  "assign": {
+    "title": "Assign a POS",
+    "description": "Choose a POS of the same branch for this receipt.",
+    "device": "POS",
+    "none": "This branch has no active POS.",
+    "confirm": "Assign and retry",
+    "cancel": "Cancel"
+  },
+  "errors": {
+    "FISCAL_NOT_FOUND": "This receipt was not found.",
+    "USE_CORRECTION": "A rejected receipt must be corrected, not retried.",
+    "NOT_REJECTED": "Only a rejected receipt can be corrected.",
+    "CORRECTION_QUEUED": "A correction is already queued for this receipt.",
+    "CORRECTION_CONFLICT": "The receipt changed meanwhile. Reload and try again.",
+    "NOT_BLOCKED_NO_DEVICE": "This receipt is not waiting for a POS.",
+    "DEVICE_INVALID_FOR_RECEIPT": "That POS cannot be used for this receipt.",
+    "NOT_SUBMITTED": "This receipt has not been submitted.",
+    "PERMISSION_DENIED": "You do not have permission to do that.",
+    "FISCAL_NOT_RETRYABLE": "This receipt cannot be retried now."
+  }
+}

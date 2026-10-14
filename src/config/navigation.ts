@@ -1,4 +1,5 @@
 import {
+  BellIcon,
   CalculatorIcon,
   CartIcon,
   ChartIcon,
@@ -218,6 +219,20 @@ export const NAV: NavItem[] = [
     icon: FactoryIcon,
     to: '/suppliers',
     roles: [OWNER, BRANCH_MANAGER, 'WAREHOUSE', 'ACCOUNTANT'],
+  },
+  // T03 (EC-91): every ETA receipt, with what to do about the ones that need a person.
+  {
+    id: 'tax',
+    labelKey: 'nav.tax',
+    icon: BellIcon,
+    children: [
+      {
+        id: 'eta-receipts',
+        labelKey: 'nav.etaReceipts',
+        to: '/tax/eta-receipts',
+        permission: 'fiscal.view',
+      },
+    ],
   },
   {
     id: 'accounting',
