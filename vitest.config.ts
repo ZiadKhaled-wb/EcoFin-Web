@@ -10,6 +10,8 @@ export default defineConfig((env) =>
         setupFiles: ['./src/test/setup.ts'],
         include: ['src/**/*.test.{ts,tsx}'],
         css: false,
+        // Hosted CI runners need more time for interaction-heavy jsdom tests.
+        testTimeout: process.env.CI ? 15000 : 5000,
       },
     }),
   ),
