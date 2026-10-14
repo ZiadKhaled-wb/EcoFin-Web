@@ -7,6 +7,8 @@ import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import Notice from '@/components/ui/Notice';
+import ForceCloseShiftDialog from './ForceCloseShiftDialog';
 import Card from '@/components/ui/Card';
 import DataTable from '@/components/ui/DataTable';
 import ErrorState from '@/components/ui/ErrorState';
@@ -38,6 +40,8 @@ const isStatus = (v: string): v is ShiftStatus => (STATUSES as readonly string[]
 export default function ShiftsPage() {
   const orgId = useAuthStore((s) => s.orgId);
   const canOperate = useCan('shift.operate');
+  const canForceClose = useCan('cash.adjust');
+  const [forceClosing, setForceClosing] = useState<ShiftSummary | null>(null);
   const branches = useBranches();
   const [branchId, setBranchId] = useState('');
   const [status, setStatus] = useState('');
@@ -65,6 +69,20 @@ export default function ShiftsPage() {
   };
 
   const columns: ColumnDef<ShiftSummary, unknown>[] = [
+    ...(canForceClose
+      ? [
+          {
+            id: 'force-close',
+            header: t('cash.shifts.forceClose.title'),
+            cell: ({ row }) =>
+              row.original.status === 'open' && row.original.device_revoked === true ? (
+                <Button variant="danger" onClick={() => setForceClosing(row.original)}>
+                  {t('cash.shifts.forceClose.title')}
+                </Button>
+              ) : null,
+          } satisfies ColumnDef<ShiftSummary, unknown>,
+        ]
+      : []),
     {
       id: 'number',
       header: t('cash.shifts.columns.number'),
@@ -128,6 +146,9 @@ export default function ShiftsPage() {
     <PageContainer>
       <PageHeader title={t('cash.shifts.title')} description={t('cash.shifts.description')} />
       {canOperate && <MyShift />}
+      {forceClosing && (
+        <ForceCloseShiftDialog shift={forceClosing} onClose={() => setForceClosing(null)} />
+      )}
       <h2 className="type-section-title mb-3 mt-6">{t('cash.shifts.history')}</h2>
       <Card className="mb-4">
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4 md:items-end">
@@ -207,6 +228,8 @@ function MyShift() {
           title={t('cash.shifts.detail.loadFailed')}
           onRetry={() => void current.refetch()}
         />
+      ) : shift?.device_revoked ? (
+        <Notice tone="error">{t('cash.shifts.revoked')}</Notice>
       ) : !shift ? (
         <div className="space-y-4">
           <p className="type-body">{t('cash.shifts.none')}</p>

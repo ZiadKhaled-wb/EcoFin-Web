@@ -260,6 +260,16 @@
       "cash": "Cash",
       "bank": "Bank transfers",
       "credit": "Store credit"
+    },
+    "revoked": "This POS device was revoked. Ask a manager to close the shift.",
+    "forceClose": {
+      "title": "Force close",
+      "description": "Close this shift without the revoked POS device. Counted cash returns to the branch default safe.",
+      "counted": "Counted cash",
+      "reason": "Reason",
+      "reasonRequired": "Write a reason of 3 to 500 characters.",
+      "cashInvalid": "Enter a cash amount of 0 or more.",
+      "saved": "Shift force-closed."
     }
   },
   "expenses": {
