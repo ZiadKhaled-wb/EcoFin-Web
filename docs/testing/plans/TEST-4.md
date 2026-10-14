@@ -8,7 +8,7 @@
 | 4. ETA | eta.integration.test.ts: accepted-then-drop lookup, 503 retry and receipt hash/chain; t03.integration.test.ts: rejected reason, USE_CORRECTION, correction, alerts and correction race | Existing timeout/rejection paths reused; 5000 arithmetic snapshots, three-sale outage with increasing attempts and monitor counts; correction race extended to ten rounds. |
 | 5. Languages | int4-cash-sale.spec.ts: split sale in English, receipt in Arabic; n: translated pages in both languages | Two independent full POS sales (ar/en), shared INT-4 fixtures, exact database receipt amounts and SVG QR payload. |
 
-Tests and tooling only; application code and dependency versions are unchanged. The user's API push/PR instruction overrides the execution document's no-push rule. Web remains unpushed.
+Tests and tooling only; application code and dependency versions are unchanged. The user's API push/PR instruction overrides the execution document's no-push rule. Web PR #61 is open; pushing it was explicitly authorized by the user.
 
 ## Added and strengthened tests
 
@@ -176,3 +176,10 @@ API PR: https://github.com/ZiadKhaled-wb/EcoFin-API/pull/75. Branch: test/test-4
 ## Unauthorized client price correction
 
 TEST4-06 asserts PRICE_OVERRIDE_DENIED and an identical complete SQL snapshot. TEST4-34 asserts HTTP 403 PRICE_OVERRIDE_DENIED, identical rows across 15 sales/ledger/counter/cache/unit tables, and no sale for the request key. Both are ordinary passing rejection tests. Only TEST4-B1 remains a known failure. Targeted validation: sales_atomicity_test.sql, 34 assertions; sales.integration.test.ts, 3 tests; typecheck and lint.
+
+## Hosted CI follow-up
+
+The first PR run exposed shared fake-ETA state: INT-4's global `invalid-next` control could be consumed by a concurrently running TEST4 language sale. Playwright now runs the language project after the main project and employee deactivation after both. Two workers remain enabled. Each language case waits for `accepted` using INT-4's bounded 90-second polling budget before the existing verifier checks exactly one Valid receipt; its overall budget is 120 seconds, and every assertion is retained.
+
+The check job also hit UI interaction timeouts on the hosted runner. CI uses a bounded 15-second unit-test budget, and Testing Library waits up to five seconds for React updates. Failure artifacts now include the fake-ETA log as well as the API log and browser reports.
+Validation of this follow-up: typecheck, lint, formatting and build passed; all 649 unit tests passed with CI settings. The full browser run passed all 39 main-project tests and all 11 INT-4 verification checks, then exposed the 30-second language acceptance timeout. After adopting the 90-second wait, both language cases and both employee-deactivation cases passed in targeted runs with two workers configured (43 browser cases verified across these runs).

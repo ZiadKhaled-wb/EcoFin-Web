@@ -169,6 +169,7 @@ jobs:
             test-results/
             playwright-report/
             ${{ runner.temp }}/api.log
+            ${{ runner.temp }}/fake-eta.log
           retention-days: 7
 
       - name: Stop Supabase

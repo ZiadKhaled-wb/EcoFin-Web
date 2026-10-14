@@ -9,7 +9,7 @@ const API_DIR = resolve(process.env.E2E_API_DIR ?? '../EcoFin-API');
 for (const language of ['ar', 'en'] as const) {
   test(`TEST4: full POS sale and prepared QR receipt in ${language}`, async ({ browser }) => {
     test.skip(process.env.RUN_E2E !== '1', 'set RUN_E2E=1 to run browser tests');
-    test.setTimeout(60000);
+    test.setTimeout(120000);
     const fixture = JSON.parse(
       execFileSync('node', ['scripts/test4-language-fixture.mjs', language], {
         cwd: API_DIR,
@@ -80,7 +80,8 @@ for (const language of ['ar', 'en'] as const) {
       const res = await response;
       expect(res.status()).toBe(201);
       const sale = (await res.json()) as { id: string; number: string };
-      await waitFiscal(s, sale.number, /^(submitted|accepted)/, 30000);
+      // The verifier requires a Valid receipt at the fake, not merely a prepared UUID.
+      await waitFiscal(s, sale.number, /^accepted\b/);
       const checked = JSON.parse(
         execFileSync('node', ['scripts/int4-verify.mjs', '--sale', sale.id], {
           cwd: API_DIR,
