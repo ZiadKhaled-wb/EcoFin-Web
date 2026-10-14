@@ -39,3 +39,6 @@ F09 builds `usePermissions()` + `<RequirePermission>`; F06 adds `useCan`, `<Can>
 - The scope must equal the repo owner (`ZiadKhaled-wb`), so `@ecotech/contracts` was renamed. Version `0.1.0` is published from EcoFin-API (tag `contracts-v0.1.0`).
 - This repo installs the fixed version through `.npmrc` (`${NPM_TOKEN}`): a classic token with only `read:packages` in Vercel (`NPM_TOKEN`), in the Actions secrets (`NPM_TOKEN`, used by CI) and in each developer's environment. The vendored tarball is gone.
 - New contract version: publish it from EcoFin-API, then bump `@ziadkhaled-wb/contracts` here and run `npm install`.
+
+### T03 ETA receipts page (EC-91)
+- The page is Tax -> ETA receipts (`/tax/eta-receipts`, `fiscal.view`); each receipt shows one action (Retry, Retry now, Correct and resend, Check now, Assign a POS) and it is disabled while the server's diagnosis says `ready: false`. The shell bell (`fiscal.view` only, refreshed every 60 s) links to the page filtered to `problem`. Corrections run as a job on the server: after "Correct and resend" the drawer reads the receipt again every 3 s for at most 30 s.

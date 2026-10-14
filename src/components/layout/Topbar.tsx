@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/Icons';
 import { useCurrentDevice } from '@/features/devices/useCurrentDevice';
 import Badge from '@/components/ui/Badge';
+import FiscalAlertBadge from '@/features/fiscal/FiscalAlertBadge';
 import IconButton from '@/components/ui/IconButton';
 import Wordmark from '@/components/ui/Wordmark';
 import {
@@ -59,6 +60,7 @@ export default function Topbar({
         <div className="hidden md:block">
           <BranchSwitcher />
         </div>
+        <FiscalAlertBadge />
         <LanguageSwitch />
         {device && (
           <span
