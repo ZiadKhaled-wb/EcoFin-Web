@@ -7,6 +7,7 @@ import type {
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { queryClient } from '@/lib/queryClient';
+import { clearAllSurveyDrafts } from '@/lib/surveyDraftStore';
 import type { AuthUser } from '@/types/auth';
 
 interface Account {
@@ -78,6 +79,7 @@ export const useAuthStore = create<AuthState>()(
       setLogin: (res, hint) => {
         // A new login must never see the previous user's cached data.
         queryClient.clear();
+        clearAllSurveyDrafts();
         const identifier = hint?.identifier?.trim() ?? '';
         const account: Account = {
           id: res.user.id,
@@ -136,6 +138,7 @@ export const useAuthStore = create<AuthState>()(
 
       clearSession: (reason) => {
         queryClient.clear();
+        clearAllSurveyDrafts();
         set({ ...EMPTY_SESSION, endedReason: reason ?? null });
       },
     }),

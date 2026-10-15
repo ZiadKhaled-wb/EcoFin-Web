@@ -17,6 +17,7 @@ import { ApiError } from '@/lib/api';
 import { formatBusinessDate, formatDate, formatMoney, formatNumber } from '@/lib/format';
 import { customerKeys, customersApi } from '@/services/customersApi';
 import { useAuthStore } from '@/store/authStore';
+import CustomerSurveysCard from '@/pages/surveys/CustomerSurveysCard';
 import { t, type TranslationKey } from '@/i18n';
 import CustomerAccountTab from './CustomerAccountTab';
 import CustomerForm from './CustomerForm';
@@ -298,6 +299,8 @@ export default function CustomerPage() {
               <CustomerCreditCard customer={data} />
 
               <CustomerGuarantorsCard customer={data} />
+
+              <CustomerSurveysCard customer={data} />
 
               <Card
                 title={t('customers.profile.photos')}

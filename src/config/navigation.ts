@@ -223,6 +223,15 @@ export const NAV: NavItem[] = [
     to: '/customers/credit-exceptions',
     permission: 'credit.approve',
   },
+  // R05 (D75): field surveys, for whoever assigns, fills or decides them. A collector sees only the
+  // surveys assigned to them (the server filters).
+  {
+    id: 'surveys',
+    labelKey: 'surveys.nav.title',
+    icon: EyeIcon,
+    to: '/customers/surveys',
+    permissionsAny: ['survey.assign', 'survey.submit', 'survey.decide'],
+  },
   {
     id: 'suppliers',
     labelKey: 'nav.suppliers',

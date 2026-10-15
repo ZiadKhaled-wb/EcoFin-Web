@@ -8,9 +8,14 @@ import Card from '@/components/ui/Card';
 import ErrorState from '@/components/ui/ErrorState';
 import LoadingState from '@/components/ui/LoadingState';
 import { useCan } from '@/features/me/useCan';
-import { formatDateTime, formatMoney, formatNumber } from '@/lib/format';
+import { formatDate, formatDateTime, formatMoney, formatNumber } from '@/lib/format';
 import { creditApi, creditKeys } from '@/services/creditApi';
 import { useAuthStore } from '@/store/authStore';
+import {
+  STATUS_TONE as SURVEY_STATUS_TONE,
+  statusLabel as surveyStatusLabel,
+  useCanOpenSurveys,
+} from '@/pages/surveys/surveyShared';
 import { t, type TranslationKey } from '@/i18n';
 import CreditExceptionDialog from './CreditExceptionDialog';
 import CreditLimitDialog from './CreditLimitDialog';
@@ -65,7 +70,12 @@ function ScoreBar({ profile }: { profile: CreditProfile }) {
       <ul className="mt-3 grid gap-2 sm:grid-cols-2">
         {profile.components.map((c) => (
           <li key={c.key} className="flex justify-between gap-3">
-            <span>{t(`credit.score.${c.key}` as TranslationKey)}</span>
+            <span>
+              {t(`credit.score.${c.key}` as TranslationKey)}
+              {c.key === 'residence' && (
+                <span className="type-caption block">{residenceSource(profile, c.value)}</span>
+              )}
+            </span>
             <span className="type-caption tabular-nums">
               {t('credit.card.points', {
                 points: formatNumber(c.points),
@@ -75,7 +85,44 @@ function ScoreBar({ profile }: { profile: CreditProfile }) {
           </li>
         ))}
       </ul>
+      <LatestSurvey profile={profile} />
     </div>
+  );
+}
+
+/**
+ * R05: where the residence points come from. The server fills residence from the latest approved
+ * survey still valid (value = its score / 100); the profile names the newest survey of any status.
+ */
+function residenceSource(profile: CreditProfile, value: number): string {
+  if (value <= 0) return t('surveys.credit.residenceNone');
+  const latest = profile.latest_survey;
+  const score = formatNumber(Math.round(value * 100));
+  if (latest?.status === 'approved' && latest.decided_at) {
+    return t('surveys.credit.residenceFromSurvey', { date: formatDate(latest.decided_at), score });
+  }
+  return t('surveys.credit.residenceScoreOnly', { score });
+}
+
+function LatestSurvey({ profile }: { profile: CreditProfile }) {
+  const latest = profile.latest_survey;
+  const canOpen = useCanOpenSurveys();
+  if (!latest) return null;
+  return (
+    <p className="mt-3 flex flex-wrap items-center gap-2">
+      <span className="type-caption">{t('surveys.credit.latest')}</span>
+      <Badge tone={SURVEY_STATUS_TONE[latest.status]}>{surveyStatusLabel(latest.status)}</Badge>
+      {latest.survey_score !== null && (
+        <span className="type-caption">
+          {t('surveys.credit.latestScore', { score: formatNumber(latest.survey_score) })}
+        </span>
+      )}
+      {canOpen && (
+        <Link to={`/customers/surveys/${latest.id}`} className="text-brand-700 hover:underline">
+          {t('surveys.credit.open')}
+        </Link>
+      )}
+    </p>
   );
 }
 

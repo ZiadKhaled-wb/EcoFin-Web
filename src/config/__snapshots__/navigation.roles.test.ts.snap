@@ -52,6 +52,7 @@ exports[`menu by role (TEST-2) > BRANCH_MANAGER sees these pages 1`] = `
   "/purchasing/approvals",
   "/customers",
   "/customers/credit-exceptions",
+  "/customers/surveys",
   "/suppliers",
   "/tax/eta-receipts",
   "/accounting/vaults",
@@ -85,6 +86,7 @@ exports[`menu by role (TEST-2) > COLLECTOR sees these pages 1`] = `
 [
   "/dashboard",
   "/customers",
+  "/customers/surveys",
 ]
 `;
 
@@ -120,6 +122,7 @@ exports[`menu by role (TEST-2) > OWNER sees these pages 1`] = `
   "/purchasing/approvals",
   "/customers",
   "/customers/credit-exceptions",
+  "/customers/surveys",
   "/suppliers",
   "/tax/eta-receipts",
   "/accounting/vaults",
