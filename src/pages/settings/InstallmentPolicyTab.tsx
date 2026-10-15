@@ -8,6 +8,7 @@ import {
   EARLY_SETTLEMENT_RULES,
   INSTALLMENT_FREQUENCIES,
   LATE_FEE_TYPES,
+  SURVEY_VALID_DAYS,
   type InstallmentFrequency,
   type InstallmentPolicy,
 } from '@ziadkhaled-wb/contracts';
@@ -23,7 +24,7 @@ import { notify } from '@/components/ui/notify';
 import { settingsApi } from '@/services/settingsApi';
 import { settingsKeys } from '@/features/settings/useSettings';
 import { useAuthStore } from '@/store/authStore';
-import { formatDate } from '@/lib/format';
+import { formatDate, formatNumber } from '@/lib/format';
 import { t } from '@/i18n';
 import { settingsError } from './settingsForm';
 import { policyBody, toPolicyForm, type PolicyForm, type Rule } from './policyForm';
@@ -310,7 +311,7 @@ export default function InstallmentPolicyTab({ current }: { current: Installment
           />
           <MoneyInput
             label={t('settings.policy.surveyAbove')}
-            help={t('settings.optional')}
+            help={`${t('settings.optional')} · ${t('surveys.policyHint', { days: formatNumber(SURVEY_VALID_DAYS) })}`}
             value={form.survey_required_above}
             onValueChange={(v) => set('survey_required_above', v)}
           />
