@@ -46,6 +46,27 @@ describe('DataTable (client mode)', () => {
     expect(screen.getByRole('columnheader', { name: /Qty/ })).toHaveClass('text-end');
   });
 
+  it('on a phone keeps headers and short cells on one line; a wrap column wraps', async () => {
+    type Note = { id: string; name: string; note: string };
+    const noteColumns: ColumnDef<Note, unknown>[] = [
+      { accessorKey: 'name', header: 'Name' },
+      { accessorKey: 'note', header: 'Note', meta: { wrap: true } },
+    ];
+    await renderApp(
+      <DataTable
+        caption="notes"
+        columns={noteColumns}
+        data={[{ id: '1', name: 'Mohamed Ahmed', note: 'a long note about the count' }]}
+      />,
+      { lang: 'en' },
+    );
+    const [name, note] = within(screen.getAllByRole('rowgroup')[1]!).getAllByRole('cell');
+    expect(name).toHaveClass('max-sm:whitespace-nowrap');
+    expect(note).not.toHaveClass('max-sm:whitespace-nowrap');
+    expect(note).toHaveClass('max-sm:min-w-48');
+    expect(screen.getByRole('columnheader', { name: /Name/ })).toHaveClass('whitespace-nowrap');
+  });
+
   it('searches, then shows the no-results state', async () => {
     const user = userEvent.setup();
     await renderApp(

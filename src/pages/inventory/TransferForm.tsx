@@ -273,59 +273,61 @@ export default function TransferForm({
           {lines.length === 0 ? (
             <p className="type-caption">{t('stock.transfers.form.noLines')}</p>
           ) : (
-            <table className="w-full text-start">
-              <caption className="sr-only">{t('stock.transfers.form.lines')}</caption>
-              <thead>
-                <tr>
-                  <th className="type-label py-2 text-start">
-                    {t('stock.transfers.form.product')}
-                  </th>
-                  <th className="type-label py-2 text-start">
-                    {t('stock.transfers.form.quantity')}
-                  </th>
-                  <th className="sr-only">{t('stock.transfers.form.remove')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lines.map((line) => (
-                  <tr key={line.key} className="border-t border-line align-top">
-                    <td className="py-2">
-                      <span className="block">{line.name}</span>
-                      <span className="type-caption block" dir="ltr">
-                        {line.serial ?? line.sku}
-                      </span>
-                    </td>
-                    <td className="w-32 py-2 [&_.field-label]:sr-only">
-                      {line.unit_id ? (
-                        '1'
-                      ) : (
-                        <NumberInput
-                          label={`${t('stock.transfers.form.quantity')}: ${line.name}`}
-                          value={line.quantity}
-                          decimals={0}
-                          maxLength={7}
-                          onValueChange={(quantity) =>
-                            setLines((list) =>
-                              list.map((l) => (l.key === line.key ? { ...l, quantity } : l)),
-                            )
-                          }
-                        />
-                      )}
-                    </td>
-                    <td className="py-2 text-end">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setLines((list) => list.filter((l) => l.key !== line.key))}
-                      >
-                        {t('stock.transfers.form.remove')}
-                      </Button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-start">
+                <caption className="sr-only">{t('stock.transfers.form.lines')}</caption>
+                <thead>
+                  <tr>
+                    <th className="type-label py-2 text-start">
+                      {t('stock.transfers.form.product')}
+                    </th>
+                    <th className="type-label py-2 text-start">
+                      {t('stock.transfers.form.quantity')}
+                    </th>
+                    <th className="sr-only">{t('stock.transfers.form.remove')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {lines.map((line) => (
+                    <tr key={line.key} className="border-t border-line align-top">
+                      <td className="py-2">
+                        <span className="block">{line.name}</span>
+                        <span className="type-caption block" dir="ltr">
+                          {line.serial ?? line.sku}
+                        </span>
+                      </td>
+                      <td className="w-32 py-2 [&_.field-label]:sr-only">
+                        {line.unit_id ? (
+                          '1'
+                        ) : (
+                          <NumberInput
+                            label={`${t('stock.transfers.form.quantity')}: ${line.name}`}
+                            value={line.quantity}
+                            decimals={0}
+                            maxLength={7}
+                            onValueChange={(quantity) =>
+                              setLines((list) =>
+                                list.map((l) => (l.key === line.key ? { ...l, quantity } : l)),
+                              )
+                            }
+                          />
+                        )}
+                      </td>
+                      <td className="py-2 text-end">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setLines((list) => list.filter((l) => l.key !== line.key))}
+                        >
+                          {t('stock.transfers.form.remove')}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 

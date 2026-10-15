@@ -28,6 +28,11 @@ declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     /** Money, quantities, codes: end-aligned, tabular, LTR-isolated (`.num`). */
     numeric?: boolean;
+    /**
+     * Free text (a note, a reason): wraps onto more lines. Other columns stay on one line on a
+     * phone and the table scrolls sideways, so a name doesn't break word by word.
+     */
+    wrap?: boolean;
     /** Type-only marker so the merged declaration uses both generics. Never set at runtime. */
     readonly types?: { row: TData; value: TValue };
   }
@@ -177,7 +182,10 @@ export default function DataTable<T>({
                             ? 'descending'
                             : undefined
                       }
-                      className={cn('type-label px-4 py-3', numeric ? 'text-end' : 'text-start')}
+                      className={cn(
+                        'type-label whitespace-nowrap px-4 py-3',
+                        numeric ? 'text-end' : 'text-start',
+                      )}
                     >
                       {header.column.getCanSort() ? (
                         <button
@@ -221,7 +229,15 @@ export default function DataTable<T>({
                       <span className="num">{content}</span>
                     </td>
                   ) : (
-                    <td key={cell.id} className="type-body px-4 py-3 text-start">
+                    <td
+                      key={cell.id}
+                      className={cn(
+                        'type-body px-4 py-3 text-start',
+                        cell.column.columnDef.meta?.wrap
+                          ? 'max-sm:min-w-48'
+                          : 'max-sm:whitespace-nowrap',
+                      )}
+                    >
                       {content}
                     </td>
                   );
