@@ -16,6 +16,7 @@
     "day": "Day",
     "month": "Month",
     "year": "Year",
-    "openPicker": "Open the calendar"
+    "openPicker": "Open the calendar",
+    "invalid": "Enter a real date: day, month and year."
   }
 }

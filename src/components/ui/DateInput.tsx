@@ -1,8 +1,10 @@
 import {
+  useEffect,
   useRef,
   useState,
   type ChangeEvent,
   type ClipboardEvent,
+  type FocusEvent,
   type InputHTMLAttributes,
   type KeyboardEvent,
   type ReactNode,
@@ -50,7 +52,12 @@ function parsePasted(text: string): Parts | null {
 /** The setter React watches: setting it this way makes React fire the input's onChange. */
 const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
 
-/** The Input props: `type`, `icon` and `ltr` are accepted and ignored (always a date, LTR digits). */
+/**
+ * The Input props. `type`, `icon`, `ltr` and `placeholder` are accepted and ignored (always a date,
+ * LTR digits, day / month / year placeholders). `onFocus` / `onBlur` fire when focus enters or
+ * leaves the whole field; `aria-label` / `aria-labelledby` name it; `autoFocus` focuses the day;
+ * `title` and `data-*` go on the field. Other input props have no meaning here and are dropped.
+ */
 export type DateInputProps = InputHTMLAttributes<HTMLInputElement> & {
   invalid?: boolean;
   icon?: ReactNode;
@@ -84,6 +91,13 @@ export default function DateInput({
   ref,
   'aria-describedby': describedBy,
   'aria-invalid': ariaInvalid,
+  'aria-label': ariaLabel,
+  'aria-labelledby': labelledBy,
+  onFocus,
+  onBlur,
+  autoFocus,
+  title,
+  ...rest
 }: DateInputProps) {
   const current = typeof value === 'string' ? value : '';
   const [parts, setParts] = useState<Parts>(() => split(current));
@@ -94,6 +108,8 @@ export default function DateInput({
     month: null,
     year: null,
   });
+  const [focused, setFocused] = useState(false);
+  const data = Object.fromEntries(Object.entries(rest).filter(([k]) => k.startsWith('data-')));
 
   // A new value from outside (a "clear" button, the picker, a reset) replaces what is shown,
   // unless it is what the boxes already say (a half-typed date stays while it says "").
@@ -163,12 +179,45 @@ export default function DateInput({
     focus('day');
   }
 
-  const bad = invalid || ariaInvalid === true || ariaInvalid === 'true';
+  // Something typed that is not a real day (31/02, a missing year): the value stays "", so say so
+  // instead of showing a date the form doesn't have. Shown once all three boxes are filled or the
+  // focus has left the field; forms refuse to submit (the day box carries the validity message).
+  const typed = ORDER.some((part) => parts[part] !== '');
+  const incomplete = typed && compose(parts) === '';
+  const showIncomplete = incomplete && (!focused || ORDER.every((part) => parts[part] !== ''));
+  useEffect(() => {
+    boxes.current.day?.setCustomValidity(incomplete ? t('ui.date.invalid') : '');
+  }, [incomplete]);
+
+  // Focus events bubble to the group: moving between the boxes and the calendar button stays
+  // inside the field, so the caller hears one focus and one blur. The event's target is the box.
+  const inside = (e: FocusEvent<HTMLDivElement>) => {
+    const other = e.relatedTarget as Node | null;
+    return !!other && e.currentTarget.contains(other);
+  };
+  function enter(e: FocusEvent<HTMLDivElement>) {
+    if (inside(e)) return;
+    setFocused(true);
+    onFocus?.(e as unknown as FocusEvent<HTMLInputElement>);
+  }
+  function leave(e: FocusEvent<HTMLDivElement>) {
+    if (inside(e)) return;
+    setFocused(false);
+    onBlur?.(e as unknown as FocusEvent<HTMLInputElement>);
+  }
+
+  const bad = invalid || ariaInvalid === true || ariaInvalid === 'true' || showIncomplete;
   const locked = disabled || readOnly;
   return (
     <div
+      {...data}
       role="group"
+      title={title}
+      aria-label={ariaLabel}
+      aria-labelledby={labelledBy}
       aria-describedby={describedBy}
+      onFocus={enter}
+      onBlur={leave}
       className={cn(
         'field-input relative flex items-center gap-1',
         'focus-within:border-brand-600 focus-within:bg-surface focus-within:ring-2 focus-within:ring-brand-600/25',
@@ -194,7 +243,13 @@ export default function DateInput({
             autoComplete="off"
             dir="ltr"
             placeholder={t(`ui.date.${part}`)}
-            aria-label={part === 'day' && id ? undefined : t(`ui.date.${part}`)}
+            aria-label={
+              part === 'day' && (id || ariaLabel || labelledBy)
+                ? (ariaLabel ?? undefined)
+                : t(`ui.date.${part}`)
+            }
+            aria-labelledby={part === 'day' ? labelledBy : undefined}
+            autoFocus={part === 'day' ? autoFocus : undefined}
             aria-invalid={bad ? true : undefined}
             aria-describedby={describedBy}
             value={parts[part]}
