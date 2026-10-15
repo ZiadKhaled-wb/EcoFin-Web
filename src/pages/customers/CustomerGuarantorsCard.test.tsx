@@ -361,7 +361,7 @@ describe('R04 customer guarantors card', () => {
     const user = userEvent.setup();
     const buttons = await screen.findAllByRole('button', { name: t('guarantors.section.unlink') });
     await user.click(buttons[0]!);
-    const dialog = await screen.findByRole('alertdialog').catch(() => screen.findByRole('dialog'));
+    const dialog = await screen.findByRole('dialog');
     expect(unlink).not.toHaveBeenCalled();
     await user.click(
       within(dialog).getByRole('button', { name: t('guarantors.unlinkDialog.confirm') }),
@@ -378,7 +378,7 @@ describe('R04 customer guarantors card', () => {
     const user = userEvent.setup();
     const buttons = await screen.findAllByRole('button', { name: t('guarantors.section.unlink') });
     await user.click(buttons[1]!);
-    const dialog = await screen.findByRole('alertdialog').catch(() => screen.findByRole('dialog'));
+    const dialog = await screen.findByRole('dialog');
     await user.click(
       within(dialog).getByRole('button', { name: t('guarantors.unlinkDialog.confirm') }),
     );
