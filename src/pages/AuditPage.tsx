@@ -21,10 +21,10 @@ import {
   type AuditFilters,
 } from '@/features/audit/filters';
 import {
-  KNOWN_ACTIONS,
-  KNOWN_ENTITY_TYPES,
   actionLabel,
+  actionOptions,
   entityTypeLabel,
+  entityTypeOptions,
 } from '@/features/audit/labels';
 import { useAuditSearch } from '@/features/audit/useAuditSearch';
 import { useMe } from '@/features/me/useMe';
@@ -160,16 +160,13 @@ export default function AuditPage() {
             <Select
               label={t('audit.filters.action')}
               value={filters.action}
-              options={[all, ...KNOWN_ACTIONS.map((a) => ({ value: a, label: actionLabel(a) }))]}
+              options={[all, ...actionOptions()]}
               onChange={(e) => set({ action: e.target.value })}
             />
             <Select
               label={t('audit.filters.entityType')}
               value={filters.entityType}
-              options={[
-                all,
-                ...KNOWN_ENTITY_TYPES.map((v) => ({ value: v, label: entityTypeLabel(v) })),
-              ]}
+              options={[all, ...entityTypeOptions()]}
               onChange={(e) => set({ entityType: e.target.value })}
             />
             <Select

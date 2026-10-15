@@ -4,7 +4,25 @@ import { describedBy } from '@/lib/a11y';
 import { ChevronDownIcon } from '@/components/ui/Icons';
 import { cn } from '@/lib/cn';
 
-export type SelectOption = { value: string; label: string; disabled?: boolean };
+/** `group`: consecutive options with the same group are listed under that heading (<optgroup>). */
+export type SelectOption = { value: string; label: string; disabled?: boolean; group?: string };
+
+/** Consecutive options of the same group, in order (an option without a group is its own run). */
+function runs(options: SelectOption[]): { group?: string; items: SelectOption[] }[] {
+  const out: { group?: string; items: SelectOption[] }[] = [];
+  for (const o of options) {
+    const last = out[out.length - 1];
+    if (last && o.group !== undefined && last.group === o.group) last.items.push(o);
+    else out.push({ group: o.group, items: [o] });
+  }
+  return out;
+}
+
+const renderOption = (o: SelectOption) => (
+  <option key={o.value} value={o.value} disabled={o.disabled}>
+    {o.label}
+  </option>
+);
 
 type Props = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children'> & {
   label: string;
@@ -46,11 +64,15 @@ export default function Select({
           {...rest}
         >
           {placeholder && <option value="">{placeholder}</option>}
-          {options.map((o) => (
-            <option key={o.value} value={o.value} disabled={o.disabled}>
-              {o.label}
-            </option>
-          ))}
+          {runs(options).map((run) =>
+            run.group === undefined ? (
+              run.items.map(renderOption)
+            ) : (
+              <optgroup key={`group-${run.group}`} label={run.group}>
+                {run.items.map(renderOption)}
+              </optgroup>
+            ),
+          )}
         </select>
         <ChevronDownIcon className="pointer-events-none absolute end-3.5 top-1/2 -translate-y-1/2 text-ink-mute" />
       </div>

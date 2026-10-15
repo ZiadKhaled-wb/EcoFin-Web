@@ -24,14 +24,243 @@
     "details": "التفاصيل"
   },
   "actions": {
-    "auth_login": "تسجيل دخول",
-    "auth_logout": "تسجيل خروج",
-    "auth_password_change": "تغيير كلمة المرور",
-    "employee_permission_set": "تغيير صلاحية",
-    "employee_branches_set": "تغيير الفروع"
+    "auth": {
+      "login": "تسجيل الدخول",
+      "logout": "تسجيل الخروج",
+      "password_change": "تغيير كلمة المرور"
+    },
+    "approval": {
+      "requested": "طلب موافقة على خصم",
+      "decided": "البت في طلب موافقة على خصم",
+      "cancelled": "إلغاء طلب موافقة على خصم"
+    },
+    "branch": {
+      "created": "إضافة فرع",
+      "updated": "تعديل فرع",
+      "deactivated": "إيقاف فرع",
+      "reactivated": "إعادة تفعيل فرع"
+    },
+    "cash_account": {
+      "created": "إضافة خزينة أو حساب بنكي",
+      "renamed": "تغيير اسم خزينة",
+      "opening_balance": "تسجيل رصيد افتتاحي",
+      "deactivated": "إيقاف خزينة",
+      "reactivated": "إعادة تفعيل خزينة"
+    },
+    "cash_transfer": {
+      "created": "تحويل نقدية بين الخزائن"
+    },
+    "category": {
+      "created": "إضافة تصنيف",
+      "updated": "تعديل تصنيف",
+      "archived": "أرشفة تصنيف",
+      "restored": "استعادة تصنيف"
+    },
+    "credit_exception": {
+      "requested": "طلب استثناء ائتماني",
+      "approved": "الموافقة على استثناء ائتماني",
+      "rejected": "رفض استثناء ائتماني",
+      "cancelled": "إلغاء طلب استثناء ائتماني"
+    },
+    "customer": {
+      "created": "إضافة عميل",
+      "updated": "تعديل بيانات عميل",
+      "status_set": "تغيير حالة عميل",
+      "credit_limit_set": "تحديد الحد الائتماني لعميل",
+      "guarantor_linked": "ربط ضامن بعميل",
+      "guarantor_relation_set": "تغيير صلة الضامن بالعميل",
+      "guarantor_unlinked": "فك ربط ضامن"
+    },
+    "device": {
+      "created": "إضافة جهاز نقطة بيع",
+      "updated": "تعديل جهاز نقطة بيع",
+      "pairing_code_created": "إنشاء رمز ربط جهاز",
+      "paired": "ربط جهاز",
+      "unpaired": "فك ربط جهاز",
+      "deactivated": "إيقاف جهاز",
+      "reactivated": "إعادة تفعيل جهاز",
+      "eta_updated": "تعديل إعدادات الإيصال الإلكتروني لجهاز"
+    },
+    "employee": {
+      "created": "إضافة موظف",
+      "updated": "تعديل بيانات موظف",
+      "active_set": "تفعيل أو إيقاف موظف",
+      "permission_set": "تغيير صلاحية",
+      "branches_set": "تغيير الفروع",
+      "password_reset_requested": "إرسال رابط إعادة تعيين كلمة المرور",
+      "password_reset_completed": "إعادة تعيين كلمة المرور"
+    },
+    "eta": {
+      "settings_updated": "تعديل إعدادات الإيصال الإلكتروني"
+    },
+    "expense": {
+      "posted": "تسجيل مصروف",
+      "reversed": "عكس مصروف"
+    },
+    "expense_category": {
+      "created": "إضافة بند مصروفات",
+      "renamed": "تغيير اسم بند مصروفات",
+      "archived": "أرشفة بند مصروفات",
+      "restored": "استعادة بند مصروفات"
+    },
+    "file": {
+      "upload": "رفع ملف"
+    },
+    "fiscal": {
+      "retry_requested": "طلب إعادة إرسال إيصال إلكتروني",
+      "retry_many": "طلب إعادة إرسال عدة إيصالات إلكترونية",
+      "correction_requested": "طلب تصحيح إيصال إلكتروني",
+      "device_assigned": "تحديد جهاز لإيصال إلكتروني",
+      "check_requested": "طلب التحقق من إيصال إلكتروني"
+    },
+    "guarantor": {
+      "created": "إضافة ضامن",
+      "updated": "تعديل بيانات ضامن",
+      "archived": "أرشفة ضامن",
+      "restored": "استعادة ضامن"
+    },
+    "installment_policy": {
+      "published": "نشر سياسة التقسيط"
+    },
+    "invite": {
+      "accepted": "قبول دعوة",
+      "resent": "إعادة إرسال دعوة"
+    },
+    "org": {
+      "provisioned": "إنشاء المتجر",
+      "settings_updated": "تعديل إعدادات المتجر",
+      "profile_updated": "تعديل الملف القانوني للمتجر",
+      "suspended": "إيقاف المتجر",
+      "reactivated": "إعادة تفعيل المتجر"
+    },
+    "product": {
+      "created": "إضافة منتج",
+      "updated": "تعديل منتج",
+      "price_changed": "تغيير سعر منتج",
+      "archived": "أرشفة منتج",
+      "restored": "استعادة منتج"
+    },
+    "purchase_invoice": {
+      "created": "إنشاء فاتورة شراء",
+      "updated": "تعديل فاتورة شراء",
+      "approval_requested": "إرسال فاتورة شراء للاعتماد",
+      "approved": "اعتماد فاتورة شراء",
+      "rejected": "رفض فاتورة شراء"
+    },
+    "purchase_order": {
+      "created": "إنشاء أمر شراء",
+      "updated": "تعديل أمر شراء",
+      "sent": "إرسال أمر شراء",
+      "cancelled": "إلغاء أمر شراء"
+    },
+    "purchase_return": {
+      "posted": "تسجيل مرتجع مشتريات"
+    },
+    "sale": {
+      "created": "تسجيل عملية بيع",
+      "voided": "إلغاء عملية بيع",
+      "receipt_printed": "طباعة إيصال"
+    },
+    "shift": {
+      "opened": "فتح وردية",
+      "closed": "إغلاق وردية",
+      "force_closed": "إغلاق وردية إجباريًا",
+      "cash_moved": "إدخال أو إخراج نقدية من الدرج"
+    },
+    "stock": {
+      "min_level_set": "تحديد حد أدنى للمخزون"
+    },
+    "stock_adjustment": {
+      "posted": "تسوية مخزون"
+    },
+    "stock_count": {
+      "created": "بدء جرد",
+      "posted": "ترحيل جرد",
+      "cancelled": "إلغاء جرد"
+    },
+    "stock_movements": {
+      "exported": "تصدير حركات المخزون"
+    },
+    "stock_transfer": {
+      "created": "إنشاء تحويل مخزني",
+      "updated": "تعديل تحويل مخزني",
+      "sent": "إرسال تحويل مخزني",
+      "received": "استلام تحويل مخزني",
+      "cancelled": "إلغاء تحويل مخزني"
+    },
+    "subscription": {
+      "plan_changed": "تغيير خطة الاشتراك",
+      "dates_changed": "تغيير تواريخ الاشتراك",
+      "payment_recorded": "تسجيل دفعة اشتراك"
+    },
+    "supplier": {
+      "created": "إضافة مورد",
+      "updated": "تعديل بيانات مورد",
+      "archived": "أرشفة مورد",
+      "restored": "استعادة مورد"
+    },
+    "supplier_payment": {
+      "posted": "سداد دفعة لمورد",
+      "reversed": "عكس دفعة مورد"
+    },
+    "survey": {
+      "assigned": "إسناد معاينة ميدانية",
+      "reassigned": "إعادة إسناد معاينة ميدانية",
+      "saved": "حفظ إجابات معاينة ميدانية",
+      "submitted": "إرسال معاينة ميدانية للمراجعة",
+      "approved": "قبول معاينة ميدانية",
+      "rejected": "رفض معاينة ميدانية",
+      "cancelled": "إلغاء معاينة ميدانية"
+    },
+    "tax_class": {
+      "created": "إضافة فئة ضريبية",
+      "updated": "تعديل فئة ضريبية",
+      "archived": "أرشفة فئة ضريبية",
+      "restored": "استعادة فئة ضريبية"
+    },
+    "units": {
+      "registered": "تسجيل أرقام تسلسلية"
+    },
+    "warranty_claim": {
+      "opened": "فتح طلب ضمان",
+      "moved": "تحديث حالة طلب ضمان"
+    }
   },
   "entityTypes": {
-    "employee": "موظف"
+    "approval": "طلب موافقة",
+    "branch": "فرع",
+    "cash_account": "خزينة",
+    "cash_transfer": "تحويل نقدية",
+    "category": "تصنيف",
+    "customer": "عميل",
+    "device": "جهاز",
+    "employee": "موظف",
+    "eta_settings": "إعدادات الإيصال الإلكتروني",
+    "expense": "مصروف",
+    "expense_category": "بند مصروفات",
+    "field_survey": "معاينة ميدانية",
+    "file": "ملف",
+    "fiscal_submission": "إيصال إلكتروني",
+    "guarantor": "ضامن",
+    "import_job": "عملية استيراد",
+    "installment_policy": "سياسة التقسيط",
+    "invite": "دعوة",
+    "organization": "المتجر",
+    "product": "منتج",
+    "purchase_invoice": "فاتورة شراء",
+    "purchase_order": "أمر شراء",
+    "purchase_return": "مرتجع مشتريات",
+    "sale": "عملية بيع",
+    "shift": "وردية",
+    "stock_adjustment": "تسوية مخزون",
+    "stock_count": "جرد",
+    "stock_movement": "حركة مخزون",
+    "stock_transfer": "تحويل مخزني",
+    "subscription_payment": "دفعة اشتراك",
+    "supplier": "مورد",
+    "supplier_payment": "دفعة مورد",
+    "tax_class": "فئة ضريبية",
+    "warranty_claim": "طلب ضمان"
   },
   "system": "النظام",
   "filterByPerson": "عرض {name} فقط",
@@ -55,5 +284,14 @@
     "before": "قبل",
     "after": "بعد",
     "none": "—"
+  },
+  "groups": {
+    "sales": "المبيعات والإيصالات",
+    "customers": "العملاء والتقسيط",
+    "inventory": "المنتجات والمخزون",
+    "purchasing": "الموردون والمشتريات",
+    "cash": "الخزائن والورديات",
+    "people": "الموظفون وتسجيل الدخول",
+    "shop": "المتجر والإعدادات"
   }
 }
