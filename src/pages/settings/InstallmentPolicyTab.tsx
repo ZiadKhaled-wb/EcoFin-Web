@@ -300,6 +300,14 @@ export default function InstallmentPolicyTab({ current }: { current: Installment
             value={form.guarantor_required_above}
             onValueChange={(v) => set('guarantor_required_above', v)}
           />
+          <NumberInput
+            label={t('settings.policy.guarantorsCount')}
+            help={t('settings.policy.guarantorsCountHelp')}
+            decimals={0}
+            value={form.guarantors_required_count}
+            disabled={form.guarantor_required_above.trim() === ''}
+            onValueChange={(v) => set('guarantors_required_count', v)}
+          />
           <MoneyInput
             label={t('settings.policy.surveyAbove')}
             help={t('settings.optional')}

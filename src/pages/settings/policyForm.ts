@@ -35,6 +35,7 @@ export interface PolicyForm {
   early_settlement_rule: (typeof EARLY_SETTLEMENT_RULES)[number];
   early_settlement_pct: string;
   guarantor_required_above: string;
+  guarantors_required_count: string;
   survey_required_above: string;
 }
 
@@ -73,6 +74,7 @@ export function toPolicyForm(p: InstallmentPolicy | null): PolicyForm {
     early_settlement_rule: p?.early_settlement_rule ?? 'no_discount',
     early_settlement_pct: s(p?.early_settlement_pct),
     guarantor_required_above: s(p?.guarantor_required_above),
+    guarantors_required_count: s(p?.guarantors_required_count ?? 1),
     survey_required_above: s(p?.survey_required_above),
   };
 }
@@ -115,6 +117,7 @@ export function policyBody(f: PolicyForm) {
     early_settlement_rule: f.early_settlement_rule,
     early_settlement_pct: pctOrNull(f.early_settlement_pct),
     guarantor_required_above: moneyOrNull(f.guarantor_required_above),
+    guarantors_required_count: num(f.guarantors_required_count || '1'),
     survey_required_above: moneyOrNull(f.survey_required_above),
   });
 }

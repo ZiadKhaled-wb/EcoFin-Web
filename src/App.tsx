@@ -46,6 +46,7 @@ import UnitPage from '@/pages/inventory/UnitPage';
 import MovementsPage from '@/pages/inventory/MovementsPage';
 import CustomersPage from '@/pages/customers/CustomersPage';
 import CustomerPage from '@/pages/customers/CustomerPage';
+import GuarantorPage from '@/pages/customers/GuarantorPage';
 import SuppliersPage from '@/pages/suppliers/SuppliersPage';
 import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
 import VaultsPage from '@/pages/accounting/VaultsPage';
@@ -218,6 +219,14 @@ export default function App() {
                     element={
                       <RequireNavItem item={CUSTOMERS_ITEM}>
                         <CustomersPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/customers/guarantors/:id"
+                    element={
+                      <RequireNavItem item={CUSTOMERS_ITEM}>
+                        <GuarantorPage />
                       </RequireNavItem>
                     }
                   />

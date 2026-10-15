@@ -7,6 +7,7 @@ import { ApiError } from '@/lib/api';
 import { meApi } from '@/features/me/meApi';
 import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
 import { customersApi } from '@/services/customersApi';
+import { guarantorsApi } from '@/services/guarantorsApi';
 import { t } from '@/i18n';
 import CustomerPage from './CustomerPage';
 
@@ -67,6 +68,7 @@ describe('R01 customer profile', () => {
     signIn();
     setPermissions(['customer.create']);
     vi.spyOn(customersApi, 'get').mockResolvedValue(customer());
+    vi.spyOn(guarantorsApi, 'ofCustomer').mockResolvedValue([]);
   });
 
   afterEach(() => {

@@ -37,6 +37,7 @@ const policy: InstallmentPolicy = {
   early_settlement_rule: 'no_discount',
   early_settlement_pct: null,
   guarantor_required_above: null,
+  guarantors_required_count: 1,
   survey_required_above: null,
   effective_from: '2026-10-07T09:00:00Z',
   created_at: '2026-10-07T09:00:00Z',
@@ -182,6 +183,43 @@ describe('P03 settings page', () => {
     await u.type(field, '5');
     await u.click(screen.getByRole('button', { name: t('settings.save') }));
     expect(await screen.findByText(t('settings.errors.SETTINGS_INVALID'))).toBeInTheDocument();
+  });
+
+  it('sends how many guarantors a contract needs, only once an amount is set', async () => {
+    const publish = vi
+      .spyOn(settingsApi, 'publishPolicy')
+      .mockResolvedValue({ ...policy, id: 'a0300000-0000-4000-8000-000000000003', version: 3 });
+    await renderApp(<SettingsPage />, { lang: 'en' });
+    const u = userEvent.setup();
+    await u.click(screen.getByRole('tab', { name: t('settings.tabs.installments') }));
+    const count = await screen.findByLabelText(t('settings.policy.guarantorsCount'));
+    expect(count).toBeDisabled();
+    expect(count).toHaveValue('1');
+    await u.type(screen.getByLabelText(t('settings.policy.guarantorAbove')), '10000');
+    expect(count).toBeEnabled();
+    await u.clear(count);
+    await u.type(count, '2');
+    await u.click(screen.getByRole('button', { name: t('settings.policy.publish') }));
+    expect(publish).toHaveBeenCalledWith(
+      expect.objectContaining({
+        guarantor_required_above: '10000.00',
+        guarantors_required_count: 2,
+      }),
+    );
+  });
+
+  it('refuses a guarantor count outside 1-3 without calling the API', async () => {
+    const publish = vi.spyOn(settingsApi, 'publishPolicy');
+    await renderApp(<SettingsPage />, { lang: 'en' });
+    const u = userEvent.setup();
+    await u.click(screen.getByRole('tab', { name: t('settings.tabs.installments') }));
+    await u.type(await screen.findByLabelText(t('settings.policy.guarantorAbove')), '10000');
+    const count = screen.getByLabelText(t('settings.policy.guarantorsCount'));
+    await u.clear(count);
+    await u.type(count, '4');
+    await u.click(screen.getByRole('button', { name: t('settings.policy.publish') }));
+    expect(await screen.findByText(t('settings.errors.validation'))).toBeInTheDocument();
+    expect(publish).not.toHaveBeenCalled();
   });
 
   it('publishes a new policy version from the installments tab', async () => {
