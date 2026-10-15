@@ -14,6 +14,8 @@ import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp
 import { creditApi } from '@/services/creditApi';
 import { customersApi } from '@/services/customersApi';
 import { guarantorsApi } from '@/services/guarantorsApi';
+import { surveysApi } from '@/services/surveysApi';
+import { formatDate } from '@/lib/format';
 import { t } from '@/i18n';
 import CustomerPage from './CustomerPage';
 
@@ -76,6 +78,7 @@ const profile = (over: Partial<CreditProfile> = {}): CreditProfile => ({
     { at: timestamp, by_name: 'Owner', from: '0.00', to: '20000.00', reason: 'Good payer' },
     { at: '2026-10-15T09:00:00.000Z', by_name: null, from: '20000.00', to: '0.00', reason: null },
   ],
+  latest_survey: null,
   ...over,
 });
 
@@ -125,6 +128,7 @@ describe('R03 customer credit card', () => {
     vi.spyOn(customersApi, 'get').mockResolvedValue(customer());
     vi.spyOn(guarantorsApi, 'ofCustomer').mockResolvedValue([]);
     vi.spyOn(creditApi, 'profile').mockResolvedValue(profile());
+    vi.spyOn(surveysApi, 'ofCustomer').mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -337,5 +341,46 @@ describe('R03 customer credit card', () => {
     );
     await user.click(within(dialog).getByRole('button', { name: t('credit.request.send') }));
     expect(await within(dialog).findByText(t('credit.errors.notNeeded'))).toBeInTheDocument();
+  });
+
+  it('R05: the residence row says there is no valid survey', async () => {
+    await renderPage();
+    await card();
+    expect(await screen.findByText(t('surveys.credit.residenceNone'))).toBeInTheDocument();
+    expect(screen.queryByText(t('surveys.credit.latest'))).toBeNull();
+  });
+
+  it('R05: the residence row names the approved survey and its score, with a link', async () => {
+    const decidedAt = '2026-10-16T11:00:00.000Z';
+    const surveyId = 'a0730000-0000-4000-8000-0000000000d1';
+    vi.mocked(creditApi.profile).mockResolvedValue(
+      profile({
+        components: [
+          { key: 'guarantors', weight: 40, value: 1, points: 40 },
+          { key: 'income', weight: 30, value: 1, points: 30 },
+          { key: 'residence', weight: 20, value: 0.7, points: 14 },
+          { key: 'identity', weight: 10, value: 0.5, points: 5 },
+        ],
+        latest_survey: {
+          id: surveyId,
+          status: 'approved',
+          survey_score: 70,
+          decided_at: decidedAt,
+          valid_until: '2027-04-14',
+        },
+      }),
+    );
+    await renderPage();
+    await card();
+    expect(
+      await screen.findByText(
+        t('surveys.credit.residenceFromSurvey', { date: formatDate(decidedAt), score: '70' }),
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText(t('surveys.credit.latest'))).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: t('surveys.credit.open') })).toHaveAttribute(
+      'href',
+      `/customers/surveys/${surveyId}`,
+    );
   });
 });

@@ -53,7 +53,9 @@ import arCredit from './locales/ar/credit.json';
 import enGuarantors from './locales/en/guarantors.json';
 import enCredit from './locales/en/credit.json';
 import arCustomerAccount from './locales/ar/customerAccount.json';
+import arSurveys from './locales/ar/surveys.json';
 import enCustomerAccount from './locales/en/customerAccount.json';
+import enSurveys from './locales/en/surveys.json';
 import arEta from './locales/ar/eta.json';
 import enEta from './locales/en/eta.json';
 import arDevices from './locales/ar/devices.json';
@@ -93,6 +95,7 @@ export const ar = {
   guarantors: arGuarantors,
   credit: arCredit,
   customerAccount: arCustomerAccount,
+  surveys: arSurveys,
   eta: arEta,
   devices: arDevices,
   fiscal: arFiscal,
@@ -130,6 +133,7 @@ export const en: SameShape<typeof ar> = {
   guarantors: enGuarantors,
   credit: enCredit,
   customerAccount: enCustomerAccount,
+  surveys: enSurveys,
   eta: enEta,
   devices: enDevices,
   fiscal: enFiscal,

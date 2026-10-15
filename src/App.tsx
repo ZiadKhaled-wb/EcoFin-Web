@@ -49,6 +49,9 @@ import CustomerPage from '@/pages/customers/CustomerPage';
 import CustomerStatementPage from '@/pages/customers/CustomerStatementPage';
 import GuarantorPage from '@/pages/customers/GuarantorPage';
 import CreditExceptionsPage from '@/pages/customers/CreditExceptionsPage';
+import SurveysPage from '@/pages/surveys/SurveysPage';
+import SurveyPage from '@/pages/surveys/SurveyPage';
+import SurveyFillPage from '@/pages/surveys/SurveyFillPage';
 import SuppliersPage from '@/pages/suppliers/SuppliersPage';
 import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
 import VaultsPage from '@/pages/accounting/VaultsPage';
@@ -106,6 +109,7 @@ const REAL_ROUTES = new Set([
   '/suppliers',
   '/customers',
   '/customers/credit-exceptions',
+  '/customers/surveys',
   '/purchasing/invoices',
   '/purchasing/approvals',
   '/purchasing/returns',
@@ -122,6 +126,9 @@ const SUPPLIERS_ITEM = navLeaves().find((i) => i.id === 'suppliers')!;
 /** R01: the customers pages follow the menu item's rule; the server checks the customer read keys
  * and masks national IDs without customer.view_pii on every call (D62). */
 const CUSTOMERS_ITEM = navLeaves().find((i) => i.id === 'customers')!;
+/** R05: the survey pages follow their menu item (any of the three survey keys); the server checks
+ * every call and gives a collector only the surveys assigned to them (D75). */
+const SURVEYS_ITEM = navLeaves().find((i) => i.id === 'surveys')!;
 /** U02: the purchase invoice pages follow their menu item (same roles as purchasing). */
 const PURCHASE_INVOICES_ITEM = navLeaves().find((i) => i.id === 'purchase-invoices')!;
 /** U04: the purchase return pages follow their menu item (same roles as purchasing). */
@@ -230,6 +237,30 @@ export default function App() {
                     element={
                       <RequireNavItem item={CUSTOMERS_ITEM}>
                         <CreditExceptionsPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/customers/surveys"
+                    element={
+                      <RequireNavItem item={SURVEYS_ITEM}>
+                        <SurveysPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/customers/surveys/:id"
+                    element={
+                      <RequireNavItem item={SURVEYS_ITEM}>
+                        <SurveyPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/customers/surveys/:id/fill"
+                    element={
+                      <RequireNavItem item={SURVEYS_ITEM}>
+                        <SurveyFillPage />
                       </RequireNavItem>
                     }
                   />

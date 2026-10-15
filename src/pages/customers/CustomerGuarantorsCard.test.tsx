@@ -126,6 +126,7 @@ describe('R04 customer guarantors card', () => {
       },
       store_credit: '0.00',
       limit_history: [],
+      latest_survey: null,
     });
     vi.spyOn(guarantorsApi, 'ofCustomer').mockResolvedValue([
       guarantor(G1, 'Mahmoud Hassan', { also_customer: { id: G2, full_name: 'Mahmoud Hassan' } }),

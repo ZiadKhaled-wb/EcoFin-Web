@@ -5,10 +5,11 @@ import type { Customer, FileResponse, PermissionKey } from '@ziadkhaled-wb/contr
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from '@/lib/api';
 import { meApi } from '@/features/me/meApi';
-import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
+import { meFixture, permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
 import { customersApi } from '@/services/customersApi';
 import { creditApi } from '@/services/creditApi';
 import { guarantorsApi } from '@/services/guarantorsApi';
+import { surveysApi } from '@/services/surveysApi';
 import { t } from '@/i18n';
 import CustomerPage from './CustomerPage';
 
@@ -96,8 +97,10 @@ describe('R01 customer profile', () => {
       },
       store_credit: '0.00',
       limit_history: [],
+      latest_survey: null,
     });
     vi.spyOn(guarantorsApi, 'ofCustomer').mockResolvedValue([]);
+    vi.spyOn(surveysApi, 'ofCustomer').mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -214,5 +217,31 @@ describe('R01 customer profile', () => {
     );
     await renderAt(CUSTOMER_ID);
     expect(await screen.findByText(t('customers.profile.notFound'))).toBeInTheDocument();
+  });
+
+  it('R05: the surveys card offers Assign only with survey.assign', async () => {
+    await renderAt(CUSTOMER_ID);
+    expect(
+      await screen.findByRole('heading', { level: 2, name: t('surveys.card.title') }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText(t('surveys.card.empty'))).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: t('surveys.card.assign') })).toBeNull();
+  });
+
+  it('R05: a manager assigns a survey from the customer page', async () => {
+    setPermissions(['survey.assign', 'survey.submit']);
+    vi.spyOn(meApi, 'me').mockResolvedValue(meFixture());
+    await renderAt(CUSTOMER_ID);
+    expect(
+      await screen.findByRole('button', { name: t('surveys.card.assign') }),
+    ).toBeInTheDocument();
+  });
+
+  it('R05: no Assign for a blocked customer', async () => {
+    setPermissions(['survey.assign']);
+    vi.mocked(customersApi.get).mockResolvedValue(customer({ status: 'blocked' }));
+    await renderAt(CUSTOMER_ID);
+    expect(await screen.findByText(t('surveys.card.blockedHint'))).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: t('surveys.card.assign') })).toBeNull();
   });
 });
