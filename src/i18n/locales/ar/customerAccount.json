@@ -1,0 +1,218 @@
+{
+  "tabs": {
+    "label": "أقسام العميل",
+    "details": "البيانات",
+    "account": "الحساب"
+  },
+  "loadFailed": "تعذّر تحميل حساب العميل",
+  "balance": {
+    "title": "الرصيد",
+    "hint": "الرصيد المفتوح = إجمالي العقود − المدفوع − المرتجع. غرامات التأخير تظهر منفصلة.",
+    "openBalance": "الرصيد المفتوح",
+    "feesDue": "غرامات تأخير مستحقة",
+    "totalDue": "إجمالي المستحق",
+    "storeCredit": "رصيد العميل",
+    "available": "الحد المتاح",
+    "formula": "{totals} عقود − {payments} مدفوع − {returns} مرتجع"
+  },
+  "overdue": {
+    "title": "المتأخرات",
+    "amount": "المبلغ المتأخر",
+    "lines": "أقساط متأخرة",
+    "maxDaysLate": "أطول تأخير",
+    "daysValue": "{count} يوم",
+    "nextDue": "القسط القادم",
+    "nextDueValue": "{amount} في {date}",
+    "none": "لا توجد متأخرات.",
+    "aging": "حسب مدة التأخير",
+    "bucket": {
+      "not_yet_due": "لم يستحق بعد",
+      "late_1_30": "١–٣٠ يوم",
+      "late_31_60": "٣١–٦٠ يوم",
+      "late_61_90": "٦١–٩٠ يوم",
+      "late_90_plus": "أكثر من ٩٠ يوم"
+    }
+  },
+  "totals": {
+    "title": "النشاط",
+    "purchases": "المشتريات",
+    "purchasesValue": "{count} بقيمة {amount}",
+    "returns": "المرتجعات",
+    "paymentsIn": "المدفوع",
+    "paymentsOut": "المردود للعميل",
+    "lastPurchase": "آخر شراء",
+    "lastPayment": "آخر دفعة",
+    "never": "لا يوجد"
+  },
+  "contracts": {
+    "title": "عقود التقسيط",
+    "empty": "لا توجد عقود تقسيط بعد.",
+    "caption": "عقود التقسيط الخاصة بالعميل",
+    "number": "العقد",
+    "issued": "تاريخ الإصدار",
+    "total": "إجمالي العقد",
+    "paid": "المدفوع",
+    "remaining": "المتبقي",
+    "overdue": "المتأخر",
+    "nextDue": "الاستحقاق القادم",
+    "statusLabel": "الحالة",
+    "schedule": "جدول الأقساط",
+    "migrated": "رصيد افتتاحي",
+    "status": {
+      "active": "ساري",
+      "completed": "مكتمل",
+      "rescheduled": "معاد جدولته",
+      "written_off": "معدوم",
+      "returned": "مرتجع"
+    }
+  },
+  "schedule": {
+    "title": "جدول أقساط {number}",
+    "loadFailed": "تعذّر تحميل جدول الأقساط",
+    "caption": "أقساط العقد",
+    "seq": "م",
+    "dueDate": "تاريخ الاستحقاق",
+    "amount": "القيمة",
+    "paid": "المدفوع",
+    "remaining": "المتبقي",
+    "fees": "الغرامات",
+    "statusLabel": "الحالة",
+    "daysLate": "متأخر {count} يوم",
+    "superseded": "جدول سابق (الإصدار {version})",
+    "financed": "المبلغ الممول",
+    "markup": "زيادة التقسيط",
+    "downPayment": "المقدم",
+    "frequency": "{count} قسط، {frequency}",
+    "chargesTitle": "غرامات التأخير",
+    "chargeLine": "القسط {seq}، {date}: {amount}",
+    "chargeWaived": "تم التنازل عن {amount}",
+    "chargeDue": "مستحق {amount}",
+    "status": {
+      "upcoming": "قادم",
+      "due": "مستحق اليوم",
+      "partly_paid": "مدفوع جزئيًا",
+      "overdue": "متأخر",
+      "paid": "مدفوع",
+      "closed": "مغلق",
+      "superseded": "مستبدل"
+    },
+    "frequencyName": {
+      "monthly": "شهري",
+      "weekly": "أسبوعي",
+      "daily": "يومي"
+    }
+  },
+  "payments": {
+    "title": "آخر المدفوعات",
+    "empty": "لا توجد مدفوعات بعد.",
+    "caption": "آخر مدفوعات العميل",
+    "date": "التاريخ",
+    "number": "الدفعة",
+    "method": "طريقة الدفع",
+    "amount": "المبلغ",
+    "for": "عن",
+    "in": "دفعة",
+    "out": "رد مبلغ",
+    "methodName": {
+      "cash": "نقدي",
+      "bank_transfer": "تحويل بنكي",
+      "store_credit": "رصيد العميل"
+    },
+    "allocation": {
+      "sale": "فاتورة {number}",
+      "schedule_line": "قسط {number}",
+      "charge": "غرامة {number}",
+      "order": "عربون طلب {number}",
+      "return": "رد قيمة {number}"
+    }
+  },
+  "returns": {
+    "title": "آخر المرتجعات",
+    "empty": "لا توجد مرتجعات.",
+    "caption": "آخر مرتجعات العميل",
+    "kind": {
+      "return": "مرتجع",
+      "void": "إلغاء",
+      "exchange": "استبدال"
+    },
+    "refund": {
+      "cash": "رُدّ نقدًا",
+      "bank_transfer": "رُدّ بتحويل",
+      "store_credit": "إلى رصيد العميل",
+      "contract_adjustment": "خُصم من العقد"
+    },
+    "ofSale": "من الفاتورة {number}"
+  },
+  "purchases": {
+    "title": "المشتريات",
+    "empty": "لا توجد مشتريات بعد.",
+    "caption": "مشتريات العميل",
+    "hidden": "تظهر المشتريات لمن يبيع أو يطّلع على التقارير.",
+    "loadFailed": "تعذّر تحميل المشتريات"
+  },
+  "documents": {
+    "title": "المستندات",
+    "count": "{count} ملف",
+    "empty": "لا توجد مستندات.",
+    "loadFailed": "تعذّر تحميل المستندات",
+    "open": "فتح",
+    "ofContract": "العقد {number}",
+    "ofCustomer": "ملف العميل",
+    "purpose": {
+      "customer_id": "صورة البطاقة",
+      "contract_pdf": "العقد الموقّع",
+      "promissory_note": "إيصال أمانة",
+      "signature": "توقيع",
+      "other": "ملف آخر"
+    }
+  },
+  "statement": {
+    "open": "كشف الحساب",
+    "title": "كشف حساب عميل",
+    "back": "العودة إلى العميل",
+    "loadFailed": "تعذّر تحميل كشف الحساب",
+    "notFound": "العميل غير موجود",
+    "notFoundHint": "ربما يخص محلًا آخر أو أن الرابط غير صحيح.",
+    "from": "من",
+    "to": "إلى",
+    "clearDates": "كل الفترة",
+    "rangeHint": "الكشف يغطي ثلاث سنوات بحد أقصى. يشمل كل الفروع.",
+    "print": "طباعة",
+    "caption": "حركات الكشف مع الرصيد بعد كل حركة",
+    "opening": "رصيد أول المدة",
+    "closing": "رصيد آخر المدة",
+    "empty": "لا توجد حركات في هذه الفترة.",
+    "owes": "الرصيد الموجب هو ما على العميل للمحل.",
+    "printedOn": "طُبع في {date}",
+    "period": "الفترة: من {from} إلى {to}",
+    "periodAll": "الفترة: كل الحركات حتى {date}",
+    "start": "أول حركة",
+    "today": "اليوم",
+    "totalDebit": "إجمالي المدين",
+    "totalCredit": "إجمالي الدائن",
+    "columns": {
+      "date": "التاريخ",
+      "type": "النوع",
+      "number": "المستند",
+      "detail": "التفاصيل",
+      "debit": "مدين",
+      "credit": "دائن",
+      "balance": "الرصيد"
+    },
+    "kind": {
+      "sale": "فاتورة بيع",
+      "contract": "عقد تقسيط",
+      "payment_in": "دفعة",
+      "payment_out": "رد مبلغ",
+      "payment_reversal": "إلغاء دفعة",
+      "return": "مرتجع",
+      "fee": "غرامة تأخير",
+      "fee_waiver": "تنازل عن غرامة"
+    },
+    "ofSale": "عن الفاتورة {number}"
+  },
+  "errors": {
+    "CONTRACT_NOT_FOUND": "هذا العقد لا يخص العميل.",
+    "VALIDATION_FAILED": "اختر تاريخ بداية قبل تاريخ النهاية، وبفرق ثلاث سنوات بحد أقصى."
+  }
+}

@@ -1,0 +1,39 @@
+.customer-statement {
+  color: #000;
+  background: #fff;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.customer-statement header {
+  margin-bottom: 4mm;
+  border-bottom: 1px solid #000;
+  padding-bottom: 3mm;
+}
+.customer-statement h1 {
+  font-size: 16px;
+  font-weight: 700;
+}
+.customer-statement h2 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-block: 1mm;
+}
+.customer-statement .statement-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.customer-statement .statement-table th,
+.customer-statement .statement-table td {
+  border: 1px solid #000;
+  padding: 1mm 1.5mm;
+  font-size: 10px;
+}
+.customer-statement .statement-table thead {
+  display: table-header-group;
+}
+.customer-statement .statement-table tr {
+  break-inside: avoid;
+}
+.customer-statement .note {
+  margin-top: 3mm;
+}
