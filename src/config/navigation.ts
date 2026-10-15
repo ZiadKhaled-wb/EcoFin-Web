@@ -2,6 +2,7 @@ import {
   BellIcon,
   CalculatorIcon,
   CartIcon,
+  CheckIcon,
   ChartIcon,
   DashboardIcon,
   EyeIcon,
@@ -212,6 +213,15 @@ export const NAV: NavItem[] = [
     icon: UsersIcon,
     to: '/customers',
     roles: [OWNER, BRANCH_MANAGER, 'CASHIER', 'ACCOUNTANT', 'COLLECTOR'],
+  },
+  // R03 (D72): credit exceptions waiting for a manager. The page itself is open to every customer
+  // reader (a cashier follows their own requests from the customer's credit card).
+  {
+    id: 'credit-exceptions',
+    labelKey: 'nav.creditExceptions',
+    icon: CheckIcon,
+    to: '/customers/credit-exceptions',
+    permission: 'credit.approve',
   },
   {
     id: 'suppliers',

@@ -13,6 +13,7 @@ import { ApiError } from '@/lib/api';
 import { meApi } from '@/features/me/meApi';
 import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
 import { customersApi } from '@/services/customersApi';
+import { creditApi } from '@/services/creditApi';
 import { guarantorsApi } from '@/services/guarantorsApi';
 import { t } from '@/i18n';
 import CustomerPage from './CustomerPage';
@@ -98,6 +99,34 @@ describe('R04 customer guarantors card', () => {
     signIn();
     setPermissions(['guarantor.manage', 'customer.create']);
     vi.spyOn(customersApi, 'get').mockResolvedValue(customer());
+    vi.spyOn(creditApi, 'profile').mockResolvedValue({
+      customer_id: CUSTOMER_ID,
+      status: 'active',
+      credit_limit: '0.00',
+      suggested_limit: null,
+      exposure: '0.00',
+      available: '0.00',
+      over_limit_by: '0.00',
+      score: 0,
+      min_score: 50,
+      components: [
+        { key: 'guarantors', weight: 40, value: 0, points: 0 },
+        { key: 'income', weight: 30, value: 0, points: 0 },
+        { key: 'residence', weight: 20, value: 0, points: 0 },
+        { key: 'identity', weight: 10, value: 0, points: 0 },
+      ],
+      behaviour: {
+        due_lines: 0,
+        on_time_pct: null,
+        max_days_late: null,
+        current_overdue_amount: '0.00',
+        overdue_lines: 0,
+        open_contracts: 0,
+        completed_contracts: 0,
+      },
+      store_credit: '0.00',
+      limit_history: [],
+    });
     vi.spyOn(guarantorsApi, 'ofCustomer').mockResolvedValue([
       guarantor(G1, 'Mahmoud Hassan', { also_customer: { id: G2, full_name: 'Mahmoud Hassan' } }),
       guarantor(G2, 'Mona Said', { relation: 'colleague', on_active_contract: true }),
