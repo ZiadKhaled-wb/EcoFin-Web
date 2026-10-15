@@ -350,7 +350,26 @@ describe('R03 customer credit card', () => {
     expect(screen.queryByText(t('surveys.credit.latest'))).toBeNull();
   });
 
+  it('R05: the latest survey has no link without a survey key', async () => {
+    vi.mocked(creditApi.profile).mockResolvedValue(
+      profile({
+        latest_survey: {
+          id: 'a0730000-0000-4000-8000-0000000000d1',
+          status: 'submitted',
+          survey_score: 70,
+          decided_at: null,
+          valid_until: null,
+        },
+      }),
+    );
+    await renderPage();
+    await card();
+    expect(await screen.findByText(t('surveys.credit.latest'))).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: t('surveys.credit.open') })).toBeNull();
+  });
+
   it('R05: the residence row names the approved survey and its score, with a link', async () => {
+    setPermissions(['credit.approve', 'sale.create', 'survey.decide']);
     const decidedAt = '2026-10-16T11:00:00.000Z';
     const surveyId = 'a0730000-0000-4000-8000-0000000000d1';
     vi.mocked(creditApi.profile).mockResolvedValue(

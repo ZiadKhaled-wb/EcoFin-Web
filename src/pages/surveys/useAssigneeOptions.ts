@@ -13,7 +13,8 @@ const SURVEY_ROLES = (Object.keys(ROLE_DEFAULT_PERMISSIONS) as EmployeeRole[]).f
 );
 
 /**
- * Who a survey can go to. The employee list needs employee.manage; without it the only choice is
+ * Who a survey can go to (employees with overrides included, see below). The employee list needs
+ * employee.manage; without it the only choice is
  * the signed-in employee (when they may fill surveys). The server checks the assignee again
  * (active, same shop, survey.submit after overrides): SURVEY_ASSIGNEE_INVALID otherwise.
  */
@@ -31,13 +32,20 @@ export function useAssigneeOptions(enabled: boolean) {
   const self = me.data?.employee;
   const options: SelectOption[] = [];
   if (canList) {
+    // The list has no effective permissions, only the role and how many overrides an employee
+    // has. Roles whose defaults include survey.submit come first; an employee of another role
+    // with overrides may have been given it, so they are offered too, marked. The server has the
+    // last word either way (an override can also take the key away).
+    const extra: SelectOption[] = [];
     for (const e of staff.data?.items ?? []) {
-      if (!e.is_active || !SURVEY_ROLES.includes(e.role)) continue;
-      options.push({
-        value: e.id,
-        label: e.id === self?.id ? t('surveys.assign.me', { name: e.full_name }) : e.full_name,
-      });
+      if (!e.is_active) continue;
+      const label = e.id === self?.id ? t('surveys.assign.me', { name: e.full_name }) : e.full_name;
+      if (SURVEY_ROLES.includes(e.role)) options.push({ value: e.id, label });
+      else if (e.override_count > 0) {
+        extra.push({ value: e.id, label: t('surveys.assign.byOverride', { name: label }) });
+      }
     }
+    options.push(...extra);
   }
   if (self && canSubmit && !options.some((o) => o.value === self.id)) {
     options.unshift({ value: self.id, label: t('surveys.assign.me', { name: self.fullName }) });

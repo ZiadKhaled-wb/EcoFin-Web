@@ -142,7 +142,9 @@ export default function SurveyPage() {
   const myId = me.data?.employee.id;
   const isAssignee = myId !== undefined && data.assigned_to.id === myId;
   const open = data.status === 'assigned' || data.status === 'submitted';
-  const showDecide = canDecide && data.status === 'submitted' && (!isAssignee || isOwner);
+  // Wait for "me": until then an assignee would look like someone else (SURVEY_SELF_DECISION).
+  const showDecide =
+    canDecide && myId !== undefined && data.status === 'submitted' && (!isAssignee || isOwner);
   const none = <span className="type-caption">{t('surveys.page.noValue')}</span>;
 
   return (

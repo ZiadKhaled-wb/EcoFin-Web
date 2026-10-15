@@ -15,7 +15,7 @@ import { surveyKeys, surveysApi } from '@/services/surveysApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
 import AssignSurveyDialog from './AssignSurveyDialog';
-import { STATUS_TONE, statusLabel, visitTypeLabel } from './surveyShared';
+import { STATUS_TONE, statusLabel, useCanOpenSurveys, visitTypeLabel } from './surveyShared';
 
 /**
  * R05 (D75): the customer's field surveys under the customer details, newest first. A manager
@@ -26,6 +26,8 @@ export default function CustomerSurveysCard({ customer }: { customer: Customer }
   const orgId = useAuthStore((s) => s.orgId);
   const cache = useQueryClient();
   const canAssign = useCan('survey.assign');
+  // The survey page needs a survey key; others see the rows without a link.
+  const canOpen = useCanOpenSurveys();
   const [assigning, setAssigning] = useState(0);
   const blocked = customer.status === 'blocked';
 
@@ -108,12 +110,14 @@ export default function CustomerSurveysCard({ customer }: { customer: Customer }
                     {s.survey_score === null ? none : formatNumber(s.survey_score)}
                   </td>
                   <td className="py-2">
-                    <Link
-                      to={`/customers/surveys/${s.id}`}
-                      className="text-brand-700 hover:underline"
-                    >
-                      {t('surveys.card.open')}
-                    </Link>
+                    {canOpen && (
+                      <Link
+                        to={`/customers/surveys/${s.id}`}
+                        className="text-brand-700 hover:underline"
+                      >
+                        {t('surveys.card.open')}
+                      </Link>
+                    )}
                   </td>
                 </tr>
               ))}

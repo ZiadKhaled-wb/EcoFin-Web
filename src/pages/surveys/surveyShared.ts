@@ -12,7 +12,9 @@ import {
   type SurveyStatus,
 } from '@ziadkhaled-wb/contracts';
 import type { BadgeTone } from '@/components/ui/Badge';
+import { useCan } from '@/features/me/useCan';
 import { ApiError } from '@/lib/api';
+import { SURVEY_DRAFT_PREFIX } from '@/lib/surveyDraftStore';
 import { t, type TranslationKey } from '@/i18n';
 
 /** The contract's limits on the free-text fields (shown and checked before sending). */
@@ -33,6 +35,14 @@ export const statusLabel = (status: SurveyStatus) => t(`surveys.status.${status}
 export const visitTypeLabel = (type: SurveyVisitType) => t(`surveys.visitType.${type}`);
 export const criterionLabel = (key: SurveyCriterion) => t(`surveys.criteria.${key}`);
 export const checklistLabel = (key: SurveyChecklistItem) => t(`surveys.checklist.${key}`);
+
+/** The survey pages follow their menu item: any of the three survey keys (links elsewhere too). */
+export function useCanOpenSurveys(): boolean {
+  const assign = useCan('survey.assign');
+  const submit = useCan('survey.submit');
+  const decide = useCan('survey.decide');
+  return assign || submit || decide;
+}
 
 const ERRORS: Partial<Record<string, TranslationKey>> = {
   SURVEY_NOT_FOUND: 'surveys.errors.SURVEY_NOT_FOUND',
@@ -133,14 +143,24 @@ export function missingParts(draft: SurveyDraft, photos: number): MissingPart[] 
 
 // Unsaved answers stay on this device per survey, so a dropped connection loses nothing. Storage
 // can be missing or full (private mode): every access is wrapped and failing is never fatal.
-const draftKey = (id: string) => `ecotech.survey-draft.${id}`;
+// A draft remembers the survey version it was made on (`updated_at`): once the survey changed on
+// the server (saved from another device, reassigned, cancelled), the old draft is dropped instead
+// of overwriting newer answers. Drafts hold the customer's location and notes, so signing out
+// removes them all (clearAllSurveyDrafts).
+const draftKey = (id: string) => `${SURVEY_DRAFT_PREFIX}${id}`;
 
-export function loadDraft(id: string): SurveyDraft | null {
+/** The draft made on this version of the survey, or null (none, unreadable or outdated). */
+export function loadDraft(id: string, version: string): SurveyDraft | null {
   try {
     const raw = window.localStorage.getItem(draftKey(id));
     if (!raw) return null;
     // Whatever is stored is checked against the contract again; anything odd is dropped.
-    const value = JSON.parse(raw) as Record<string, unknown> | null;
+    const stored = JSON.parse(raw) as { version?: unknown; draft?: unknown } | null;
+    if (!stored || typeof stored !== 'object' || stored.version !== version) {
+      clearDraft(id);
+      return null;
+    }
+    const value = stored.draft as Record<string, unknown> | null;
     if (!value || typeof value !== 'object') return null;
     const visit = SurveyVisitType.safeParse(value.visit_type);
     if (!visit.success) return null;
@@ -159,9 +179,9 @@ export function loadDraft(id: string): SurveyDraft | null {
   }
 }
 
-export function storeDraft(id: string, draft: SurveyDraft): void {
+export function storeDraft(id: string, version: string, draft: SurveyDraft): void {
   try {
-    window.localStorage.setItem(draftKey(id), JSON.stringify(draft));
+    window.localStorage.setItem(draftKey(id), JSON.stringify({ version, draft }));
   } catch {
     // Storage unavailable: the answers stay in memory only.
   }
