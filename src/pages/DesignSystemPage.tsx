@@ -160,6 +160,35 @@ function NumberDemo() {
   );
 }
 
+function DateDemo() {
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('2026-10-15');
+  return (
+    <div className="grid gap-5 rounded-panel border border-line bg-surface p-6 md:grid-cols-2">
+      <FormField
+        type="date"
+        label="من"
+        value={from}
+        max={to || undefined}
+        onChange={(e) => setFrom(e.target.value)}
+      />
+      <FormField
+        type="date"
+        label="إلى"
+        value={to}
+        min={from || undefined}
+        onChange={(e) => setTo(e.target.value)}
+      />
+      <p className="type-caption md:col-span-2">
+        يوم / شهر / سنة بلغة الصفحة؛ زر التقويم يفتح منتقي الجهاز. القيمة:{' '}
+        <span dir="ltr" className="font-mono">
+          {from || '—'} → {to || '—'}
+        </span>
+      </p>
+    </div>
+  );
+}
+
 function SearchDemo() {
   const [q, setQ] = useState('');
   return (
@@ -274,6 +303,10 @@ export default function DesignSystemPage() {
             <IconButton label="معطّل" icon={<Icons.XIcon />} disabled />
           </div>
         </div>
+      </Section>
+
+      <Section title="Date (DateInput)">
+        <DateDemo />
       </Section>
 
       <Section title="Input / FormField">

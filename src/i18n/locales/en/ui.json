@@ -11,5 +11,11 @@
   "confirm": "Confirm",
   "errorTitle": "Could not load the data",
   "errorDescription": "Something went wrong while contacting the server. Try again.",
-  "dismissToast": "Dismiss notification"
+  "dismissToast": "Dismiss notification",
+  "date": {
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "openPicker": "Open the calendar"
+  }
 }

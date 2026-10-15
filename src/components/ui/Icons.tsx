@@ -2,6 +2,7 @@ import type { ComponentType, ReactElement } from 'react';
 import {
   Bell,
   Calculator,
+  Calendar,
   Check,
   ChartColumn,
   ChevronDown,
@@ -70,6 +71,7 @@ export const AlertIcon = wrap(CircleAlert);
 export const CheckCircleIcon = wrap(CircleCheck);
 export const CheckIcon = wrap(Check);
 export const SearchIcon = wrap(Search);
+export const CalendarIcon = wrap(Calendar);
 export const XIcon = wrap(X);
 export const InboxIcon = wrap(Inbox);
 export const ChevronDownIcon = wrap(ChevronDown);

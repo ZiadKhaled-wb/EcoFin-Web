@@ -11,5 +11,11 @@
   "confirm": "تأكيد",
   "errorTitle": "تعذر تحميل البيانات",
   "errorDescription": "حدث خطأ أثناء الاتصال بالخادم. حاول مرة أخرى.",
-  "dismissToast": "إغلاق الإشعار"
+  "dismissToast": "إغلاق الإشعار",
+  "date": {
+    "day": "يوم",
+    "month": "شهر",
+    "year": "سنة",
+    "openPicker": "فتح التقويم"
+  }
 }

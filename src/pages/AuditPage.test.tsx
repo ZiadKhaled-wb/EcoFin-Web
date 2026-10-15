@@ -137,7 +137,7 @@ describe('AuditPage', () => {
       }),
     );
 
-    await user.type(screen.getByLabelText(t('audit.filters.from')), '2026-10-01');
+    await user.type(screen.getByLabelText(t('audit.filters.from')), '01102026');
     await waitFor(() =>
       expect(lastQuery()?.from).toBe(new Date('2026-10-01T00:00:00').toISOString()),
     );

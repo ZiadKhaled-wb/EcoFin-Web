@@ -2,6 +2,7 @@ import { useState, type InputHTMLAttributes, type ReactNode, type Ref } from 're
 import { t } from '@/i18n';
 import { cn } from '@/lib/cn';
 import { EyeIcon, EyeOffIcon } from '@/components/ui/Icons';
+import DateInput from '@/components/ui/DateInput';
 
 export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   /** Red border (error styling) without rendering a message. */
@@ -16,9 +17,18 @@ export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
 
 /**
  * Bare input (no label). Use FormField for labelled fields.
- * type="password" gets a show/hide toggle automatically.
+ * type="password" gets a show/hide toggle automatically; type="date" renders DateInput.
  */
-export default function Input({ invalid, icon, ltr, type, className, ...rest }: InputProps) {
+export default function Input(props: InputProps) {
+  // Dates get day / month / year boxes in the page's language: the browser's own date box shows
+  // its format (mm/dd/yyyy) in the browser's language and can't be translated.
+  if (props.type === 'date') {
+    return <DateInput {...props} />;
+  }
+  return <TextInput {...props} />;
+}
+
+function TextInput({ invalid, icon, ltr, type, className, ...rest }: InputProps) {
   const [visible, setVisible] = useState(false);
   const isPassword = type === 'password';
   const isLtr = ltr || isPassword;
