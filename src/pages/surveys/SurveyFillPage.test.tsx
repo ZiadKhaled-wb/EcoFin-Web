@@ -7,6 +7,7 @@ import { api } from '@/lib/api';
 import { meApi } from '@/features/me/meApi';
 import { meFixture, permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
 import { surveysApi } from '@/services/surveysApi';
+import { useAuthStore } from '@/store/authStore';
 import { t, type TranslationKey } from '@/i18n';
 import SurveyFillPage from './SurveyFillPage';
 import { ALL_CHECKS, ALL_SCORES, GPS, OTHER_EMPLOYEE, SURVEY_ID, survey } from './surveyFixtures';
@@ -220,7 +221,10 @@ describe('R05 survey fill page', () => {
   it('keeps unsaved answers on the device and restores them', async () => {
     window.localStorage.setItem(
       `ecotech.survey-draft.${SURVEY_ID}`,
-      JSON.stringify({ visit_type: 'work', scores: { job_status: 9 }, checklist: {}, notes: '' }),
+      JSON.stringify({
+        version: survey().updated_at,
+        draft: { visit_type: 'work', scores: { job_status: 9 }, checklist: {}, notes: '' },
+      }),
     );
     await renderPage();
     expect(await screen.findByText(t('surveys.fill.draftRestored'))).toBeInTheDocument();
@@ -229,6 +233,46 @@ describe('R05 survey fill page', () => {
       'aria-checked',
       'true',
     );
+  });
+
+  it('drops a draft made on an older version of the survey (saved elsewhere since)', async () => {
+    const key = `ecotech.survey-draft.${SURVEY_ID}`;
+    window.localStorage.setItem(
+      key,
+      JSON.stringify({
+        version: '2026-10-16T08:00:00.000Z',
+        draft: { visit_type: 'work', scores: { job_status: 2 }, checklist: {}, notes: '' },
+      }),
+    );
+    vi.mocked(surveysApi.get).mockResolvedValue(survey({ scores: { job_status: 9 } }));
+    await renderPage();
+    await screen.findByRole('heading', { level: 1, name: t('surveys.fill.title') });
+    expect(screen.queryByText(t('surveys.fill.draftRestored'))).toBeNull();
+    const group = screen.getByRole('radiogroup', { name: t('surveys.criteria.job_status') });
+    expect(within(group).getByRole('radio', { name: /: 9$/ })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+    expect(JSON.parse(window.localStorage.getItem(key) ?? '{}')).toMatchObject({
+      version: survey().updated_at,
+    });
+  });
+
+  it('drops the draft of a survey that is no longer open', async () => {
+    const key = `ecotech.survey-draft.${SURVEY_ID}`;
+    window.localStorage.setItem(key, JSON.stringify({ version: 'x', draft: {} }));
+    vi.mocked(surveysApi.get).mockResolvedValue(survey({ status: 'cancelled' }));
+    await renderPage();
+    expect(await screen.findByText(t('surveys.fill.notOpen'))).toBeInTheDocument();
+    expect(window.localStorage.getItem(key)).toBeNull();
+  });
+
+  it('signing out removes every survey draft from the device', () => {
+    window.localStorage.setItem(`ecotech.survey-draft.${SURVEY_ID}`, '{}');
+    window.localStorage.setItem('ecotech.other', 'kept');
+    useAuthStore.getState().clearSession();
+    expect(window.localStorage.getItem(`ecotech.survey-draft.${SURVEY_ID}`)).toBeNull();
+    expect(window.localStorage.getItem('ecotech.other')).toBe('kept');
   });
 
   it('never calls the API for an id that is not a UUID', async () => {

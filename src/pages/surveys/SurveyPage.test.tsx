@@ -124,6 +124,17 @@ describe('R05 survey page', () => {
     expect(screen.queryByRole('button', { name: t('surveys.page.approve') })).toBeNull();
   });
 
+  it('shows Approve only once it knows who is signed in', async () => {
+    setPermissions(['survey.decide']);
+    let resolveMe: (v: ReturnType<typeof meFixture>) => void = () => {};
+    vi.mocked(meApi.me).mockReturnValue(new Promise((r) => (resolveMe = r)));
+    await renderPage();
+    await heading();
+    expect(screen.queryByRole('button', { name: t('surveys.page.approve') })).toBeNull();
+    resolveMe(meFixture());
+    expect(await screen.findByRole('button', { name: t('surveys.page.approve') })).toBeVisible();
+  });
+
   it('cancels with a reason', async () => {
     const user = userEvent.setup();
     setPermissions(['survey.assign']);

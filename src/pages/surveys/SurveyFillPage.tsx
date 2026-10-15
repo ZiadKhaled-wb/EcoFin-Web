@@ -154,6 +154,8 @@ export default function SurveyFillPage() {
         ? t('surveys.fill.notOpen')
         : null;
   if (blocker) {
+    // Not this employee's open survey (any more): no answers for it stay on this device.
+    if (data.status !== 'assigned') clearDraft(data.id);
     return (
       <PageContainer>
         <EmptyState
@@ -176,7 +178,7 @@ function FillForm({ survey }: { survey: Survey }) {
   const cache = useQueryClient();
   const navigate = useNavigate();
   const [restored] = useState(() => {
-    const stored = loadDraft(survey.id);
+    const stored = loadDraft(survey.id, survey.updated_at);
     return stored && Object.keys(changedAnswers(stored, survey)).length > 0 ? stored : null;
   });
   const [draft, setDraft] = useState<SurveyDraft>(() => restored ?? draftFromSurvey(survey));
@@ -188,7 +190,11 @@ function FillForm({ survey }: { survey: Survey }) {
   const nextKey = useRef(1);
   const previews = useRef<string[]>([]);
 
-  useEffect(() => storeDraft(survey.id, draft), [survey.id, draft]);
+  // Stored against the version on screen: a save or upload that changes the survey moves it on.
+  useEffect(
+    () => storeDraft(survey.id, survey.updated_at, draft),
+    [survey.id, survey.updated_at, draft],
+  );
   // The local previews are object URLs: free them when the page goes away.
   useEffect(() => {
     const urls = previews.current;

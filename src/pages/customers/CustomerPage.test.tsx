@@ -1,7 +1,13 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
-import type { Customer, FileResponse, PermissionKey } from '@ziadkhaled-wb/contracts';
+import type {
+  Customer,
+  EmployeeRow,
+  EmployeeRole,
+  FileResponse,
+  PermissionKey,
+} from '@ziadkhaled-wb/contracts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from '@/lib/api';
 import { meApi } from '@/features/me/meApi';
@@ -10,6 +16,8 @@ import { customersApi } from '@/services/customersApi';
 import { creditApi } from '@/services/creditApi';
 import { guarantorsApi } from '@/services/guarantorsApi';
 import { surveysApi } from '@/services/surveysApi';
+import { staffApi } from '@/services/staffApi';
+import { survey } from '@/pages/surveys/surveyFixtures';
 import { t } from '@/i18n';
 import CustomerPage from './CustomerPage';
 
@@ -243,5 +251,65 @@ describe('R01 customer profile', () => {
     await renderAt(CUSTOMER_ID);
     expect(await screen.findByText(t('surveys.card.blockedHint'))).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: t('surveys.card.assign') })).toBeNull();
+  });
+
+  it('R05: survey rows link to the survey only for users with a survey key', async () => {
+    vi.mocked(surveysApi.ofCustomer).mockResolvedValue([survey()]);
+    await renderAt(CUSTOMER_ID);
+    expect(await screen.findByText(t('surveys.status.assigned'))).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: t('surveys.card.open') })).toBeNull();
+  });
+
+  it('R05: a survey key shows the link to the survey', async () => {
+    setPermissions(['survey.submit']);
+    vi.mocked(surveysApi.ofCustomer).mockResolvedValue([survey()]);
+    await renderAt(CUSTOMER_ID);
+    expect(await screen.findByRole('link', { name: t('surveys.card.open') })).toHaveAttribute(
+      'href',
+      `/customers/surveys/${survey().id}`,
+    );
+  });
+
+  it('R05: the assignee list adds employees whose permissions were set by hand', async () => {
+    const user = userEvent.setup();
+    setPermissions(['survey.assign', 'employee.manage']);
+    vi.spyOn(meApi, 'me').mockResolvedValue(meFixture());
+    const row = (id: string, name: string, role: EmployeeRole, overrides = 0): EmployeeRow => ({
+      id,
+      full_name: name,
+      phone: null,
+      email: null,
+      username: null,
+      role,
+      is_active: true,
+      default_branch_id: null,
+      branch_ids: [],
+      invite_status: 'accepted',
+      override_count: overrides,
+      created_at: '2026-10-01T09:00:00.000Z',
+    });
+    vi.spyOn(staffApi, 'list').mockResolvedValue({
+      items: [
+        row('a0750000-0000-4000-8000-0000000000e1', 'Collector One', 'COLLECTOR'),
+        row('a0750000-0000-4000-8000-0000000000e3', 'Cashier Granted', 'CASHIER', 1),
+        row('a0750000-0000-4000-8000-0000000000e4', 'Cashier Plain', 'CASHIER'),
+      ],
+      total: 3,
+    });
+    await renderAt(CUSTOMER_ID);
+    await user.click(await screen.findByRole('button', { name: t('surveys.card.assign') }));
+    const dialog = await screen.findByRole('dialog');
+    const select = within(dialog).getByLabelText(t('surveys.assign.assignee'));
+    await waitFor(() =>
+      expect(within(select).getByRole('option', { name: 'Collector One' })).toBeInTheDocument(),
+    );
+    const names = within(select)
+      .getAllByRole('option')
+      .map((o) => o.textContent);
+    expect(names).toContain(t('surveys.assign.byOverride', { name: 'Cashier Granted' }));
+    expect(names).not.toContain('Cashier Plain');
+    expect(names.indexOf('Collector One')).toBeLessThan(
+      names.indexOf(t('surveys.assign.byOverride', { name: 'Cashier Granted' })),
+    );
   });
 });

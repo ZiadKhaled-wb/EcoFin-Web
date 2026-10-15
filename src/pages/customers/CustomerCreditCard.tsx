@@ -14,6 +14,7 @@ import { useAuthStore } from '@/store/authStore';
 import {
   STATUS_TONE as SURVEY_STATUS_TONE,
   statusLabel as surveyStatusLabel,
+  useCanOpenSurveys,
 } from '@/pages/surveys/surveyShared';
 import { t, type TranslationKey } from '@/i18n';
 import CreditExceptionDialog from './CreditExceptionDialog';
@@ -105,6 +106,7 @@ function residenceSource(profile: CreditProfile, value: number): string {
 
 function LatestSurvey({ profile }: { profile: CreditProfile }) {
   const latest = profile.latest_survey;
+  const canOpen = useCanOpenSurveys();
   if (!latest) return null;
   return (
     <p className="mt-3 flex flex-wrap items-center gap-2">
@@ -115,9 +117,11 @@ function LatestSurvey({ profile }: { profile: CreditProfile }) {
           {t('surveys.credit.latestScore', { score: formatNumber(latest.survey_score) })}
         </span>
       )}
-      <Link to={`/customers/surveys/${latest.id}`} className="text-brand-700 hover:underline">
-        {t('surveys.credit.open')}
-      </Link>
+      {canOpen && (
+        <Link to={`/customers/surveys/${latest.id}`} className="text-brand-700 hover:underline">
+          {t('surveys.credit.open')}
+        </Link>
+      )}
     </p>
   );
 }
