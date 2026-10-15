@@ -1,0 +1,218 @@
+{
+  "tabs": {
+    "label": "Customer sections",
+    "details": "Details",
+    "account": "Account"
+  },
+  "loadFailed": "Couldn't load the customer's account",
+  "balance": {
+    "title": "Balance",
+    "hint": "Open balance = contract totals − payments − returns. Late fees are shown apart.",
+    "openBalance": "Open balance",
+    "feesDue": "Late fees due",
+    "totalDue": "Total due",
+    "storeCredit": "Store credit",
+    "available": "Available credit",
+    "formula": "{totals} in contracts − {payments} paid − {returns} returned"
+  },
+  "overdue": {
+    "title": "Overdue",
+    "amount": "Overdue amount",
+    "lines": "Overdue installments",
+    "maxDaysLate": "Most days late",
+    "daysValue": "{count} days",
+    "nextDue": "Next installment due",
+    "nextDueValue": "{amount} on {date}",
+    "none": "Nothing is overdue.",
+    "aging": "By age",
+    "bucket": {
+      "not_yet_due": "Not due yet",
+      "late_1_30": "1–30 days",
+      "late_31_60": "31–60 days",
+      "late_61_90": "61–90 days",
+      "late_90_plus": "Over 90 days"
+    }
+  },
+  "totals": {
+    "title": "Activity",
+    "purchases": "Purchases",
+    "purchasesValue": "{count} for {amount}",
+    "returns": "Returns",
+    "paymentsIn": "Paid in",
+    "paymentsOut": "Refunded",
+    "lastPurchase": "Last purchase",
+    "lastPayment": "Last payment",
+    "never": "Never"
+  },
+  "contracts": {
+    "title": "Installment contracts",
+    "empty": "No installment contracts yet.",
+    "caption": "The customer's installment contracts",
+    "number": "Contract",
+    "issued": "Issued",
+    "total": "Contract total",
+    "paid": "Paid",
+    "remaining": "Remaining",
+    "overdue": "Overdue",
+    "nextDue": "Next due",
+    "statusLabel": "Status",
+    "schedule": "Schedule",
+    "migrated": "Opening balance",
+    "status": {
+      "active": "Active",
+      "completed": "Completed",
+      "rescheduled": "Rescheduled",
+      "written_off": "Written off",
+      "returned": "Returned"
+    }
+  },
+  "schedule": {
+    "title": "Schedule of {number}",
+    "loadFailed": "Couldn't load the schedule",
+    "caption": "Installments of the contract",
+    "seq": "#",
+    "dueDate": "Due date",
+    "amount": "Amount",
+    "paid": "Paid",
+    "remaining": "Remaining",
+    "fees": "Fees",
+    "statusLabel": "Status",
+    "daysLate": "{count} days late",
+    "superseded": "Earlier schedule (version {version})",
+    "financed": "Financed",
+    "markup": "Markup",
+    "downPayment": "Down payment",
+    "frequency": "{count} installments, {frequency}",
+    "chargesTitle": "Late fees",
+    "chargeLine": "Installment {seq}, {date}: {amount}",
+    "chargeWaived": "{amount} waived",
+    "chargeDue": "{amount} due",
+    "status": {
+      "upcoming": "Upcoming",
+      "due": "Due today",
+      "partly_paid": "Partly paid",
+      "overdue": "Overdue",
+      "paid": "Paid",
+      "closed": "Closed",
+      "superseded": "Replaced"
+    },
+    "frequencyName": {
+      "monthly": "monthly",
+      "weekly": "weekly",
+      "daily": "daily"
+    }
+  },
+  "payments": {
+    "title": "Recent payments",
+    "empty": "No payments yet.",
+    "caption": "The customer's last payments",
+    "date": "Date",
+    "number": "Payment",
+    "method": "Method",
+    "amount": "Amount",
+    "for": "For",
+    "in": "Paid in",
+    "out": "Refund",
+    "methodName": {
+      "cash": "Cash",
+      "bank_transfer": "Bank transfer",
+      "store_credit": "Store credit"
+    },
+    "allocation": {
+      "sale": "Sale {number}",
+      "schedule_line": "Installment {number}",
+      "charge": "Late fee {number}",
+      "order": "Order deposit {number}",
+      "return": "Refund of {number}"
+    }
+  },
+  "returns": {
+    "title": "Recent returns",
+    "empty": "No returns.",
+    "caption": "The customer's last returns",
+    "kind": {
+      "return": "Return",
+      "void": "Void",
+      "exchange": "Exchange"
+    },
+    "refund": {
+      "cash": "Refunded in cash",
+      "bank_transfer": "Refunded by transfer",
+      "store_credit": "To store credit",
+      "contract_adjustment": "Off the contract"
+    },
+    "ofSale": "of sale {number}"
+  },
+  "purchases": {
+    "title": "Purchases",
+    "empty": "No purchases yet.",
+    "caption": "The customer's purchases",
+    "hidden": "Purchases are shown to users who sell or see reports.",
+    "loadFailed": "Couldn't load the purchases"
+  },
+  "documents": {
+    "title": "Documents",
+    "count": "{count} files",
+    "empty": "No documents.",
+    "loadFailed": "Couldn't load the documents",
+    "open": "Open",
+    "ofContract": "Contract {number}",
+    "ofCustomer": "Customer file",
+    "purpose": {
+      "customer_id": "ID card photo",
+      "contract_pdf": "Signed contract",
+      "promissory_note": "Promissory note",
+      "signature": "Signature",
+      "other": "Other file"
+    }
+  },
+  "statement": {
+    "open": "Statement",
+    "title": "Customer statement",
+    "back": "Back to the customer",
+    "loadFailed": "Couldn't load the statement",
+    "notFound": "Customer not found",
+    "notFoundHint": "It may belong to another shop or the link is wrong.",
+    "from": "From",
+    "to": "To",
+    "clearDates": "Whole history",
+    "rangeHint": "A statement covers at most three years. Every branch is included.",
+    "print": "Print",
+    "caption": "Statement rows with the running balance",
+    "opening": "Opening balance",
+    "closing": "Closing balance",
+    "empty": "Nothing in this period.",
+    "owes": "A positive balance is what the customer owes the shop.",
+    "printedOn": "Printed {date}",
+    "period": "Period: {from} to {to}",
+    "periodAll": "Period: the whole history up to {date}",
+    "start": "the first record",
+    "today": "today",
+    "totalDebit": "Total debit",
+    "totalCredit": "Total credit",
+    "columns": {
+      "date": "Date",
+      "type": "Type",
+      "number": "Document",
+      "detail": "Details",
+      "debit": "Debit",
+      "credit": "Credit",
+      "balance": "Balance"
+    },
+    "kind": {
+      "sale": "Sale",
+      "contract": "Installment contract",
+      "payment_in": "Payment",
+      "payment_out": "Refund",
+      "payment_reversal": "Payment reversal",
+      "return": "Return",
+      "fee": "Late fee",
+      "fee_waiver": "Fee waiver"
+    },
+    "ofSale": "for sale {number}"
+  },
+  "errors": {
+    "CONTRACT_NOT_FOUND": "This contract isn't the customer's.",
+    "VALIDATION_FAILED": "Pick a start date before the end date, at most three years apart."
+  }
+}

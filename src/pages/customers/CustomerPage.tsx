@@ -1,5 +1,5 @@
 import { useRef, useState, type ReactNode } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Uuid } from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
@@ -18,6 +18,7 @@ import { formatBusinessDate, formatDate, formatMoney, formatNumber } from '@/lib
 import { customerKeys, customersApi } from '@/services/customersApi';
 import { useAuthStore } from '@/store/authStore';
 import { t, type TranslationKey } from '@/i18n';
+import CustomerAccountTab from './CustomerAccountTab';
 import CustomerForm from './CustomerForm';
 import CustomerCreditCard from './CustomerCreditCard';
 import CustomerGuarantorsCard from './CustomerGuarantorsCard';
@@ -72,6 +73,11 @@ export default function CustomerPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  // R02: the account is a second tab; the choice lives in the URL so a link can open it.
+  const [search, setSearch] = useSearchParams();
+  const tab = search.get('tab') === 'account' ? 'account' : 'details';
+  const showTab = (next: 'details' | 'account') =>
+    setSearch(next === 'account' ? { tab: 'account' } : {}, { replace: true });
 
   const customer = useQuery({
     queryKey: customerKeys.one(orgId, id),
@@ -156,152 +162,197 @@ export default function CustomerPage() {
       {!data ? (
         <LoadingState />
       ) : (
-        <div className="space-y-4">
-          <Card
-            title={t('customers.sections.identity')}
-            actions={
-              <span className="flex flex-wrap gap-2">
-                {data.is_business && <Badge tone="brand">{t('customers.businessBadge')}</Badge>}
-                <Badge tone={STATUS_TONE[data.status]}>
-                  {t(`customers.status.${data.status}`)}
-                </Badge>
-              </span>
-            }
+        <>
+          <div
+            role="tablist"
+            aria-label={t('customerAccount.tabs.label')}
+            className="mb-4 flex gap-1 border-b border-line"
           >
-            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Detail label={t('customers.fields.nationalId')}>
-                {data.national_id_masked === null ? (
-                  none
-                ) : (
-                  <>
-                    <span dir="ltr" className="num">
-                      {data.national_id ?? data.national_id_masked}
-                    </span>
-                    {data.national_id === null && (
-                      <span className="type-caption block">{t('customers.profile.idHidden')}</span>
+            {(['details', 'account'] as const).map((key) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                id={`customer-tab-${key}`}
+                aria-selected={tab === key}
+                aria-controls={`customer-panel-${key}`}
+                className={
+                  tab === key
+                    ? '-mb-px border-b-2 border-brand-700 px-4 py-2 font-medium text-brand-700'
+                    : '-mb-px border-b-2 border-transparent px-4 py-2 text-ink-soft hover:text-ink'
+                }
+                onClick={() => showTab(key)}
+              >
+                {t(`customerAccount.tabs.${key}`)}
+              </button>
+            ))}
+          </div>
+          {tab === 'account' ? (
+            <div role="tabpanel" id="customer-panel-account" aria-labelledby="customer-tab-account">
+              <CustomerAccountTab customer={data} />
+            </div>
+          ) : (
+            <div
+              className="space-y-4"
+              role="tabpanel"
+              id="customer-panel-details"
+              aria-labelledby="customer-tab-details"
+            >
+              <Card
+                title={t('customers.sections.identity')}
+                actions={
+                  <span className="flex flex-wrap gap-2">
+                    {data.is_business && <Badge tone="brand">{t('customers.businessBadge')}</Badge>}
+                    <Badge tone={STATUS_TONE[data.status]}>
+                      {t(`customers.status.${data.status}`)}
+                    </Badge>
+                  </span>
+                }
+              >
+                <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <Detail label={t('customers.fields.nationalId')}>
+                    {data.national_id_masked === null ? (
+                      none
+                    ) : (
+                      <>
+                        <span dir="ltr" className="num">
+                          {data.national_id ?? data.national_id_masked}
+                        </span>
+                        {data.national_id === null && (
+                          <span className="type-caption block">
+                            {t('customers.profile.idHidden')}
+                          </span>
+                        )}
+                      </>
                     )}
-                  </>
-                )}
-              </Detail>
-              <Detail label={t('customers.fields.birthDate')}>
-                {data.birth_date ? formatBusinessDate(data.birth_date) : none}
-              </Detail>
-              <Detail label={t('customers.fields.age')}>
-                {data.birth_date
-                  ? t('customers.fields.ageYears', { count: formatNumber(ageOn(data.birth_date)) })
-                  : none}
-              </Detail>
-              <Detail label={t('customers.fields.gender')}>
-                {data.gender ? t(`customers.gender.${data.gender}`) : none}
-              </Detail>
-              {data.governorate_code && (
-                <Detail label={t('customers.fields.governorate')}>
-                  {governorateName(data.governorate_code)}
-                </Detail>
-              )}
-              {data.tax_registration_no && (
-                <Detail label={t('customers.fields.taxNo')}>
-                  <span dir="ltr">{data.tax_registration_no}</span>
-                </Detail>
-              )}
-              <Detail label={t('customers.profile.addedOn')}>{formatDate(data.created_at)}</Detail>
-            </dl>
-          </Card>
+                  </Detail>
+                  <Detail label={t('customers.fields.birthDate')}>
+                    {data.birth_date ? formatBusinessDate(data.birth_date) : none}
+                  </Detail>
+                  <Detail label={t('customers.fields.age')}>
+                    {data.birth_date
+                      ? t('customers.fields.ageYears', {
+                          count: formatNumber(ageOn(data.birth_date)),
+                        })
+                      : none}
+                  </Detail>
+                  <Detail label={t('customers.fields.gender')}>
+                    {data.gender ? t(`customers.gender.${data.gender}`) : none}
+                  </Detail>
+                  {data.governorate_code && (
+                    <Detail label={t('customers.fields.governorate')}>
+                      {governorateName(data.governorate_code)}
+                    </Detail>
+                  )}
+                  {data.tax_registration_no && (
+                    <Detail label={t('customers.fields.taxNo')}>
+                      <span dir="ltr">{data.tax_registration_no}</span>
+                    </Detail>
+                  )}
+                  <Detail label={t('customers.profile.addedOn')}>
+                    {formatDate(data.created_at)}
+                  </Detail>
+                </dl>
+              </Card>
 
-          <Card title={t('customers.sections.contact')}>
-            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {data.phones.map((phone, index) => (
-                <Detail
-                  key={phone}
-                  label={
-                    index === 0
-                      ? t('customers.fields.phoneMain')
-                      : t('customers.fields.phoneOther', { n: formatNumber(index + 1) })
-                  }
-                >
-                  <span dir="ltr">{phone}</span>
-                </Detail>
-              ))}
-              <Detail label={t('customers.fields.city')}>{text(data.city)}</Detail>
-              <Detail label={t('customers.fields.address')} wide>
-                {text(data.address)}
-              </Detail>
-            </dl>
-          </Card>
+              <Card title={t('customers.sections.contact')}>
+                <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {data.phones.map((phone, index) => (
+                    <Detail
+                      key={phone}
+                      label={
+                        index === 0
+                          ? t('customers.fields.phoneMain')
+                          : t('customers.fields.phoneOther', { n: formatNumber(index + 1) })
+                      }
+                    >
+                      <span dir="ltr">{phone}</span>
+                    </Detail>
+                  ))}
+                  <Detail label={t('customers.fields.city')}>{text(data.city)}</Detail>
+                  <Detail label={t('customers.fields.address')} wide>
+                    {text(data.address)}
+                  </Detail>
+                </dl>
+              </Card>
 
-          <Card title={t('customers.sections.work')}>
-            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Detail label={t('customers.fields.job')}>{text(data.job)}</Detail>
-              <Detail label={t('customers.fields.employer')}>{text(data.employer)}</Detail>
-              <Detail label={t('customers.fields.monthlyIncome')}>
-                {data.monthly_income === null ? (
-                  none
-                ) : (
-                  <span className="num">{formatMoney(data.monthly_income)}</span>
-                )}
-              </Detail>
-              {data.notes && (
-                <Detail label={t('customers.fields.notes')} wide>
-                  <span className="whitespace-pre-wrap">{data.notes}</span>
-                </Detail>
-              )}
-            </dl>
-          </Card>
+              <Card title={t('customers.sections.work')}>
+                <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <Detail label={t('customers.fields.job')}>{text(data.job)}</Detail>
+                  <Detail label={t('customers.fields.employer')}>{text(data.employer)}</Detail>
+                  <Detail label={t('customers.fields.monthlyIncome')}>
+                    {data.monthly_income === null ? (
+                      none
+                    ) : (
+                      <span className="num">{formatMoney(data.monthly_income)}</span>
+                    )}
+                  </Detail>
+                  {data.notes && (
+                    <Detail label={t('customers.fields.notes')} wide>
+                      <span className="whitespace-pre-wrap">{data.notes}</span>
+                    </Detail>
+                  )}
+                </dl>
+              </Card>
 
-          <CustomerCreditCard customer={data} />
+              <CustomerCreditCard customer={data} />
 
-          <CustomerGuarantorsCard customer={data} />
+              <CustomerGuarantorsCard customer={data} />
 
-          <Card
-            title={t('customers.profile.photos')}
-            description={t('customers.profile.photosHint')}
-            actions={
-              <Can permission="customer.create">
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp"
-                  className="sr-only"
-                  aria-label={t('customers.profile.uploadPhoto')}
-                  onChange={(e) => void upload(e.target.files?.[0])}
-                />
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={uploading}
-                  onClick={() => fileRef.current?.click()}
-                >
-                  {t('customers.profile.uploadPhoto')}
-                </Button>
-              </Can>
-            }
-          >
-            <p className="type-caption mb-3">
-              {t('customers.profile.photosCount', { count: formatNumber(data.id_photos_count) })}
-            </p>
-            {!canSeePii ? (
-              <p role="note">{t('customers.profile.photosHidden')}</p>
-            ) : photos.isPending ? (
-              <LoadingState />
-            ) : (photos.data ?? []).length === 0 ? (
-              <p>{t('customers.profile.photosEmpty')}</p>
-            ) : (
-              <ul className="divide-y divide-line">
-                {(photos.data ?? []).map((photo, index) => (
-                  <li key={photo.id} className="flex items-center justify-between gap-3 py-2">
-                    <span>
-                      {t('customers.profile.photoName', { n: formatNumber(index + 1) })}
-                      <span className="type-caption ms-2">{formatDate(photo.createdAt)}</span>
-                    </span>
-                    <Button size="sm" variant="ghost" onClick={() => void view(photo.id)}>
-                      {t('customers.profile.viewPhoto')}
+              <Card
+                title={t('customers.profile.photos')}
+                description={t('customers.profile.photosHint')}
+                actions={
+                  <Can permission="customer.create">
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="sr-only"
+                      aria-label={t('customers.profile.uploadPhoto')}
+                      onChange={(e) => void upload(e.target.files?.[0])}
+                    />
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      disabled={uploading}
+                      onClick={() => fileRef.current?.click()}
+                    >
+                      {t('customers.profile.uploadPhoto')}
                     </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
-        </div>
+                  </Can>
+                }
+              >
+                <p className="type-caption mb-3">
+                  {t('customers.profile.photosCount', {
+                    count: formatNumber(data.id_photos_count),
+                  })}
+                </p>
+                {!canSeePii ? (
+                  <p role="note">{t('customers.profile.photosHidden')}</p>
+                ) : photos.isPending ? (
+                  <LoadingState />
+                ) : (photos.data ?? []).length === 0 ? (
+                  <p>{t('customers.profile.photosEmpty')}</p>
+                ) : (
+                  <ul className="divide-y divide-line">
+                    {(photos.data ?? []).map((photo, index) => (
+                      <li key={photo.id} className="flex items-center justify-between gap-3 py-2">
+                        <span>
+                          {t('customers.profile.photoName', { n: formatNumber(index + 1) })}
+                          <span className="type-caption ms-2">{formatDate(photo.createdAt)}</span>
+                        </span>
+                        <Button size="sm" variant="ghost" onClick={() => void view(photo.id)}>
+                          {t('customers.profile.viewPhoto')}
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            </div>
+          )}
+        </>
       )}
       {data && canEdit && formOpen && (
         <CustomerForm

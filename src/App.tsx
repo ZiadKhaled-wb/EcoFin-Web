@@ -46,6 +46,7 @@ import UnitPage from '@/pages/inventory/UnitPage';
 import MovementsPage from '@/pages/inventory/MovementsPage';
 import CustomersPage from '@/pages/customers/CustomersPage';
 import CustomerPage from '@/pages/customers/CustomerPage';
+import CustomerStatementPage from '@/pages/customers/CustomerStatementPage';
 import GuarantorPage from '@/pages/customers/GuarantorPage';
 import CreditExceptionsPage from '@/pages/customers/CreditExceptionsPage';
 import SuppliersPage from '@/pages/suppliers/SuppliersPage';
@@ -237,6 +238,14 @@ export default function App() {
                     element={
                       <RequireNavItem item={CUSTOMERS_ITEM}>
                         <GuarantorPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/customers/:id/statement"
+                    element={
+                      <RequireNavItem item={CUSTOMERS_ITEM}>
+                        <CustomerStatementPage />
                       </RequireNavItem>
                     }
                   />
