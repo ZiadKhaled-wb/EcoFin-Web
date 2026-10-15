@@ -24,6 +24,7 @@
   "audit": "سجل التدقيق",
   "settings": "الإعدادات",
   "discountApprovals": "الموافقات المعلقة",
+  "creditExceptions": "الاستثناءات الائتمانية",
   "tax": "الضرائب",
   "etaReceipts": "إيصالات الضرائب (ETA)"
 }

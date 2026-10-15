@@ -47,6 +47,7 @@ import MovementsPage from '@/pages/inventory/MovementsPage';
 import CustomersPage from '@/pages/customers/CustomersPage';
 import CustomerPage from '@/pages/customers/CustomerPage';
 import GuarantorPage from '@/pages/customers/GuarantorPage';
+import CreditExceptionsPage from '@/pages/customers/CreditExceptionsPage';
 import SuppliersPage from '@/pages/suppliers/SuppliersPage';
 import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
 import VaultsPage from '@/pages/accounting/VaultsPage';
@@ -103,6 +104,7 @@ const REAL_ROUTES = new Set([
   '/inventory/movements',
   '/suppliers',
   '/customers',
+  '/customers/credit-exceptions',
   '/purchasing/invoices',
   '/purchasing/approvals',
   '/purchasing/returns',
@@ -219,6 +221,14 @@ export default function App() {
                     element={
                       <RequireNavItem item={CUSTOMERS_ITEM}>
                         <CustomersPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/customers/credit-exceptions"
+                    element={
+                      <RequireNavItem item={CUSTOMERS_ITEM}>
+                        <CreditExceptionsPage />
                       </RequireNavItem>
                     }
                   />

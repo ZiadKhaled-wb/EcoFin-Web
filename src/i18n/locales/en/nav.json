@@ -24,6 +24,7 @@
   "audit": "Audit log",
   "settings": "Settings",
   "discountApprovals": "Pending approvals",
+  "creditExceptions": "Credit exceptions",
   "tax": "Tax",
   "etaReceipts": "ETA receipts"
 }

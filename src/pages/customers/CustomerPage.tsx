@@ -19,6 +19,7 @@ import { customerKeys, customersApi } from '@/services/customersApi';
 import { useAuthStore } from '@/store/authStore';
 import { t, type TranslationKey } from '@/i18n';
 import CustomerForm from './CustomerForm';
+import CustomerCreditCard from './CustomerCreditCard';
 import CustomerGuarantorsCard from './CustomerGuarantorsCard';
 import CustomerStatusDialog from './CustomerStatusDialog';
 import { STATUS_TONE, ageOn, governorateName } from './customerShared';
@@ -246,6 +247,8 @@ export default function CustomerPage() {
               )}
             </dl>
           </Card>
+
+          <CustomerCreditCard customer={data} />
 
           <CustomerGuarantorsCard customer={data} />
 
