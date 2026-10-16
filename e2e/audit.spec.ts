@@ -12,7 +12,7 @@ const OWNER_NAME = process.env.E2E_OWNER_NAME ?? 'Owner One';
 const AR = {
   title: 'سجل التدقيق',
   action: 'الإجراء',
-  signedIn: 'تسجيل دخول',
+  signedIn: 'تسجيل الدخول', // audit.json actions.auth.login (renamed in PR 67)
   details: 'التفاصيل',
   detailTitle: 'تفاصيل القيد',
   forbidden: 'ليس لديك صلاحية لفتح هذه الصفحة',
