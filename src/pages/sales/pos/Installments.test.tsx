@@ -388,7 +388,7 @@ describe('N02 installment sale in the POS', () => {
     'uses an approved credit exception and sells with no down payment step at 0.00',
     { timeout: 20_000 },
     async () => {
-      preview.mockImplementation(async (body) => previewOf(body, false));
+      preview.mockImplementation(async (body: InstallmentPreviewBody) => previewOf(body, false));
       const user = await open();
       await user.click(await screen.findByRole('button', { name: 'Installments' }));
       await waitFor(() => expect(termsButton()).toBeEnabled());
