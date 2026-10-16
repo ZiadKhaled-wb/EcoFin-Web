@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   Uuid,
   compareMoney,
+  type Contract,
   type Product,
   type Sale,
   type SalePaymentInput,
@@ -19,11 +20,16 @@ import Notice from '@/components/ui/Notice';
 import Skeleton from '@/components/ui/Skeleton';
 import { ApiError } from '@/lib/api';
 import PrintReceipt from '@/features/receipts/PrintReceipt';
-import { formatMoney } from '@/lib/format';
+import { useCan } from '@/features/me/useCan';
+import { useSettings } from '@/features/settings/useSettings';
+import { shopProfileApi } from '@/services/shopProfileApi';
+import { formatBusinessDate, formatMoney, formatNumber } from '@/lib/format';
 import { shiftKeys, shiftsApi } from '@/services/shiftsApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
+import { installmentError } from '../installments/installmentShared';
 import PaymentDialog from './PaymentDialog';
+import InstallmentDialog, { type InstallmentPlan } from './pos/InstallmentDialog';
 import CartPane from './pos/CartPane';
 import CustomerPicker from './pos/CustomerPicker';
 import { HeldCartsDialog, HoldDialog, ShortcutsDialog } from './pos/HeldCarts';
@@ -36,7 +42,16 @@ import { POS_SHORTCUTS, inputIn, useEvent, usePosShortcuts } from './pos/usePosS
 import { saleError } from './saleShared';
 import { usePosCart } from './usePosCart';
 
-type OpenDialog = 'units' | 'customer' | 'hold' | 'held' | 'keys' | 'pay' | null;
+type OpenDialog =
+  'units' | 'customer' | 'hold' | 'held' | 'keys' | 'pay' | 'terms' | 'downPay' | null;
+export type SaleMode = 'cash' | 'installments';
+/** Refusals the payment dialog shows itself; any other refusal goes back to the terms. */
+const PAYMENT_CODES = new Set([
+  'PAYMENT_TOTAL_MISMATCH',
+  'INSUFFICIENT_STORE_CREDIT',
+  'VAULT_INVALID',
+  'CASH_ACCOUNT_INACTIVE',
+]);
 
 /**
  * S06 (D66): the cashier's screen. Products on one side (search, scanner, category chips, tiles),
@@ -88,6 +103,21 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
   const [revoked, setRevoked] = useState(false);
   const [approvalError, setApprovalError] = useState('');
   const [customersOn, setCustomersOn] = useState(true);
+  // N02 (D77): a sale on installments needs installment.create, the shop's switch and a policy.
+  const orgId = useAuthStore((s) => s.orgId);
+  const mayInstall = useCan('installment.create');
+  const profile = useQuery({
+    queryKey: ['shop-profile', orgId],
+    queryFn: shopProfileApi.get,
+    enabled: mayInstall,
+    staleTime: 60_000,
+  });
+  const policy = useSettings().data?.installment_policy ?? null;
+  const canInstall = mayInstall && customersOn && profile.data?.installments_enabled === true;
+  const [mode, setMode] = useState<SaleMode>('cash');
+  const installments = canInstall && mode === 'installments';
+  const [plan, setPlan] = useState<InstallmentPlan | null>(null);
+  const [planError, setPlanError] = useState('');
   const searchRef = useRef<HTMLDivElement>(null);
   const discountRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLElement>(null);
@@ -142,7 +172,50 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
   function openPay() {
     if (!canPay) return;
     setError('');
-    setDialog('pay');
+    if (!installments) {
+      setDialog('pay');
+      return;
+    }
+    if (!cart.customerId) {
+      setError(t('installments.pos.needCustomer'));
+      setDialog('customer');
+      return;
+    }
+    if (!policy) {
+      setError(t('installments.errors.policyNotSet'));
+      return;
+    }
+    setPlanError('');
+    setDialog('terms');
+  }
+  /** N02: the terms are agreed; the down payment is taken next (none for 0.00). */
+  function agree(next: InstallmentPlan) {
+    setPlan(next);
+    setPlanError('');
+    if (compareMoney(next.down_payment, '0.00') > 0) setDialog('downPay');
+    else void sellOnInstallments(next, undefined);
+  }
+  async function sellOnInstallments(
+    agreed: InstallmentPlan,
+    payments: SalePaymentInput[] | undefined,
+  ): Promise<unknown> {
+    const refused = await cart.confirmInstallment(agreed, payments);
+    if (!refused) {
+      setDialog(null);
+      return null;
+    }
+    if (refused instanceof ApiError && refused.code === 'DEVICE_REVOKED') {
+      setRevoked(true);
+      setDialog(null);
+      return null;
+    }
+    if (payments && refused instanceof ApiError && PAYMENT_CODES.has(refused.code)) {
+      return refused;
+    }
+    // Changed prices, policy or customer checks: back to the terms, which ask the server again.
+    setPlanError(installmentError(refused));
+    setDialog('terms');
+    return null;
   }
   /** Sells; an over-cap discount closes the payment and opens the approval panel instead. */
   async function pay(payments: SalePaymentInput[]): Promise<unknown> {
@@ -228,7 +301,9 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
   );
 
   if (revoked) return <Notice tone="error">{t('cash.shifts.revoked')}</Notice>;
-  if (cart.done) return <DoneCard sale={cart.done} onNew={cart.reset} />;
+  if (cart.done) {
+    return <DoneCard sale={cart.done} contract={cart.doneContract} onNew={cart.reset} />;
+  }
 
   const close = () => setDialog(null);
   return (
@@ -245,6 +320,8 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
         cart={cart}
         canPay={canPay}
         customersOn={customersOn}
+        mode={installments ? 'installments' : 'cash'}
+        {...(canInstall ? { onMode: setMode } : {})}
         heldCount={held.carts.length}
         error={error}
         approval={approval}
@@ -268,6 +345,29 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
           busy={cart.busy}
           onPay={pay}
           onClose={close}
+        />
+      )}
+      {dialog === 'terms' && quote && cart.customer && policy && (
+        <InstallmentDialog
+          cashPrice={quote.total}
+          customer={{ id: cart.customer.id, name: cart.customer.name }}
+          policy={policy}
+          initial={plan}
+          error={planError}
+          busy={cart.busy}
+          onContinue={agree}
+          onClose={close}
+        />
+      )}
+      {dialog === 'downPay' && plan && (
+        <PaymentDialog
+          purpose="downPayment"
+          total={plan.down_payment}
+          customerId={cart.customerId}
+          storeCreditBalance={quote?.store_credit_balance ?? null}
+          busy={cart.busy}
+          onPay={(payments) => sellOnInstallments(plan, payments)}
+          onClose={() => setDialog('terms')}
         />
       )}
       {dialog === 'units' && unitsFor && (
@@ -311,7 +411,16 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
 }
 
 /** After the sale: the number, what was paid and the change. Enter starts the next cart. */
-function DoneCard({ sale, onNew }: { sale: Sale; onNew: () => void }) {
+function DoneCard({
+  sale,
+  contract,
+  onNew,
+}: {
+  sale: Sale;
+  /** N02: the contract of an installment sale. */
+  contract: Contract | null;
+  onNew: () => void;
+}) {
   const actions = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const id = setTimeout(() => actions.current?.querySelector('button')?.focus(), 0);
@@ -337,13 +446,38 @@ function DoneCard({ sale, onNew }: { sale: Sale; onNew: () => void }) {
             {t('sales.pos.done.change', { amount: formatMoney(sale.change_total) })}
           </p>
         )}
+        {contract && (
+          <div
+            className="space-y-1 rounded-control border border-line p-3"
+            data-testid="done-contract"
+          >
+            <p className="type-label">
+              {t('installments.done.contract', { number: contract.number })}
+            </p>
+            <p className="type-body">
+              {t('installments.done.price', { amount: formatMoney(contract.total_payable) })}
+            </p>
+            <p className="type-body">
+              {t('installments.done.schedule', {
+                count: formatNumber(contract.installments_count),
+                first: formatBusinessDate(contract.first_due_date),
+                last: formatBusinessDate(contract.last_due_date ?? contract.first_due_date),
+              })}
+            </p>
+          </div>
+        )}
         <div ref={actions} className="flex flex-wrap gap-2">
           <Button onClick={onNew}>{t('sales.pos.done.newSale')}</Button>
           <Link to={`/sales/${sale.id}`} className="btn btn-secondary">
             {t('sales.pos.done.view')}
           </Link>
+          {contract && (
+            <Link to={`/contracts/${contract.id}`} className="btn btn-secondary">
+              {t('installments.done.view')}
+            </Link>
+          )}
           {/* S04 (D68): the first print is the original, every later one a copy. */}
-          <PrintReceipt sale={sale} original />
+          <PrintReceipt sale={sale} original {...(contract ? { contract } : {})} />
         </div>
       </div>
     </Card>

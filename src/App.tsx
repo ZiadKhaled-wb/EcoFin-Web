@@ -61,6 +61,7 @@ import PairDevicePage from '@/pages/settings/PairDevicePage';
 import ExpensesPage from '@/pages/accounting/ExpensesPage';
 import PosPage from '@/pages/sales/PosPage';
 import SalePage from '@/pages/sales/SalePage';
+import ContractPage from '@/pages/installments/ContractPage';
 import ShiftPage from '@/pages/accounting/ShiftPage';
 import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
@@ -277,6 +278,14 @@ export default function App() {
                     element={
                       <RequireNavItem item={CUSTOMERS_ITEM}>
                         <CustomerStatementPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/contracts/:id"
+                    element={
+                      <RequireNavItem item={CUSTOMERS_ITEM}>
+                        <ContractPage />
                       </RequireNavItem>
                     }
                   />

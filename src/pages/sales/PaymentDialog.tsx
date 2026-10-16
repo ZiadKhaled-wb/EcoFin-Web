@@ -83,12 +83,16 @@ function toPayments(lines: readonly PayLine[]): SalePaymentInput[] | null {
  * S02: how the sale is paid. The first line is cash for the whole total; the cashier changes the
  * amounts, adds a bank transfer (account and reference) or the customer's store credit, and Pay
  * opens only when what is paid equals the total. The server checks everything again.
+ *
+ * N02 (D77): `purpose="downPayment"` pays the down payment of an installment sale: `total` is the
+ * down payment, and only the titles change.
  */
 export default function PaymentDialog({
   total,
   customerId,
   storeCreditBalance,
   busy,
+  purpose = 'sale',
   onPay,
   onClose,
 }: {
@@ -96,6 +100,7 @@ export default function PaymentDialog({
   customerId: string | null;
   storeCreditBalance: Money | null;
   busy: boolean;
+  purpose?: 'sale' | 'downPayment';
   /** Sells with these lines; answers the error of a refused sale, or null. */
   onPay: (payments: SalePaymentInput[]) => Promise<unknown>;
   onClose: () => void;
@@ -153,8 +158,10 @@ export default function PaymentDialog({
     <Dialog
       open
       onOpenChange={(v) => !v && !busy && onClose()}
-      title={t('sales.pay.title')}
-      description={t('sales.pay.description')}
+      title={purpose === 'downPayment' ? t('installments.pay.title') : t('sales.pay.title')}
+      description={
+        purpose === 'downPayment' ? t('installments.pay.description') : t('sales.pay.description')
+      }
       className="max-w-3xl!"
       footer={
         <>
@@ -175,7 +182,9 @@ export default function PaymentDialog({
       <div className="space-y-4" onKeyDown={onKeyDown}>
         <dl className="grid grid-cols-3 gap-3" aria-live="polite">
           <div>
-            <dt className="type-caption">{t('sales.pay.total')}</dt>
+            <dt className="type-caption">
+              {purpose === 'downPayment' ? t('installments.pay.total') : t('sales.pay.total')}
+            </dt>
             <dd className="num type-section-title" data-testid="pay-total">
               {formatMoney(total)}
             </dd>

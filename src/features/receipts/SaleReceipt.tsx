@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { compareMoney, type Sale } from '@ziadkhaled-wb/contracts';
+import { compareMoney, type Contract, type Sale } from '@ziadkhaled-wb/contracts';
 import { directionOf, t, type Language, type TranslationKey } from '@/i18n';
 import { formatBusinessDate, formatDateTime, formatMoney, formatNumber } from '@/lib/format';
 import QrCode from './QrCode';
@@ -17,6 +17,21 @@ export type SaleReceiptProps = {
   lang: Language;
   paper: ReceiptPaper;
   copy: boolean;
+  /**
+   * N02 (D77): the contract of an installment sale, printed as a short block (the contract itself
+   * is printed by N07). Words: profit and installment price, never interest.
+   */
+  contract?: Pick<
+    Contract,
+    | 'number'
+    | 'down_payment'
+    | 'financed_amount'
+    | 'total_payable'
+    | 'installments_count'
+    | 'first_due_date'
+    | 'last_due_date'
+    | 'lines'
+  >;
   onLogoSettled?: () => void;
 };
 
@@ -36,7 +51,7 @@ function Ltr({ children, mono }: { children: ReactNode; mono?: boolean }) {
  * of the sale answer, only formatted: nothing is added up or rounded here.
  */
 export default function SaleReceipt(props: SaleReceiptProps) {
-  const { sale, shop, branchName, logoUrl, lang, paper, copy, onLogoSettled } = props;
+  const { sale, shop, branchName, logoUrl, lang, paper, copy, contract, onLogoSettled } = props;
   const tr: Tr = (key, params) => t(key, params, lang);
   const money = (v: string) => formatMoney(v, lang);
   const show = shop.receipt_fields;
@@ -147,6 +162,40 @@ export default function SaleReceipt(props: SaleReceiptProps) {
         {tr(sale.prices_include_vat ? 'receipts.doc.vatIncluded' : 'receipts.doc.vatAdded')}
       </div>
     </>
+  );
+  const installmentBlock = contract && (
+    <div className="r-line" data-part="installment">
+      <div className="r-bold">{tr('receipts.doc.installment.title')}</div>
+      <div className="r-row">
+        <span>{tr('receipts.doc.installment.contract')}</span>
+        <Ltr>{contract.number}</Ltr>
+      </div>
+      <div className="r-row">
+        <span>{tr('receipts.doc.installment.downPayment')}</span>
+        <span>{money(contract.down_payment)}</span>
+      </div>
+      <div className="r-row">
+        <span>{tr('receipts.doc.installment.price')}</span>
+        <span data-amount="total_payable">{money(contract.total_payable)}</span>
+      </div>
+      <div className="r-row">
+        <span>{tr('receipts.doc.installment.count')}</span>
+        <span>
+          <Ltr>
+            {formatNumber(contract.installments_count, lang)} ×{' '}
+            {money(contract.lines[0]?.amount ?? '0')}
+          </Ltr>
+        </span>
+      </div>
+      <div className="r-row r-small">
+        <span>{tr('receipts.doc.installment.dates')}</span>
+        <span>
+          {formatBusinessDate(contract.first_due_date, lang)} –{' '}
+          {formatBusinessDate(contract.last_due_date ?? contract.first_due_date, lang)}
+        </span>
+      </div>
+      <div className="r-small">{tr('receipts.doc.installment.note')}</div>
+    </div>
   );
   const changeRow = above0(sale.change_total) && (
     <div className="r-row r-bold">
@@ -266,6 +315,7 @@ export default function SaleReceipt(props: SaleReceiptProps) {
           </tbody>
         </table>
         <div className="r-totals">{changeRow}</div>
+        {installmentBlock}
         {etaBlock}
         {footer}
       </article>
@@ -330,6 +380,8 @@ export default function SaleReceipt(props: SaleReceiptProps) {
         </div>
       ))}
       {changeRow}
+      {installmentBlock && <div className="r-rule" />}
+      {installmentBlock}
       {etaBlock && <div className="r-rule" />}
       {etaBlock}
       {footer && <div className="r-rule" />}

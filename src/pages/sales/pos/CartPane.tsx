@@ -45,6 +45,8 @@ export default function CartPane({
   cart,
   canPay,
   customersOn,
+  mode = 'cash',
+  onMode,
   heldCount,
   error,
   approval,
@@ -63,6 +65,9 @@ export default function CartPane({
   canPay: boolean;
   /** False once the server said the plan has no customers. */
   customersOn: boolean;
+  /** N02: a cash sale or a sale on installments; the switch shows only with `onMode`. */
+  mode?: 'cash' | 'installments';
+  onMode?: (mode: 'cash' | 'installments') => void;
   heldCount: number;
   error: string;
   approval: CartApproval;
@@ -105,9 +110,27 @@ export default function CartPane({
     <section className="flex min-h-0 flex-col rounded-panel border border-line bg-surface">
       <header className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
         <h2 className="type-section-title">{t('sales.pos.cart')}</h2>
-        <Button size="sm" variant="ghost" onClick={onHelp}>
-          {t('sales.pos.keys.title')}
-        </Button>
+        <span className="flex items-center gap-2">
+          {onMode && (
+            <span role="group" aria-label={t('installments.pos.mode')} className="flex gap-1">
+              {(['cash', 'installments'] as const).map((m) => (
+                <Button
+                  key={m}
+                  size="sm"
+                  variant={mode === m ? 'primary' : 'secondary'}
+                  aria-pressed={mode === m}
+                  disabled={cart.busy}
+                  onClick={() => onMode(m)}
+                >
+                  {t(`installments.pos.${m}`)}
+                </Button>
+              ))}
+            </span>
+          )}
+          <Button size="sm" variant="ghost" onClick={onHelp}>
+            {t('sales.pos.keys.title')}
+          </Button>
+        </span>
       </header>
       {customersOn && (
         <CustomerRow cart={cart} onCustomer={onCustomer} onModuleMissing={onModuleMissing} />
@@ -236,7 +259,7 @@ export default function CartPane({
             aria-keyshortcuts={POS_SHORTCUTS.pay}
             onClick={onPay}
           >
-            {t('sales.pos.confirm')}
+            {mode === 'installments' ? t('installments.pos.terms') : t('sales.pos.confirm')}
             <Key k={POS_SHORTCUTS.pay} />
           </Button>
         </div>

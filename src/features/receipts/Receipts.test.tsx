@@ -316,6 +316,48 @@ describe('S04 sale receipt (paper)', () => {
   });
 });
 
+describe('N02 installment block on the receipt', () => {
+  const contract: NonNullable<SaleReceiptProps['contract']> = {
+    number: 'MAIN-CT-26-000001',
+    down_payment: '1200.00',
+    financed_amount: '10800.00',
+    total_payable: '12960.00',
+    installments_count: 12,
+    first_due_date: '2026-11-16',
+    last_due_date: '2027-10-16',
+    lines: [
+      {
+        seq: 1,
+        due_date: '2026-11-16',
+        principal: '900.00',
+        profit: '180.00',
+        amount: '1080.00',
+        paid: '0.00',
+        remaining: '1080.00',
+        status: 'upcoming',
+      },
+    ],
+  };
+  it.each(['thermal', 'a4'] as const)(
+    '%s prints the contract number, down payment and installments',
+    (paper) => {
+      const root = paperOf({ paper, contract });
+      const block = root.querySelector<HTMLElement>('[data-part="installment"]')!;
+      expect(block).toHaveTextContent('MAIN-CT-26-000001');
+      expect(block).toHaveTextContent(formatMoney('1200.00', 'en'));
+      expect(block.querySelector('[data-amount="total_payable"]')).toHaveTextContent(
+        formatMoney('12960.00', 'en'),
+      );
+      expect(block).toHaveTextContent(formatMoney('1080.00', 'en'));
+      expect(block).toHaveTextContent(t('receipts.doc.installment.note', {}, 'en'));
+      expect(block).not.toHaveTextContent(/interest/i);
+    },
+  );
+  it('a cash sale has no installment block', () => {
+    expect(paperOf().querySelector('[data-part="installment"]')).toBeNull();
+  });
+});
+
 describe('S04 QR code', () => {
   it('encodes a known text as a version 1 symbol with its fixed patterns', () => {
     const m = qrMatrix('HELLO')!;

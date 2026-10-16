@@ -1,0 +1,129 @@
+{
+  "frequency": {
+    "monthly": "Monthly",
+    "weekly": "Weekly",
+    "daily": "Daily"
+  },
+  "pos": {
+    "mode": "Sale type",
+    "cash": "Cash",
+    "installments": "Installments",
+    "terms": "Installment terms",
+    "needCustomer": "Choose the customer first: an installment sale needs one."
+  },
+  "dialog": {
+    "title": "Installment sale",
+    "description": "Agree on the terms with the customer. The installment price is fixed today and never grows.",
+    "cancel": "Back to the cart",
+    "toDownPayment": "Next: down payment",
+    "confirm": "Confirm the sale",
+    "checking": "Checking with the server…"
+  },
+  "fields": {
+    "downPayment": "Down payment",
+    "downAtLeast": "At least {amount}",
+    "count": "Number of installments",
+    "maxMonths": "Up to {months} months",
+    "frequency": "Frequency",
+    "firstDue": "First due date (optional)"
+  },
+  "terms": {
+    "cashPrice": "Cash price",
+    "downPayment": "Down payment",
+    "financed": "Financed amount",
+    "profit": "Profit",
+    "installmentPrice": "Installment price",
+    "installment": "Installments",
+    "countTimes": "{count} × {amount}",
+    "firstDue": "First due date",
+    "lastDue": "Last due date"
+  },
+  "violations": {
+    "frequency_not_allowed": "This frequency isn't allowed. Allowed: {allowed}.",
+    "sale_below_minimum": "Installment sales start at {amount}.",
+    "down_payment_too_high": "The down payment can be at most {amount}.",
+    "down_payment_too_low": "The down payment must be at least {amount}.",
+    "down_payment_none": "No down payment below the cash price meets the policy for these terms.",
+    "too_many_months": "Too long: {months} months; the most is {max} months.",
+    "installment_below_minimum": "Each installment must be at least {amount}.",
+    "rounding": "Too many installments for the rounding step of {step}.",
+    "first_due_date_out_of_range": "The first due date must be between {earliest} and {latest}."
+  },
+  "checks": {
+    "title": "Customer checks",
+    "creditOk": "Credit: OK",
+    "creditApproved": "Credit: an approved exception covers it",
+    "creditPending": "Credit: exception waiting for a manager",
+    "creditNo": "Credit: over the limit",
+    "available": "Available credit: {amount}",
+    "askException": "Ask for an exception",
+    "refresh": "Check again",
+    "guarantorsNone": "No guarantor needed",
+    "guarantorsNeeded": "Guarantors: {picked} of {count} chosen",
+    "addGuarantor": "Add a guarantor",
+    "surveyNone": "No field survey needed",
+    "surveyOk": "Field survey: approved",
+    "surveyOpen": "Field survey: in progress",
+    "surveyMissing": "Field survey: needed"
+  },
+  "schedule": {
+    "title": "Schedule ({count} installments)",
+    "caption": "Installment schedule",
+    "seq": "#",
+    "due": "Due date",
+    "amount": "Amount",
+    "principal": "Principal",
+    "profit": "Profit"
+  },
+  "pay": {
+    "title": "Down payment",
+    "description": "Take the down payment. The rest is paid by the installments.",
+    "total": "Down payment"
+  },
+  "done": {
+    "contract": "Installment contract {number}",
+    "price": "Installment price: {amount}",
+    "schedule": "{count} installments, from {first} to {last}",
+    "view": "View contract"
+  },
+  "contract": {
+    "title": "Contract {number}",
+    "notFound": "Contract not found",
+    "notFoundHint": "It may belong to another branch, or the link is wrong.",
+    "loadFailed": "The contract could not be loaded.",
+    "toCustomer": "Customer",
+    "status": "Status",
+    "customer": "Customer",
+    "sale": "Sale",
+    "issued": "Issued",
+    "terms": "Terms",
+    "countOf": "{count} × {frequency}",
+    "policy": "Installment policy version {version}",
+    "balance": "Balance",
+    "paid": "Paid",
+    "remaining": "Remaining",
+    "overdue": "Overdue",
+    "guarantors": "Guarantors",
+    "noGuarantors": "No guarantors."
+  },
+  "errors": {
+    "nationalIdRequired": "This customer has no national ID. Add it on the customer's page before selling on installments.",
+    "customerBlocked": "This customer is blocked and can't buy on installments.",
+    "markupVat": "The shop's VAT setting taxes the profit; installment sales wait for the accountant's answer.",
+    "policyNotSet": "The shop has no installment policy yet.",
+    "disabled": "Installment sales are switched off for this shop.",
+    "creditLimit": "The customer is over the credit limit: ask for an exception.",
+    "creditScore": "The customer's credit score is too low: ask for an exception.",
+    "creditWatch": "The customer is on watch: ask for an exception.",
+    "approvalInvalid": "The credit exception can't be used (used, expired or too small).",
+    "guarantorRequired": "Choose the guarantors this sale needs.",
+    "guarantorNotLinked": "A chosen guarantor isn't linked to this customer.",
+    "guarantorArchived": "A chosen guarantor is archived.",
+    "surveyRequired": "This sale needs an approved field survey of the customer.",
+    "contractNotFound": "Contract not found.",
+    "keyUsed": "This sale was already sent. Start a new cart.",
+    "policyChanged": "The installment policy changed (version {version}). Check the new terms.",
+    "policyChangedPlain": "The installment policy changed. Check the new terms.",
+    "termsInvalid": "These terms break the shop's installment policy."
+  }
+}

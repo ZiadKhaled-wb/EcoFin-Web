@@ -12,7 +12,7 @@ import { salesHistoryApi } from '@/services/salesHistoryApi';
 import { settingsApi } from '@/services/settingsApi';
 import { useAuthStore } from '@/store/authStore';
 import { t, type Language } from '@/i18n';
-import SaleReceipt from './SaleReceipt';
+import SaleReceipt, { type SaleReceiptProps } from './SaleReceipt';
 import { ETA_POLL, PRINT_LOG_WAIT_MS, etaOnReceipt, type ReceiptSale } from './receiptRules';
 import {
   readReceiptPrefs,
@@ -32,13 +32,15 @@ type Props = {
    * sale's own `receipt_prints` says so. The server has the last word when Print is pressed.
    */
   original?: boolean;
+  /** N02: the contract of an installment sale just made (the done card). */
+  contract?: SaleReceiptProps['contract'];
 };
 
 /**
  * S04 (D68): the Print receipt button with its dialog. Ctrl+P opens the dialog (and prints once
  * it is open) instead of the browser printing the screen.
  */
-export default function PrintReceipt({ sale, original = false }: Props) {
+export default function PrintReceipt({ sale, original = false, contract }: Props) {
   const [open, setOpen] = useState(false);
   /** Prints of this sale so far, as far as this screen knows; null = unknown (treated as a copy). */
   const [prints, setPrints] = useState<number | null>(original ? 0 : (sale.receipt_prints ?? null));
@@ -79,6 +81,7 @@ export default function PrintReceipt({ sale, original = false }: Props) {
       {open && (
         <PrintDialog
           sale={current}
+          {...(contract ? { contract } : {})}
           copy={prints === null || prints > 0}
           printNowRef={printNowRef}
           onEta={setEta}
@@ -92,6 +95,7 @@ export default function PrintReceipt({ sale, original = false }: Props) {
 
 function PrintDialog({
   sale,
+  contract,
   copy,
   printNowRef,
   onEta,
@@ -99,6 +103,7 @@ function PrintDialog({
   onClose,
 }: {
   sale: ReceiptSale;
+  contract?: SaleReceiptProps['contract'];
   copy: boolean;
   printNowRef: RefObject<(() => void) | null>;
   onEta: (eta: ReceiptSale['eta']) => void;
@@ -222,6 +227,7 @@ function PrintDialog({
   const receipt = shop && (
     <SaleReceipt
       sale={sale}
+      {...(contract ? { contract } : {})}
       shop={shop}
       branchName={branchName}
       logoUrl={logo.data?.url ?? null}

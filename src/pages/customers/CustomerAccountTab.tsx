@@ -225,7 +225,13 @@ function ContractsCard({
             {account.contracts.map((c) => (
               <tr key={c.id} className="border-b border-line hover:bg-paper">
                 <td className={td}>
-                  <span dir="ltr">{c.number}</span>
+                  <Link
+                    to={`/contracts/${c.id}`}
+                    className="text-brand-700 hover:underline"
+                    dir="ltr"
+                  >
+                    {c.number}
+                  </Link>
                   {c.is_migrated && (
                     <span className="type-caption block">
                       {t('customerAccount.contracts.migrated')}
