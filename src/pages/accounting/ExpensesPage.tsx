@@ -136,6 +136,7 @@ export default function ExpensesPage() {
     {
       id: 'note',
       header: t('cash.expenses.columns.note'),
+      meta: { wrap: true },
       cell: ({ row }) => <span dir="auto">{row.original.note ?? ''}</span>,
     },
     {

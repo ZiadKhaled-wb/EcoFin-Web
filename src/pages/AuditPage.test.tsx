@@ -97,8 +97,8 @@ describe('AuditPage', () => {
     await renderApp(routes, { lang, route: '/audit' });
     expect(await screen.findByRole('heading', { name: t('audit.title') })).toBeInTheDocument();
     const tbl = await table();
-    expect(await within(tbl).findByText(t('audit.actions.auth_login'))).toBeInTheDocument();
-    expect(within(tbl).getByText(t('audit.actions.employee_permission_set'))).toBeInTheDocument();
+    expect(await within(tbl).findByText(t('audit.actions.auth.login'))).toBeInTheDocument();
+    expect(within(tbl).getByText(t('audit.actions.employee.permission_set'))).toBeInTheDocument();
     expect(
       screen.getAllByRole('button', { name: t('audit.filterByPerson', { name: 'Owner One' }) }),
     ).toHaveLength(2);
@@ -107,19 +107,20 @@ describe('AuditPage', () => {
     expect(lastQuery()).toEqual({ page: 1, pageSize: 25 });
   });
 
-  it('an unknown action shows its raw key; a platform action shows "System"', async () => {
+  it('an unknown action reads as words, not as a code; a platform action shows "System"', async () => {
     vi.mocked(auditApi.search).mockResolvedValue(
       page([row({ action: 'sale.create', employeeId: null, actorName: null })]),
     );
     await renderApp(routes, { lang: 'en', route: '/audit' });
-    expect(await screen.findByText('sale.create')).toBeInTheDocument();
+    expect(await screen.findByText('sale · create')).toBeInTheDocument();
+    expect(screen.queryByText('sale.create')).toBeNull();
     expect(screen.getByText(t('audit.system'))).toBeInTheDocument();
   });
 
   it('filters change the request and go back to page 1', async () => {
     const user = userEvent.setup();
     await renderApp(routes, { lang: 'en', route: '/audit?page=2' });
-    await within(await table()).findByText(t('audit.actions.auth_login'));
+    await within(await table()).findByText(t('audit.actions.auth.login'));
     expect(lastQuery()).toMatchObject({ page: 2 });
 
     await user.selectOptions(screen.getByLabelText(t('audit.filters.action')), 'auth.login');
@@ -137,7 +138,7 @@ describe('AuditPage', () => {
       }),
     );
 
-    await user.type(screen.getByLabelText(t('audit.filters.from')), '2026-10-01');
+    await user.type(screen.getByLabelText(t('audit.filters.from')), '01102026');
     await waitFor(() =>
       expect(lastQuery()?.from).toBe(new Date('2026-10-01T00:00:00').toISOString()),
     );
@@ -166,7 +167,7 @@ describe('AuditPage', () => {
     const user = userEvent.setup();
     vi.mocked(auditApi.search).mockResolvedValue(page([row()], { total: 60 }));
     await renderApp(routes, { lang: 'en', route: '/audit' });
-    await within(await table()).findByText(t('audit.actions.auth_login'));
+    await within(await table()).findByText(t('audit.actions.auth.login'));
     expect(screen.getByRole('navigation', { name: t('table.pagination') })).toHaveTextContent(
       t('table.pageOf', { page: '1', pages: '3' }),
     );
@@ -178,7 +179,7 @@ describe('AuditPage', () => {
     const user = userEvent.setup();
     await renderApp(routes, { lang: 'en', route: '/audit' });
     const tbl = await table();
-    await within(tbl).findByText(t('audit.actions.employee_permission_set'));
+    await within(tbl).findByText(t('audit.actions.employee.permission_set'));
     const buttons = within(tbl).getAllByRole('button', { name: t('audit.openDetails') });
     await user.click(buttons[1]!);
     const drawer = await screen.findByRole('dialog', { name: t('audit.detail.title') });

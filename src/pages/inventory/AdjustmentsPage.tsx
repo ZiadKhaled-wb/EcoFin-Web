@@ -123,6 +123,7 @@ export default function AdjustmentsPage() {
     {
       id: 'note',
       header: t('stock.adjustments.columns.note'),
+      meta: { wrap: true },
       cell: ({ row }) => (
         <span dir="auto">
           {row.original.count_number

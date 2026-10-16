@@ -95,29 +95,31 @@ export default function MinLevelsDialog({
         <p className="type-body">{t('stock.minLevels.noBranches')}</p>
       ) : (
         // A plain table: the inputs keep their focus while the drafts change.
-        <table className="w-full text-start">
-          <caption className="sr-only">{t('stock.minLevels.title', { name })}</caption>
-          <thead>
-            <tr className="type-label border-b border-line">
-              <th className="py-2 text-start">{t('stock.minLevels.branch')}</th>
-              <th className="py-2 text-end">{t('stock.minLevels.inUse')}</th>
-              <th className="py-2 ps-4 text-start">{t('stock.minLevels.own')}</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {levels.data.branches.map((b) => (
-              <LevelRow
-                key={b.branch_id}
-                level={b}
-                branch={branchName.get(b.branch_id) ?? ''}
-                draft={drafts[b.branch_id]}
-                busy={saving === b.branch_id}
-                onDraft={(v) => setDrafts((d) => ({ ...d, [b.branch_id]: v }))}
-                onSave={(v) => void save(b.branch_id, v)}
-              />
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full text-start">
+            <caption className="sr-only">{t('stock.minLevels.title', { name })}</caption>
+            <thead>
+              <tr className="type-label border-b border-line">
+                <th className="py-2 text-start">{t('stock.minLevels.branch')}</th>
+                <th className="py-2 text-end">{t('stock.minLevels.inUse')}</th>
+                <th className="py-2 ps-4 text-start">{t('stock.minLevels.own')}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {levels.data.branches.map((b) => (
+                <LevelRow
+                  key={b.branch_id}
+                  level={b}
+                  branch={branchName.get(b.branch_id) ?? ''}
+                  draft={drafts[b.branch_id]}
+                  busy={saving === b.branch_id}
+                  onDraft={(v) => setDrafts((d) => ({ ...d, [b.branch_id]: v }))}
+                  onSave={(v) => void save(b.branch_id, v)}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </Dialog>
   );

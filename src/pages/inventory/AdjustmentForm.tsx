@@ -267,89 +267,91 @@ export default function AdjustmentForm({
           {lines.length === 0 ? (
             <p className="type-caption">{t('stock.adjustments.form.noLines')}</p>
           ) : (
-            <table className="w-full text-start">
-              <caption className="sr-only">{t('stock.adjustments.form.lines')}</caption>
-              <thead>
-                <tr>
-                  <th className="type-label py-2 text-start">
-                    {t('stock.adjustments.form.product')}
-                  </th>
-                  <th className="type-label py-2 text-start">
-                    {t('stock.adjustments.form.direction')}
-                  </th>
-                  <th className="type-label py-2 text-start">
-                    {t('stock.adjustments.form.quantity')}
-                  </th>
-                  <th className="sr-only">{t('stock.adjustments.form.remove')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lines.map((line) => (
-                  <tr key={line.key} className="border-t border-line align-top">
-                    <td className="py-2">
-                      <span className="block">{productName(line.product)}</span>
-                      <span className="type-caption block" dir="ltr">
-                        {line.unit ? line.unit.serial : line.product.sku}
-                      </span>
-                    </td>
-                    <td className="w-48 py-2 [&_.field-label]:sr-only">
-                      {fixed || line.unit ? (
-                        t(
-                          line.direction === 'in'
-                            ? 'stock.adjustments.form.add_in'
-                            : 'stock.adjustments.form.remove_out',
-                        )
-                      ) : (
-                        <Select
-                          label={t('stock.adjustments.form.direction')}
-                          value={line.direction}
-                          options={[
-                            { value: 'out', label: t('stock.adjustments.form.remove_out') },
-                            { value: 'in', label: t('stock.adjustments.form.add_in') },
-                          ]}
-                          onChange={(e) =>
-                            setLines((list) =>
-                              list.map((l) =>
-                                l.key === line.key
-                                  ? { ...l, direction: e.target.value as Direction }
-                                  : l,
-                              ),
-                            )
-                          }
-                        />
-                      )}
-                    </td>
-                    <td className="w-32 py-2 [&_.field-label]:sr-only">
-                      {line.unit ? (
-                        '1'
-                      ) : (
-                        <NumberInput
-                          label={t('stock.adjustments.form.quantity')}
-                          value={line.quantity}
-                          decimals={0}
-                          maxLength={7}
-                          onValueChange={(quantity) =>
-                            setLines((list) =>
-                              list.map((l) => (l.key === line.key ? { ...l, quantity } : l)),
-                            )
-                          }
-                        />
-                      )}
-                    </td>
-                    <td className="py-2 text-end">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setLines((list) => list.filter((l) => l.key !== line.key))}
-                      >
-                        {t('stock.adjustments.form.remove')}
-                      </Button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-start">
+                <caption className="sr-only">{t('stock.adjustments.form.lines')}</caption>
+                <thead>
+                  <tr>
+                    <th className="type-label py-2 text-start">
+                      {t('stock.adjustments.form.product')}
+                    </th>
+                    <th className="type-label py-2 text-start">
+                      {t('stock.adjustments.form.direction')}
+                    </th>
+                    <th className="type-label py-2 text-start">
+                      {t('stock.adjustments.form.quantity')}
+                    </th>
+                    <th className="sr-only">{t('stock.adjustments.form.remove')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {lines.map((line) => (
+                    <tr key={line.key} className="border-t border-line align-top">
+                      <td className="py-2">
+                        <span className="block">{productName(line.product)}</span>
+                        <span className="type-caption block" dir="ltr">
+                          {line.unit ? line.unit.serial : line.product.sku}
+                        </span>
+                      </td>
+                      <td className="w-48 py-2 [&_.field-label]:sr-only">
+                        {fixed || line.unit ? (
+                          t(
+                            line.direction === 'in'
+                              ? 'stock.adjustments.form.add_in'
+                              : 'stock.adjustments.form.remove_out',
+                          )
+                        ) : (
+                          <Select
+                            label={t('stock.adjustments.form.direction')}
+                            value={line.direction}
+                            options={[
+                              { value: 'out', label: t('stock.adjustments.form.remove_out') },
+                              { value: 'in', label: t('stock.adjustments.form.add_in') },
+                            ]}
+                            onChange={(e) =>
+                              setLines((list) =>
+                                list.map((l) =>
+                                  l.key === line.key
+                                    ? { ...l, direction: e.target.value as Direction }
+                                    : l,
+                                ),
+                              )
+                            }
+                          />
+                        )}
+                      </td>
+                      <td className="w-32 py-2 [&_.field-label]:sr-only">
+                        {line.unit ? (
+                          '1'
+                        ) : (
+                          <NumberInput
+                            label={t('stock.adjustments.form.quantity')}
+                            value={line.quantity}
+                            decimals={0}
+                            maxLength={7}
+                            onValueChange={(quantity) =>
+                              setLines((list) =>
+                                list.map((l) => (l.key === line.key ? { ...l, quantity } : l)),
+                              )
+                            }
+                          />
+                        )}
+                      </td>
+                      <td className="py-2 text-end">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setLines((list) => list.filter((l) => l.key !== line.key))}
+                        >
+                          {t('stock.adjustments.form.remove')}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 

@@ -196,7 +196,10 @@ describe('U01 supplier statement page', () => {
     });
     await rows();
     expect(api).toHaveBeenCalledWith(SUPPLIER_ID, { from: '2026-09-01', to: '2026-09-30' });
-    expect(screen.getByLabelText(t('suppliers.statement.from'))).toHaveValue('2026-09-01');
+    // The date shows as day / month / year boxes (DateInput); the labelled box is the day.
+    const from = screen.getByLabelText(t('suppliers.statement.from'));
+    const parts = within(from.closest<HTMLElement>('[role="group"]')!).getAllByRole('textbox');
+    expect(parts.map((p) => (p as HTMLInputElement).value)).toEqual(['01', '09', '2026']);
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: t('suppliers.statement.clearDates') }));
     await waitFor(() => expect(api).toHaveBeenLastCalledWith(SUPPLIER_ID, {}));

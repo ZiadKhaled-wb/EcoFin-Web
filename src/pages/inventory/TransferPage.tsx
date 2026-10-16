@@ -350,85 +350,87 @@ function ReceiveDialog({
         </>
       }
     >
-      <table className="w-full text-start">
-        <caption className="sr-only">
-          {t('stock.transfers.receive.title', { number: transfer.number })}
-        </caption>
-        <thead>
-          <tr>
-            <th className="type-label py-2 text-start">
-              {t('stock.transfers.detail.columns.product')}
-            </th>
-            <th className="type-label py-2 text-start">
-              {t('stock.transfers.detail.columns.sent')}
-            </th>
-            <th className="type-label py-2 text-start">{t('stock.transfers.receive.arrived')}</th>
-            <th className="type-label py-2 text-start">{t('stock.transfers.receive.reason')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transfer.lines.map((l) => {
-            const r = receipts[l.id]!;
-            const short = r.received !== '' && Number(r.received) < l.qty_sent;
-            const label = `${lineName(l)}${l.serial ? ` ${l.serial}` : ''}`;
-            return (
-              <tr key={l.id} className="border-t border-line align-top">
-                <td className="py-2">
-                  <span className="block">{lineName(l)}</span>
-                  <span className="type-caption block" dir="ltr">
-                    {l.serial ?? l.sku}
-                  </span>
-                </td>
-                <td className="py-2">{formatNumber(l.qty_sent)}</td>
-                <td className="w-40 py-2 [&_.field-label]:sr-only">
-                  {l.unit_id ? (
-                    <Select
-                      label={`${t('stock.transfers.receive.arrived')}: ${label}`}
-                      value={r.received === '1' ? 'yes' : r.reason}
-                      options={[
-                        { value: 'yes', label: t('stock.transfers.receive.unitArrived') },
-                        { value: 'loss', label: t('stock.transfers.receive.unitMissing') },
-                        { value: 'damage', label: t('stock.transfers.receive.unitDamaged') },
-                      ]}
-                      onChange={(e) =>
-                        e.target.value === 'yes'
-                          ? set(l.id, { received: '1' })
-                          : set(l.id, {
-                              received: '0',
-                              reason: e.target.value as TransferDiscrepancyReason,
-                            })
-                      }
-                    />
-                  ) : (
-                    <NumberInput
-                      label={`${t('stock.transfers.receive.arrived')}: ${label}`}
-                      value={r.received}
-                      decimals={0}
-                      maxLength={7}
-                      onValueChange={(v) => set(l.id, { received: v })}
-                    />
-                  )}
-                </td>
-                <td className="w-40 py-2 [&_.field-label]:sr-only">
-                  {short && !l.unit_id && (
-                    <Select
-                      label={`${t('stock.transfers.receive.reason')}: ${label}`}
-                      value={r.reason}
-                      options={[
-                        { value: 'loss', label: t('stock.transfers.receive.reasons.loss') },
-                        { value: 'damage', label: t('stock.transfers.receive.reasons.damage') },
-                      ]}
-                      onChange={(e) =>
-                        set(l.id, { reason: e.target.value as TransferDiscrepancyReason })
-                      }
-                    />
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <div className="overflow-x-auto">
+        <table className="w-full text-start">
+          <caption className="sr-only">
+            {t('stock.transfers.receive.title', { number: transfer.number })}
+          </caption>
+          <thead>
+            <tr>
+              <th className="type-label py-2 text-start">
+                {t('stock.transfers.detail.columns.product')}
+              </th>
+              <th className="type-label py-2 text-start">
+                {t('stock.transfers.detail.columns.sent')}
+              </th>
+              <th className="type-label py-2 text-start">{t('stock.transfers.receive.arrived')}</th>
+              <th className="type-label py-2 text-start">{t('stock.transfers.receive.reason')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transfer.lines.map((l) => {
+              const r = receipts[l.id]!;
+              const short = r.received !== '' && Number(r.received) < l.qty_sent;
+              const label = `${lineName(l)}${l.serial ? ` ${l.serial}` : ''}`;
+              return (
+                <tr key={l.id} className="border-t border-line align-top">
+                  <td className="py-2">
+                    <span className="block">{lineName(l)}</span>
+                    <span className="type-caption block" dir="ltr">
+                      {l.serial ?? l.sku}
+                    </span>
+                  </td>
+                  <td className="py-2">{formatNumber(l.qty_sent)}</td>
+                  <td className="w-40 py-2 [&_.field-label]:sr-only">
+                    {l.unit_id ? (
+                      <Select
+                        label={`${t('stock.transfers.receive.arrived')}: ${label}`}
+                        value={r.received === '1' ? 'yes' : r.reason}
+                        options={[
+                          { value: 'yes', label: t('stock.transfers.receive.unitArrived') },
+                          { value: 'loss', label: t('stock.transfers.receive.unitMissing') },
+                          { value: 'damage', label: t('stock.transfers.receive.unitDamaged') },
+                        ]}
+                        onChange={(e) =>
+                          e.target.value === 'yes'
+                            ? set(l.id, { received: '1' })
+                            : set(l.id, {
+                                received: '0',
+                                reason: e.target.value as TransferDiscrepancyReason,
+                              })
+                        }
+                      />
+                    ) : (
+                      <NumberInput
+                        label={`${t('stock.transfers.receive.arrived')}: ${label}`}
+                        value={r.received}
+                        decimals={0}
+                        maxLength={7}
+                        onValueChange={(v) => set(l.id, { received: v })}
+                      />
+                    )}
+                  </td>
+                  <td className="w-40 py-2 [&_.field-label]:sr-only">
+                    {short && !l.unit_id && (
+                      <Select
+                        label={`${t('stock.transfers.receive.reason')}: ${label}`}
+                        value={r.reason}
+                        options={[
+                          { value: 'loss', label: t('stock.transfers.receive.reasons.loss') },
+                          { value: 'damage', label: t('stock.transfers.receive.reasons.damage') },
+                        ]}
+                        onChange={(e) =>
+                          set(l.id, { reason: e.target.value as TransferDiscrepancyReason })
+                        }
+                      />
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       <FormError message={error} />
     </Dialog>
   );

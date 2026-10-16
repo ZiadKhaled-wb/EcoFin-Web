@@ -24,14 +24,243 @@
     "details": "Details"
   },
   "actions": {
-    "auth_login": "Signed in",
-    "auth_logout": "Signed out",
-    "auth_password_change": "Changed password",
-    "employee_permission_set": "Changed a permission",
-    "employee_branches_set": "Changed branches"
+    "auth": {
+      "login": "Signed in",
+      "logout": "Signed out",
+      "password_change": "Changed password"
+    },
+    "approval": {
+      "requested": "Asked for a discount approval",
+      "decided": "Decided a discount approval",
+      "cancelled": "Cancelled a discount approval request"
+    },
+    "branch": {
+      "created": "Added a branch",
+      "updated": "Edited a branch",
+      "deactivated": "Deactivated a branch",
+      "reactivated": "Reactivated a branch"
+    },
+    "cash_account": {
+      "created": "Added a vault or bank account",
+      "renamed": "Renamed a vault",
+      "opening_balance": "Set an opening balance",
+      "deactivated": "Deactivated a vault",
+      "reactivated": "Reactivated a vault"
+    },
+    "cash_transfer": {
+      "created": "Transferred cash between vaults"
+    },
+    "category": {
+      "created": "Added a category",
+      "updated": "Edited a category",
+      "archived": "Archived a category",
+      "restored": "Restored a category"
+    },
+    "credit_exception": {
+      "requested": "Asked for a credit exception",
+      "approved": "Approved a credit exception",
+      "rejected": "Rejected a credit exception",
+      "cancelled": "Cancelled a credit exception request"
+    },
+    "customer": {
+      "created": "Added a customer",
+      "updated": "Edited a customer",
+      "status_set": "Changed a customer's status",
+      "credit_limit_set": "Set a customer's credit limit",
+      "guarantor_linked": "Linked a guarantor to a customer",
+      "guarantor_relation_set": "Changed a guarantor's relation",
+      "guarantor_unlinked": "Unlinked a guarantor"
+    },
+    "device": {
+      "created": "Added a POS device",
+      "updated": "Edited a POS device",
+      "pairing_code_created": "Created a device pairing code",
+      "paired": "Paired a device",
+      "unpaired": "Unpaired a device",
+      "deactivated": "Deactivated a device",
+      "reactivated": "Reactivated a device",
+      "eta_updated": "Changed a device's e-receipt settings"
+    },
+    "employee": {
+      "created": "Added an employee",
+      "updated": "Edited an employee",
+      "active_set": "Activated or deactivated an employee",
+      "permission_set": "Changed a permission",
+      "branches_set": "Changed branches",
+      "password_reset_requested": "Sent a password reset link",
+      "password_reset_completed": "Reset a password"
+    },
+    "eta": {
+      "settings_updated": "Changed e-receipt settings"
+    },
+    "expense": {
+      "posted": "Recorded an expense",
+      "reversed": "Reversed an expense"
+    },
+    "expense_category": {
+      "created": "Added an expense category",
+      "renamed": "Renamed an expense category",
+      "archived": "Archived an expense category",
+      "restored": "Restored an expense category"
+    },
+    "file": {
+      "upload": "Uploaded a file"
+    },
+    "fiscal": {
+      "retry_requested": "Asked to resend an e-receipt",
+      "retry_many": "Asked to resend several e-receipts",
+      "correction_requested": "Asked to correct an e-receipt",
+      "device_assigned": "Assigned a device to an e-receipt",
+      "check_requested": "Asked to check an e-receipt now"
+    },
+    "guarantor": {
+      "created": "Added a guarantor",
+      "updated": "Edited a guarantor",
+      "archived": "Archived a guarantor",
+      "restored": "Restored a guarantor"
+    },
+    "installment_policy": {
+      "published": "Published an installment policy"
+    },
+    "invite": {
+      "accepted": "Accepted an invitation",
+      "resent": "Resent an invitation"
+    },
+    "org": {
+      "provisioned": "Created the shop",
+      "settings_updated": "Changed shop settings",
+      "profile_updated": "Changed the legal profile",
+      "suspended": "Suspended the shop",
+      "reactivated": "Reactivated the shop"
+    },
+    "product": {
+      "created": "Added a product",
+      "updated": "Edited a product",
+      "price_changed": "Changed a product's price",
+      "archived": "Archived a product",
+      "restored": "Restored a product"
+    },
+    "purchase_invoice": {
+      "created": "Created a purchase invoice",
+      "updated": "Edited a purchase invoice",
+      "approval_requested": "Sent a purchase invoice for approval",
+      "approved": "Approved a purchase invoice",
+      "rejected": "Rejected a purchase invoice"
+    },
+    "purchase_order": {
+      "created": "Created a purchase order",
+      "updated": "Edited a purchase order",
+      "sent": "Sent a purchase order",
+      "cancelled": "Cancelled a purchase order"
+    },
+    "purchase_return": {
+      "posted": "Recorded a purchase return"
+    },
+    "sale": {
+      "created": "Made a sale",
+      "voided": "Voided a sale",
+      "receipt_printed": "Printed a receipt"
+    },
+    "shift": {
+      "opened": "Opened a shift",
+      "closed": "Closed a shift",
+      "force_closed": "Force-closed a shift",
+      "cash_moved": "Moved cash in or out of the drawer"
+    },
+    "stock": {
+      "min_level_set": "Set a minimum stock level"
+    },
+    "stock_adjustment": {
+      "posted": "Adjusted stock"
+    },
+    "stock_count": {
+      "created": "Started a stock count",
+      "posted": "Posted a stock count",
+      "cancelled": "Cancelled a stock count"
+    },
+    "stock_movements": {
+      "exported": "Exported stock movements"
+    },
+    "stock_transfer": {
+      "created": "Created a stock transfer",
+      "updated": "Edited a stock transfer",
+      "sent": "Sent a stock transfer",
+      "received": "Received a stock transfer",
+      "cancelled": "Cancelled a stock transfer"
+    },
+    "subscription": {
+      "plan_changed": "Changed the subscription plan",
+      "dates_changed": "Changed the subscription dates",
+      "payment_recorded": "Recorded a subscription payment"
+    },
+    "supplier": {
+      "created": "Added a supplier",
+      "updated": "Edited a supplier",
+      "archived": "Archived a supplier",
+      "restored": "Restored a supplier"
+    },
+    "supplier_payment": {
+      "posted": "Paid a supplier",
+      "reversed": "Reversed a supplier payment"
+    },
+    "survey": {
+      "assigned": "Assigned a field survey",
+      "reassigned": "Reassigned a field survey",
+      "saved": "Saved field survey answers",
+      "submitted": "Submitted a field survey",
+      "approved": "Approved a field survey",
+      "rejected": "Rejected a field survey",
+      "cancelled": "Cancelled a field survey"
+    },
+    "tax_class": {
+      "created": "Added a tax class",
+      "updated": "Edited a tax class",
+      "archived": "Archived a tax class",
+      "restored": "Restored a tax class"
+    },
+    "units": {
+      "registered": "Registered serial numbers"
+    },
+    "warranty_claim": {
+      "opened": "Opened a warranty claim",
+      "moved": "Updated a warranty claim"
+    }
   },
   "entityTypes": {
-    "employee": "Employee"
+    "approval": "Approval",
+    "branch": "Branch",
+    "cash_account": "Vault",
+    "cash_transfer": "Cash transfer",
+    "category": "Category",
+    "customer": "Customer",
+    "device": "Device",
+    "employee": "Employee",
+    "eta_settings": "E-receipt settings",
+    "expense": "Expense",
+    "expense_category": "Expense category",
+    "field_survey": "Field survey",
+    "file": "File",
+    "fiscal_submission": "E-receipt",
+    "guarantor": "Guarantor",
+    "import_job": "Import",
+    "installment_policy": "Installment policy",
+    "invite": "Invitation",
+    "organization": "Shop",
+    "product": "Product",
+    "purchase_invoice": "Purchase invoice",
+    "purchase_order": "Purchase order",
+    "purchase_return": "Purchase return",
+    "sale": "Sale",
+    "shift": "Shift",
+    "stock_adjustment": "Stock adjustment",
+    "stock_count": "Stock count",
+    "stock_movement": "Stock movement",
+    "stock_transfer": "Stock transfer",
+    "subscription_payment": "Subscription payment",
+    "supplier": "Supplier",
+    "supplier_payment": "Supplier payment",
+    "tax_class": "Tax class",
+    "warranty_claim": "Warranty claim"
   },
   "system": "System",
   "filterByPerson": "Show only {name}",
@@ -55,5 +284,14 @@
     "before": "Before",
     "after": "After",
     "none": "—"
+  },
+  "groups": {
+    "sales": "Sales and e-receipts",
+    "customers": "Customers and installments",
+    "inventory": "Products and stock",
+    "purchasing": "Suppliers and purchasing",
+    "cash": "Vaults and shifts",
+    "people": "Employees and sign-in",
+    "shop": "Shop and settings"
   }
 }

@@ -95,6 +95,7 @@ export default function PurchaseApprovalsPage() {
           {
             id: 'note',
             header: t('purchases.approvals.columns.note'),
+            meta: { wrap: true },
             cell: ({ row }) => row.original.approval.note ?? '',
           },
         ] satisfies ColumnDef<PurchaseApprovalListItem, unknown>[])

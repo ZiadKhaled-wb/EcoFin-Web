@@ -106,8 +106,8 @@ describe('P05 subscription admin', () => {
     await screen.findByText('Retail');
     await user.click(screen.getByRole('button', { name: t('subscriptions.recordPayment') }));
     await user.type(screen.getByLabelText(t('subscriptions.amount')), '500.25');
-    await user.type(screen.getByLabelText(t('subscriptions.periodStart')), '2026-10-01');
-    await user.type(screen.getByLabelText(t('subscriptions.periodEnd')), '2026-10-31');
+    await user.type(screen.getByLabelText(t('subscriptions.periodStart')), '01102026');
+    await user.type(screen.getByLabelText(t('subscriptions.periodEnd')), '31102026');
     const submit = screen.getByRole('button', { name: t('subscriptions.savePayment') });
     await user.click(submit);
     await waitFor(() =>
