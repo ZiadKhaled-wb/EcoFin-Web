@@ -8,11 +8,9 @@ on:
 permissions:
   contents: read
 
-# Jobs run on the self-hosted runner on the owner's PC (WSL Ubuntu + Docker Desktop, since 16 Oct 2026,
-# when the GitHub-hosted minutes ran out). Repo variable CI_RUNNER=ubuntu-latest switches back.
 jobs:
   check:
-    runs-on: ${{ vars.CI_RUNNER || 'self-hosted' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,11 +37,8 @@ jobs:
   # Needs secret API_REPO_TOKEN: a fine-grained token with "Contents: read-only" on
   # ZiadKhaled-wb/EcoFin-API (the API repo is private).
   e2e:
-    runs-on: ${{ vars.CI_RUNNER || 'self-hosted' }}
+    runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      # The API's TEST4 fixture writes through this container (the CI stack, see the slot step).
-      SUPABASE_DB_CONTAINER: supabase_db_ecofin-ci
     steps:
       - uses: actions/checkout@v4
 
@@ -85,18 +80,6 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: 2.119.0
-
-      # The runner on the owner's PC shares one Docker and Supabase's fixed ports between the API and
-      # Web runners: one job at a time holds the local stack (released in the last step, or when the
-      # job ends). The stack is named ecofin-ci, never the developer's own ecofin-api stack.
-      - name: Wait for the local Supabase slot (stack ecofin-ci)
-        working-directory: api
-        run: |
-          touch "$RUNNER_TEMP/supabase-slot"
-          nohup flock /tmp/ecofin-ci-supabase.lock sh -c 'touch "$0.held"; while [ -e "$0" ]; do sleep 2; done' "$RUNNER_TEMP/supabase-slot" > /dev/null 2>&1 &
-          until [ -e "$RUNNER_TEMP/supabase-slot.held" ]; do sleep 5; done
-          sed -i 's/^project_id = .*/project_id = "ecofin-ci"/' supabase/config.toml
-          supabase stop --no-backup > /dev/null 2>&1 || true
 
       # Auth, PostgREST, Kong, Storage and Mailpit are needed (login, reset email, files).
       - name: Start local Supabase (migrations + dev seed)
@@ -150,9 +133,8 @@ jobs:
           done
           echo "API did not become healthy"; cat "$RUNNER_TEMP/api.log"; exit 1
 
-      # --with-deps needs sudo apt-get: only on GitHub's runners (the PC has the libraries installed once).
       - name: Install the Playwright browser
-        run: npx playwright install ${{ runner.environment == 'github-hosted' && '--with-deps' || '' }} chromium
+        run: npx playwright install --with-deps chromium
 
       # Logins: the API repo's dev seed (docs/testing/int-1/LOGINS.md), local-only password.
       - name: e2e (RUN_E2E=1)
@@ -194,10 +176,6 @@ jobs:
         if: always()
         working-directory: api
         run: supabase stop --no-backup
-
-      - name: Release the local Supabase slot
-        if: always()
-        run: rm -f "$RUNNER_TEMP/supabase-slot"
 
       - name: TEST4 known failures
         if: always()
