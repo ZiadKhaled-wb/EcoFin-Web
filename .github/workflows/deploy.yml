@@ -27,12 +27,11 @@ env:
   VERCEL_ORG_ID: team_PILhO6A7GqMRsPbckxlBpXVZ
   VERCEL_PROJECT_ID: prj_g3Ivldr4T0V0OAs76qCriA8jAAUa
 
-# Runs on the self-hosted runner on the owner's PC (see ci.yml); CI_RUNNER=ubuntu-latest switches back.
 jobs:
   deploy:
     # A production deploy only follows a green CI run on main.
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ${{ vars.CI_RUNNER || 'self-hosted' }}
+    runs-on: ubuntu-latest
     environment:
       name: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
       url: ${{ steps.deploy.outputs.url }}
