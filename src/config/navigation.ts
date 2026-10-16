@@ -2,6 +2,7 @@ import {
   BellIcon,
   CalculatorIcon,
   CartIcon,
+  CheckCircleIcon,
   CheckIcon,
   ChartIcon,
   DashboardIcon,
@@ -213,6 +214,14 @@ export const NAV: NavItem[] = [
     icon: UsersIcon,
     to: '/customers',
     roles: [OWNER, BRANCH_MANAGER, 'CASHIER', 'ACCOUNTANT', 'COLLECTOR'],
+  },
+  // N03 (D78): collections: find a contract of any branch and take installment payments.
+  {
+    id: 'collections',
+    labelKey: 'collections.nav.title',
+    icon: CheckCircleIcon,
+    to: '/collections',
+    permissionsAny: ['collection.create', 'collection.reverse'],
   },
   // R03 (D72): credit exceptions waiting for a manager. The page itself is open to every customer
   // reader (a cashier follows their own requests from the customer's credit card).

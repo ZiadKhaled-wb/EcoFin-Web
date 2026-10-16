@@ -21,7 +21,7 @@ import Select from '@/components/ui/Select';
 import { formatMoney } from '@/lib/format';
 import { saleKeys, salesApi } from '@/services/salesApi';
 import { useAuthStore } from '@/store/authStore';
-import { t } from '@/i18n';
+import { t, type TranslationKey } from '@/i18n';
 import { saleError } from './saleShared';
 
 /** One payment line as the cashier edits it (typed text). */
@@ -49,6 +49,25 @@ const newLine = (method: SalePaymentMethod, amount: string): PayLine => ({
   account: '',
   reference: '',
 });
+
+/** The dialog's own words per purpose (the lines and the buttons are the same). */
+const TEXT = {
+  sale: {
+    title: 'sales.pay.title',
+    description: 'sales.pay.description',
+    total: 'sales.pay.total',
+  },
+  downPayment: {
+    title: 'installments.pay.title',
+    description: 'installments.pay.description',
+    total: 'installments.pay.total',
+  },
+  collection: {
+    title: 'collections.pay.title',
+    description: 'collections.pay.description',
+    total: 'collections.pay.total',
+  },
+} as const satisfies Record<string, Record<'title' | 'description' | 'total', TranslationKey>>;
 
 /** The change to give back for a cash line: received - amount (null without a received amount). */
 function changeOf(line: PayLine): Money | null {
@@ -86,6 +105,9 @@ function toPayments(lines: readonly PayLine[]): SalePaymentInput[] | null {
  *
  * N02 (D77): `purpose="downPayment"` pays the down payment of an installment sale: `total` is the
  * down payment, and only the titles change.
+ *
+ * N03 (D78): `purpose="collection"` takes an installment payment: `total` is what the cashier puts
+ * on the contracts; cash and bank transfers only (no store credit is offered without a balance).
  */
 export default function PaymentDialog({
   total,
@@ -100,7 +122,7 @@ export default function PaymentDialog({
   customerId: string | null;
   storeCreditBalance: Money | null;
   busy: boolean;
-  purpose?: 'sale' | 'downPayment';
+  purpose?: 'sale' | 'downPayment' | 'collection';
   /** Sells with these lines; answers the error of a refused sale, or null. */
   onPay: (payments: SalePaymentInput[]) => Promise<unknown>;
   onClose: () => void;
@@ -158,10 +180,8 @@ export default function PaymentDialog({
     <Dialog
       open
       onOpenChange={(v) => !v && !busy && onClose()}
-      title={purpose === 'downPayment' ? t('installments.pay.title') : t('sales.pay.title')}
-      description={
-        purpose === 'downPayment' ? t('installments.pay.description') : t('sales.pay.description')
-      }
+      title={t(TEXT[purpose].title)}
+      description={t(TEXT[purpose].description)}
       className="max-w-3xl!"
       footer={
         <>
@@ -182,9 +202,7 @@ export default function PaymentDialog({
       <div className="space-y-4" onKeyDown={onKeyDown}>
         <dl className="grid grid-cols-3 gap-3" aria-live="polite">
           <div>
-            <dt className="type-caption">
-              {purpose === 'downPayment' ? t('installments.pay.total') : t('sales.pay.total')}
-            </dt>
+            <dt className="type-caption">{t(TEXT[purpose].total)}</dt>
             <dd className="num type-section-title" data-testid="pay-total">
               {formatMoney(total)}
             </dd>

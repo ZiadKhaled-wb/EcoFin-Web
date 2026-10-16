@@ -1,0 +1,148 @@
+{
+  "nav": {
+    "title": "Collections"
+  },
+  "search": {
+    "title": "Collections",
+    "description": "Find a customer or a contract and take installment payments. Contracts of every branch are listed.",
+    "placeholder": "Contract number, customer name, phone or national ID",
+    "overdueOnly": "Overdue only",
+    "empty": "No open contracts match.",
+    "loadFailed": "The contracts could not be loaded.",
+    "more": "Show more",
+    "collect": "Collect",
+    "columns": {
+      "contract": "Contract",
+      "customer": "Customer",
+      "phone": "Phone",
+      "remaining": "Left to pay",
+      "overdue": "Overdue",
+      "daysLate": "Days late",
+      "nextDue": "Next due"
+    }
+  },
+  "collect": {
+    "title": "Take a payment",
+    "description": "Tick the contracts the customer pays and the amount for each. Every amount goes to the oldest installment first. No late fees are ever charged.",
+    "customer": "Customer: {name}",
+    "noShift": "Open a shift to take payments: the cash goes into your drawer.",
+    "noShiftAction": "Open a shift",
+    "revoked": "This computer is no longer paired. Ask a manager to pair it again.",
+    "loadFailed": "The customer's contracts could not be loaded.",
+    "notFound": "This contract was not found.",
+    "noOpenContracts": "This customer has no contract with anything left to pay.",
+    "pay": "Pay contract {number}",
+    "amount": "Amount for {number}",
+    "max": "Left on this contract: {amount}",
+    "above": "More than what is left on this contract ({amount}).",
+    "quick": {
+      "next": "Next installment",
+      "overdue": "All overdue",
+      "all": "Pay off the contract"
+    },
+    "due": {
+      "overdue": "Overdue",
+      "today": "Due today",
+      "nextDue": "Next due",
+      "remaining": "Left to pay",
+      "none": "Nothing"
+    },
+    "schedule": {
+      "title": "Installments of {number}",
+      "seq": "#",
+      "dueDate": "Due date",
+      "amount": "Installment",
+      "paid": "Paid",
+      "remaining": "Left",
+      "status": "Status",
+      "daysLate": "{days} days late"
+    },
+    "preview": {
+      "title": "This amount pays",
+      "line": "Installment {seq} ({date}): {amount}",
+      "paysOff": "paid in full",
+      "partly": "partly paid",
+      "completes": "This pays off the contract.",
+      "details": "Profit and principal",
+      "split": "Profit {profit} · principal {principal}",
+      "checking": "Checking with the server…"
+    },
+    "total": "Total to collect",
+    "take": "Take payment",
+    "pick": "Tick a contract and enter an amount.",
+    "errors": {
+      "dueChanged": "Another payment was taken on this contract a moment ago. The amounts were reloaded: check them and try again.",
+      "exceeds": "That is more than what is left on the contract. The amounts were reloaded.",
+      "notOpen": "This contract is closed: nothing is left to pay.",
+      "failed": "The payment could not be taken. Try again."
+    }
+  },
+  "pay": {
+    "title": "Collect the payment",
+    "description": "How does the customer pay? Cash, bank transfers or both. Collect opens when the lines add up to the total.",
+    "total": "To collect"
+  },
+  "receipt": {
+    "title": "Receipt {number}",
+    "loadFailed": "The receipt could not be loaded.",
+    "notFound": "This receipt was not found.",
+    "back": "Back to collections",
+    "contract": "Open the contract",
+    "another": "Take another payment",
+    "print": "Print receipt",
+    "printing": "Printing…",
+    "printTitle": "Print receipt {number}",
+    "close": "Close",
+    "printNow": "Print",
+    "copyNote": "This receipt was printed before: it prints as a COPY.",
+    "doc": {
+      "heading": "Installment payment receipt",
+      "number": "Receipt no.",
+      "date": "Date",
+      "branch": "Branch",
+      "cashier": "Received by",
+      "customer": "Customer",
+      "phone": "Phone",
+      "contract": "Contract {number}",
+      "installment": "Installment {seq} · {date}",
+      "paysOff": "paid",
+      "partly": "partly paid",
+      "left": "Left on the contract",
+      "nextDue": "Next installment",
+      "nextDueValue": "{amount} on {date}",
+      "completed": "Contract paid off",
+      "payments": "Payment",
+      "method": {
+        "cash": "Cash",
+        "bank_transfer": "Bank transfer"
+      },
+      "tendered": "Received",
+      "change": "Change",
+      "reference": "Ref.",
+      "total": "Total paid",
+      "copy": "COPY",
+      "reversed": "REVERSED",
+      "reversedBy": "Reversed {number}: {reason}",
+      "thanks": "Thank you."
+    }
+  },
+  "reverse": {
+    "button": "Reverse collection",
+    "title": "Reverse receipt {number}",
+    "description": "The money goes back to the customer and the installments become unpaid again. Only today's latest collection of these contracts can be reversed.",
+    "back": "Give back: {amount}",
+    "line": "{method}: {amount}",
+    "reason": "Reason",
+    "confirm": "Reverse",
+    "cancel": "Keep it",
+    "done": "The collection was reversed.",
+    "errors": {
+      "already_reversed": "This collection was already reversed.",
+      "not_same_day": "Only a collection from today can be reversed. Older mistakes are corrected by a manager later.",
+      "not_latest": "A later payment was taken on one of these contracts: reverse that one first.",
+      "shift_closed": "The shift that took this payment is closed: the cash can't go back out of its drawer.",
+      "insufficient": "There is not enough cash in the drawer to give back.",
+      "failed": "The collection could not be reversed."
+    }
+  }
+}

@@ -66,6 +66,8 @@ import arReceipts from './locales/ar/receipts.json';
 import enReceipts from './locales/en/receipts.json';
 import arInstallments from './locales/ar/installments.json';
 import enInstallments from './locales/en/installments.json';
+import arCollections from './locales/ar/collections.json';
+import enCollections from './locales/en/collections.json';
 
 /** One JSON file per namespace and language. The first segment of a key is its namespace. */
 export const ar = {
@@ -103,6 +105,7 @@ export const ar = {
   fiscal: arFiscal,
   receipts: arReceipts,
   installments: arInstallments,
+  collections: arCollections,
 };
 
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
@@ -142,6 +145,7 @@ export const en: SameShape<typeof ar> = {
   fiscal: enFiscal,
   receipts: enReceipts,
   installments: enInstallments,
+  collections: enCollections,
 };
 
 type Leaves<T, P extends string = ''> = {
