@@ -1,0 +1,129 @@
+{
+  "frequency": {
+    "monthly": "شهري",
+    "weekly": "أسبوعي",
+    "daily": "يومي"
+  },
+  "pos": {
+    "mode": "نوع البيع",
+    "cash": "نقدي",
+    "installments": "تقسيط",
+    "terms": "شروط التقسيط",
+    "needCustomer": "اختر العميل أولاً: البيع بالتقسيط يحتاج عميلاً."
+  },
+  "dialog": {
+    "title": "بيع بالتقسيط",
+    "description": "اتفق مع العميل على الشروط. سعر البيع بالتقسيط يُحدد اليوم ولا يزيد أبداً.",
+    "cancel": "رجوع إلى السلة",
+    "toDownPayment": "التالي: المقدم",
+    "confirm": "تأكيد البيع",
+    "checking": "جارٍ التحقق من الخادم…"
+  },
+  "fields": {
+    "downPayment": "المقدم",
+    "downAtLeast": "على الأقل {amount}",
+    "count": "عدد الأقساط",
+    "maxMonths": "حتى {months} شهراً",
+    "frequency": "التكرار",
+    "firstDue": "تاريخ أول قسط (اختياري)"
+  },
+  "terms": {
+    "cashPrice": "السعر النقدي",
+    "downPayment": "المقدم",
+    "financed": "المبلغ المقسط",
+    "profit": "ربح البيع بالتقسيط",
+    "installmentPrice": "سعر البيع بالتقسيط",
+    "installment": "الأقساط",
+    "countTimes": "{count} × {amount}",
+    "firstDue": "تاريخ أول قسط",
+    "lastDue": "تاريخ آخر قسط"
+  },
+  "violations": {
+    "frequency_not_allowed": "هذا التكرار غير مسموح. المسموح: {allowed}.",
+    "sale_below_minimum": "البيع بالتقسيط يبدأ من {amount}.",
+    "down_payment_too_high": "المقدم لا يزيد عن {amount}.",
+    "down_payment_too_low": "المقدم لا يقل عن {amount}.",
+    "down_payment_none": "لا يوجد مقدم أقل من السعر النقدي يوافق السياسة لهذه الشروط.",
+    "too_many_months": "المدة طويلة: {months} شهراً، والحد الأقصى {max} شهراً.",
+    "installment_below_minimum": "القسط الواحد لا يقل عن {amount}.",
+    "rounding": "عدد الأقساط كبير على خطوة التقريب {step}.",
+    "first_due_date_out_of_range": "تاريخ أول قسط يكون بين {earliest} و{latest}."
+  },
+  "checks": {
+    "title": "فحوص العميل",
+    "creditOk": "الائتمان: مقبول",
+    "creditApproved": "الائتمان: استثناء معتمد يغطيه",
+    "creditPending": "الائتمان: استثناء في انتظار المدير",
+    "creditNo": "الائتمان: فوق الحد",
+    "available": "الائتمان المتاح: {amount}",
+    "askException": "طلب استثناء",
+    "refresh": "تحقق مرة أخرى",
+    "guarantorsNone": "لا يحتاج ضامناً",
+    "guarantorsNeeded": "الضامنون: تم اختيار {picked} من {count}",
+    "addGuarantor": "إضافة ضامن",
+    "surveyNone": "لا يحتاج استعلاماً ميدانياً",
+    "surveyOk": "الاستعلام الميداني: معتمد",
+    "surveyOpen": "الاستعلام الميداني: جارٍ",
+    "surveyMissing": "الاستعلام الميداني: مطلوب"
+  },
+  "schedule": {
+    "title": "جدول الأقساط ({count} قسطاً)",
+    "caption": "جدول الأقساط",
+    "seq": "م",
+    "due": "تاريخ الاستحقاق",
+    "amount": "القيمة",
+    "principal": "الأصل",
+    "profit": "الربح"
+  },
+  "pay": {
+    "title": "المقدم",
+    "description": "استلم المقدم. الباقي يُسدد بالأقساط.",
+    "total": "المقدم"
+  },
+  "done": {
+    "contract": "عقد التقسيط {number}",
+    "price": "سعر البيع بالتقسيط: {amount}",
+    "schedule": "{count} قسطاً، من {first} إلى {last}",
+    "view": "عرض العقد"
+  },
+  "contract": {
+    "title": "العقد {number}",
+    "notFound": "العقد غير موجود",
+    "notFoundHint": "قد يكون تابعاً لفرع آخر، أو الرابط غير صحيح.",
+    "loadFailed": "تعذر تحميل العقد.",
+    "toCustomer": "العميل",
+    "status": "الحالة",
+    "customer": "العميل",
+    "sale": "عملية البيع",
+    "issued": "تاريخ الإصدار",
+    "terms": "الشروط",
+    "countOf": "{count} × {frequency}",
+    "policy": "إصدار سياسة التقسيط {version}",
+    "balance": "الرصيد",
+    "paid": "المدفوع",
+    "remaining": "المتبقي",
+    "overdue": "المتأخر",
+    "guarantors": "الضامنون",
+    "noGuarantors": "لا يوجد ضامنون."
+  },
+  "errors": {
+    "nationalIdRequired": "هذا العميل ليس له رقم قومي. أضفه من صفحة العميل قبل البيع بالتقسيط.",
+    "customerBlocked": "هذا العميل محظور ولا يمكنه الشراء بالتقسيط.",
+    "markupVat": "إعداد ضريبة المتجر يُخضع الربح للضريبة؛ البيع بالتقسيط ينتظر رد المحاسب.",
+    "policyNotSet": "لا توجد سياسة تقسيط للمتجر بعد.",
+    "disabled": "البيع بالتقسيط متوقف لهذا المتجر.",
+    "creditLimit": "العميل فوق حد الائتمان: اطلب استثناء.",
+    "creditScore": "تقييم العميل الائتماني منخفض: اطلب استثناء.",
+    "creditWatch": "العميل تحت المراقبة: اطلب استثناء.",
+    "approvalInvalid": "لا يمكن استخدام استثناء الائتمان (مستخدم أو منتهٍ أو أقل من المطلوب).",
+    "guarantorRequired": "اختر الضامنين الذين يحتاجهم هذا البيع.",
+    "guarantorNotLinked": "أحد الضامنين المختارين غير مرتبط بهذا العميل.",
+    "guarantorArchived": "أحد الضامنين المختارين مؤرشف.",
+    "surveyRequired": "هذا البيع يحتاج استعلاماً ميدانياً معتمداً عن العميل.",
+    "contractNotFound": "العقد غير موجود.",
+    "keyUsed": "تم إرسال هذا البيع من قبل. ابدأ سلة جديدة.",
+    "policyChanged": "تغيرت سياسة التقسيط (الإصدار {version}). راجع الشروط الجديدة.",
+    "policyChangedPlain": "تغيرت سياسة التقسيط. راجع الشروط الجديدة.",
+    "termsInvalid": "هذه الشروط تخالف سياسة التقسيط في المتجر."
+  }
+}

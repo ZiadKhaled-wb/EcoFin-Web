@@ -63,6 +63,15 @@
     },
     "eta": "ETA e-receipt",
     "qr": "ETA receipt QR code",
-    "etaPending": "The e-receipt is being issued. Ask for a copy that carries the QR code."
+    "etaPending": "The e-receipt is being issued. Ask for a copy that carries the QR code.",
+    "installment": {
+      "title": "Installment sale",
+      "contract": "Contract",
+      "downPayment": "Down payment paid",
+      "price": "Due in installments",
+      "count": "Installments",
+      "dates": "From – to",
+      "note": "The installment contract is printed separately."
+    }
   }
 }

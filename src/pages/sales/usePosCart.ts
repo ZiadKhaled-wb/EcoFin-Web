@@ -4,14 +4,18 @@ import {
   Discount,
   SaleQuoteBody,
   compareMoney,
+  type Contract,
   type Product,
   type Sale,
+  type InstallmentFrequency,
   type SaleLineInput,
   type SalePaymentInput,
 } from '@ziadkhaled-wb/contracts';
 import { ApiError } from '@/lib/api';
 import { getLanguage } from '@/i18n';
 import { cashKeys } from '@/services/cashApi';
+import { customerKeys } from '@/services/customersApi';
+import { installmentsApi } from '@/services/installmentsApi';
 import { saleKeys, salesApi } from '@/services/salesApi';
 import { shiftKeys } from '@/services/shiftsApi';
 import { stockKeys } from '@/services/stockApi';
@@ -96,8 +100,12 @@ export function usePosCart(enabled: boolean, scope: string) {
   );
   const [reason, setReasonState] = useState(stored?.reason ?? '');
   const [done, setDone] = useState<Sale | null>(null);
+  /** N02: the contract of a completed installment sale. */
+  const [doneContract, setDoneContract] = useState<Contract | null>(null);
   const [busy, setBusy] = useState(false);
   const posting = useRef(false);
+  /** N02: one key per installment sale as sent; other terms or payments are another attempt. */
+  const installmentKey = useRef<{ text: string; key: string } | null>(null);
 
   const change = (update: (list: CartLine[]) => CartLine[]) => {
     setLines(update);
@@ -271,6 +279,74 @@ export function usePosCart(enabled: boolean, scope: string) {
     }
   }
 
+  /**
+   * N02 (D77): sells the cart on installments to its customer, with the terms the cashier agreed
+   * on and the down payment lines (none for a down payment of 0.00). The cash price is the quoted
+   * total. Returns the error of a refused sale, or null.
+   */
+  async function confirmInstallment(
+    plan: {
+      down_payment: string;
+      installments_count: number;
+      frequency: InstallmentFrequency;
+      first_due_date?: string;
+      policy_version: number;
+      guarantor_ids: string[];
+      credit_approval_id?: string;
+    },
+    payments: SalePaymentInput[] | undefined,
+  ): Promise<unknown> {
+    if (posting.current || !current || !wanted || !quote.data || !reasonOk || !customerId) {
+      return null;
+    }
+    const body = {
+      lines: wanted,
+      expected_total: quote.data.total,
+      customer_id: customerId,
+      terms: {
+        down_payment: plan.down_payment,
+        installments_count: plan.installments_count,
+        frequency: plan.frequency,
+        ...(plan.first_due_date ? { first_due_date: plan.first_due_date } : {}),
+        policy_version: plan.policy_version,
+      },
+      guarantor_ids: plan.guarantor_ids,
+      ...(plan.credit_approval_id ? { credit_approval_id: plan.credit_approval_id } : {}),
+      ...(payments && payments.length > 0 ? { payments } : {}),
+      ...(saleDiscountInput ? { sale_discount: saleDiscountInput } : {}),
+      ...(hasDiscount ? { discount_reason: reasonText } : {}),
+    };
+    const text = JSON.stringify(body);
+    if (installmentKey.current?.text !== text) {
+      installmentKey.current = { text, key: crypto.randomUUID() };
+    }
+    posting.current = true;
+    setBusy(true);
+    try {
+      const answer = await installmentsApi.sell(body, installmentKey.current.key);
+      setDoneContract(answer.contract);
+      setDone(answer.sale);
+      await Promise.all([
+        cache.invalidateQueries({ queryKey: shiftKeys.all(orgId) }),
+        cache.invalidateQueries({ queryKey: stockKeys.all(orgId) }),
+        cache.invalidateQueries({ queryKey: cashKeys.all(orgId) }),
+        cache.invalidateQueries({ queryKey: customerKeys.all(orgId) }),
+      ]);
+      return null;
+    } catch (err) {
+      // A refused sale wrote nothing: the cashier can change the terms and confirm again.
+      posting.current = false;
+      setBusy(false);
+      if (
+        err instanceof ApiError &&
+        (err.code === 'PRICE_CHANGED' || err.code === 'OUT_OF_STOCK')
+      ) {
+        await quote.refetch();
+      }
+      return err;
+    }
+  }
+
   /** Puts `content` on screen as a new cart with a new key (empty by default). */
   function load(content: CartContent | null) {
     setLines(content?.lines ?? []);
@@ -279,6 +355,8 @@ export function usePosCart(enabled: boolean, scope: string) {
     setReasonState(content?.reason ?? '');
     setKey(crypto.randomUUID());
     setDone(null);
+    setDoneContract(null);
+    installmentKey.current = null;
     setBusy(false);
     posting.current = false;
   }
@@ -314,7 +392,9 @@ export function usePosCart(enabled: boolean, scope: string) {
     current,
     busy,
     done,
+    doneContract,
     confirm,
+    confirmInstallment,
     /** After a completed sale, New sale or Hold: an empty cart and a new key. */
     reset: () => load(null),
     load,
