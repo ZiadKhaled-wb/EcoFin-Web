@@ -208,6 +208,24 @@ describe('P03 settings page', () => {
     );
   });
 
+  it('has no late-fee fields and never sends one (N04, Islamic finance rule 4)', async () => {
+    const publish = vi
+      .spyOn(settingsApi, 'publishPolicy')
+      .mockResolvedValue({ ...policy, id: 'a0300000-0000-4000-8000-000000000004', version: 4 });
+    await renderApp(<SettingsPage />, { lang: 'en' });
+    const u = userEvent.setup();
+    await u.click(screen.getByRole('tab', { name: t('settings.tabs.installments') }));
+    expect(await screen.findByText(t('settings.policy.noLateFees'))).toBeInTheDocument();
+    expect(screen.queryByLabelText(/late fee/i)).not.toBeInTheDocument();
+    const grace = screen.getByLabelText(t('settings.policy.graceDays'));
+    await u.clear(grace);
+    await u.type(grace, '3');
+    await u.click(screen.getByRole('button', { name: t('settings.policy.publish') }));
+    expect(publish).toHaveBeenCalledWith(expect.objectContaining({ grace_days: 3 }));
+    const body = publish.mock.calls[0]![0] as Record<string, unknown>;
+    expect(Object.keys(body).filter((k) => k.startsWith('late_fee'))).toEqual([]);
+  });
+
   it('refuses a guarantor count outside 1-3 without calling the API', async () => {
     const publish = vi.spyOn(settingsApi, 'publishPolicy');
     await renderApp(<SettingsPage />, { lang: 'en' });

@@ -117,6 +117,8 @@
     "installment_create": "إنشاء مبيعات التقسيط",
     "collection_create": "تحصيل الأقساط",
     "collection_reverse": "إلغاء تحصيل اليوم",
+    "overdue_view": "عرض العقود المتأخرة والتنبيهات والإحالات القانونية",
+    "overdue_handle": "تسجيل التعامل مع تنبيهات التأخير",
     "collector_settle": "تسوية عهد المحصلين",
     "charge_waive": "إعفاء غرامات التأخير",
     "schedule_change": "إعادة جدولة العقود",

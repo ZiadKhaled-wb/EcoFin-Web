@@ -1,4 +1,5 @@
 import {
+  AlertIcon,
   BellIcon,
   CalculatorIcon,
   CartIcon,
@@ -222,6 +223,14 @@ export const NAV: NavItem[] = [
     icon: CheckCircleIcon,
     to: '/collections',
     permissionsAny: ['collection.create', 'collection.reverse'],
+  },
+  // N04 (D79): overdue contracts, the warnings work list and the legal referrals (every branch).
+  {
+    id: 'overdue',
+    labelKey: 'overdue.nav.title',
+    icon: AlertIcon,
+    to: '/installments/overdue',
+    permission: 'overdue.view',
   },
   // R03 (D72): credit exceptions waiting for a manager. The page itself is open to every customer
   // reader (a cashier follows their own requests from the customer's credit card).

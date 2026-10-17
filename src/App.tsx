@@ -65,6 +65,7 @@ import ContractPage from '@/pages/installments/ContractPage';
 import CollectionsPage from '@/pages/collections/CollectionsPage';
 import CollectPage from '@/pages/collections/CollectPage';
 import CollectionReceiptPage from '@/pages/collections/CollectionReceiptPage';
+import OverduePage from '@/pages/installments/OverduePage';
 import ShiftPage from '@/pages/accounting/ShiftPage';
 import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
@@ -115,6 +116,7 @@ const REAL_ROUTES = new Set([
   '/customers/credit-exceptions',
   '/customers/surveys',
   '/collections',
+  '/installments/overdue',
   '/purchasing/invoices',
   '/purchasing/approvals',
   '/purchasing/returns',
@@ -137,6 +139,8 @@ const SURVEYS_ITEM = navLeaves().find((i) => i.id === 'surveys')!;
 /** N03: the collection pages follow their menu item (either collection key); the server checks
  * every call (D78). */
 const COLLECTIONS_ITEM = navLeaves().find((i) => i.id === 'collections')!;
+/** N04: the overdue page follows its menu item (overdue.view); the server checks every call (D79). */
+const OVERDUE_ITEM = navLeaves().find((i) => i.id === 'overdue')!;
 /** U02: the purchase invoice pages follow their menu item (same roles as purchasing). */
 const PURCHASE_INVOICES_ITEM = navLeaves().find((i) => i.id === 'purchase-invoices')!;
 /** U04: the purchase return pages follow their menu item (same roles as purchasing). */
@@ -309,6 +313,14 @@ export default function App() {
                     element={
                       <RequireNavItem item={COLLECTIONS_ITEM}>
                         <CollectionReceiptPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/installments/overdue"
+                    element={
+                      <RequireNavItem item={OVERDUE_ITEM}>
+                        <OverduePage />
                       </RequireNavItem>
                     }
                   />

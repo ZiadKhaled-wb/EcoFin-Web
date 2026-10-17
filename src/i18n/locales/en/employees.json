@@ -117,6 +117,8 @@
     "installment_create": "Make installment sales",
     "collection_create": "Take installment payments",
     "collection_reverse": "Reverse a same-day collection",
+    "overdue_view": "See overdue contracts, warnings and legal referrals",
+    "overdue_handle": "Mark overdue warnings handled",
     "collector_settle": "Settle collector wallets into the vault",
     "charge_waive": "Waive late fees",
     "schedule_change": "Reschedule contracts",
