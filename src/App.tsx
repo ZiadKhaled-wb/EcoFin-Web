@@ -62,6 +62,9 @@ import ExpensesPage from '@/pages/accounting/ExpensesPage';
 import PosPage from '@/pages/sales/PosPage';
 import SalePage from '@/pages/sales/SalePage';
 import ContractPage from '@/pages/installments/ContractPage';
+import CollectionsPage from '@/pages/collections/CollectionsPage';
+import CollectPage from '@/pages/collections/CollectPage';
+import CollectionReceiptPage from '@/pages/collections/CollectionReceiptPage';
 import ShiftPage from '@/pages/accounting/ShiftPage';
 import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
@@ -111,6 +114,7 @@ const REAL_ROUTES = new Set([
   '/customers',
   '/customers/credit-exceptions',
   '/customers/surveys',
+  '/collections',
   '/purchasing/invoices',
   '/purchasing/approvals',
   '/purchasing/returns',
@@ -130,6 +134,9 @@ const CUSTOMERS_ITEM = navLeaves().find((i) => i.id === 'customers')!;
 /** R05: the survey pages follow their menu item (any of the three survey keys); the server checks
  * every call and gives a collector only the surveys assigned to them (D75). */
 const SURVEYS_ITEM = navLeaves().find((i) => i.id === 'surveys')!;
+/** N03: the collection pages follow their menu item (either collection key); the server checks
+ * every call (D78). */
+const COLLECTIONS_ITEM = navLeaves().find((i) => i.id === 'collections')!;
 /** U02: the purchase invoice pages follow their menu item (same roles as purchasing). */
 const PURCHASE_INVOICES_ITEM = navLeaves().find((i) => i.id === 'purchase-invoices')!;
 /** U04: the purchase return pages follow their menu item (same roles as purchasing). */
@@ -278,6 +285,30 @@ export default function App() {
                     element={
                       <RequireNavItem item={CUSTOMERS_ITEM}>
                         <CustomerStatementPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/collections"
+                    element={
+                      <RequireNavItem item={COLLECTIONS_ITEM}>
+                        <CollectionsPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/collections/new"
+                    element={
+                      <RequireNavItem item={COLLECTIONS_ITEM}>
+                        <CollectPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/collections/:id"
+                    element={
+                      <RequireNavItem item={COLLECTIONS_ITEM}>
+                        <CollectionReceiptPage />
                       </RequireNavItem>
                     }
                   />

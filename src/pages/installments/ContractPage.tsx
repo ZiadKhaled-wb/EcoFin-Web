@@ -11,6 +11,7 @@ import LoadingState from '@/components/ui/LoadingState';
 import { ApiError } from '@/lib/api';
 import { formatBusinessDate, formatDateTime, formatMoney, formatNumber } from '@/lib/format';
 import { installmentKeys, installmentsApi } from '@/services/installmentsApi';
+import { useCan } from '@/features/me/useCan';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
 import { relationLabel } from '../customers/guarantorShared';
@@ -50,6 +51,8 @@ export default function ContractPage() {
   const { id = '' } = useParams();
   const validId = Uuid.safeParse(id).success;
   const orgId = useAuthStore((s) => s.orgId);
+  // N03: a contract with something left can be collected from here.
+  const canCollect = useCan('collection.create');
   const query = useQuery({
     queryKey: installmentKeys.contract(orgId, id),
     queryFn: () => installmentsApi.contract(id),
@@ -77,9 +80,19 @@ export default function ContractPage() {
       <PageHeader
         title={t('installments.contract.title', { number: c.number })}
         actions={
-          <Link to={`/customers/${c.customer.id}`} className="btn btn-ghost">
-            {t('installments.contract.toCustomer')}
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            {canCollect && (c.status === 'active' || c.status === 'rescheduled') && (
+              <Link
+                to={`/collections/new?customer=${c.customer.id}&contract=${c.id}`}
+                className="btn btn-primary"
+              >
+                {t('collections.search.collect')}
+              </Link>
+            )}
+            <Link to={`/customers/${c.customer.id}`} className="btn btn-ghost">
+              {t('installments.contract.toCustomer')}
+            </Link>
+          </div>
         }
       />
       <div className="space-y-4">

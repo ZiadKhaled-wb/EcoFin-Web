@@ -480,6 +480,8 @@ function documentLabel(purpose: string): TranslationKey {
  */
 export default function CustomerAccountTab({ customer }: { customer: Customer }) {
   const orgId = useAuthStore((s) => s.orgId);
+  // N03: collect from the customer's open contracts.
+  const canCollect = useCan('collection.create');
   const [openContract, setOpenContract] = useState<CustomerContractSummary | null>(null);
   const account = useQuery({
     queryKey: customerAccountKeys.account(orgId, customer.id),
@@ -496,7 +498,13 @@ export default function CustomerAccountTab({ customer }: { customer: Customer })
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        {canCollect &&
+          data.contracts.some((c) => c.status === 'active' || c.status === 'rescheduled') && (
+            <Link to={`/collections/new?customer=${customer.id}`} className="btn btn-primary">
+              {t('collections.search.collect')}
+            </Link>
+          )}
         <Link to={`/customers/${customer.id}/statement`} className="btn btn-secondary">
           {t('customerAccount.statement.open')}
         </Link>

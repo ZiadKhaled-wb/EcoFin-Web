@@ -116,6 +116,7 @@
     "warranty_manage": "إدارة مطالبات الضمان",
     "installment_create": "إنشاء مبيعات التقسيط",
     "collection_create": "تحصيل الأقساط",
+    "collection_reverse": "إلغاء تحصيل اليوم",
     "collector_settle": "تسوية عهد المحصلين",
     "charge_waive": "إعفاء غرامات التأخير",
     "schedule_change": "إعادة جدولة العقود",
