@@ -4,7 +4,6 @@ import {
   EARLY_SETTLEMENT_RULES,
   INSTALLMENT_FREQUENCIES,
   InstallmentPolicyBody,
-  LATE_FEE_TYPES,
   type InstallmentFrequency,
   type InstallmentPolicy,
 } from '@ziadkhaled-wb/contracts';
@@ -27,10 +26,6 @@ export interface PolicyForm {
   min_sale_amount: string;
   min_installment: string;
   rounding_step: string;
-  late_fee_type: (typeof LATE_FEE_TYPES)[number];
-  late_fee_value: string;
-  late_fee_cap: string;
-  late_fee_recurring: boolean;
   grace_days: string;
   early_settlement_rule: (typeof EARLY_SETTLEMENT_RULES)[number];
   early_settlement_pct: string;
@@ -66,10 +61,6 @@ export function toPolicyForm(p: InstallmentPolicy | null): PolicyForm {
     min_sale_amount: s(p?.min_sale_amount ?? '0.00'),
     min_installment: s(p?.min_installment ?? '0.00'),
     rounding_step: s(p?.rounding_step ?? '1.00'),
-    late_fee_type: p?.late_fee_type ?? 'none',
-    late_fee_value: s(p?.late_fee_value ?? '0.00'),
-    late_fee_cap: s(p?.late_fee_cap),
-    late_fee_recurring: p?.late_fee_recurring ?? false,
     grace_days: s(p?.grace_days ?? 0),
     early_settlement_rule: p?.early_settlement_rule ?? 'no_discount',
     early_settlement_pct: s(p?.early_settlement_pct),
@@ -109,10 +100,7 @@ export function policyBody(f: PolicyForm) {
     min_sale_amount: money(f.min_sale_amount || '0'),
     min_installment: money(f.min_installment || '0'),
     rounding_step: money(f.rounding_step || '1'),
-    late_fee_type: f.late_fee_type,
-    late_fee_value: money(f.late_fee_value || '0'),
-    late_fee_cap: moneyOrNull(f.late_fee_cap),
-    late_fee_recurring: f.late_fee_recurring,
+    // N04 (D79): no late fees (Islamic finance rule 4); the server saves every version without one.
     grace_days: num(f.grace_days || '0'),
     early_settlement_rule: f.early_settlement_rule,
     early_settlement_pct: pctOrNull(f.early_settlement_pct),

@@ -7,7 +7,6 @@ import {
   DOWN_PAYMENT_RULES,
   EARLY_SETTLEMENT_RULES,
   INSTALLMENT_FREQUENCIES,
-  LATE_FEE_TYPES,
   SURVEY_VALID_DAYS,
   type InstallmentFrequency,
   type InstallmentPolicy,
@@ -228,49 +227,12 @@ export default function InstallmentPolicyTab({ current }: { current: Installment
         </div>
       </Card>
 
-      <Card title={t('settings.policy.lateFees')}>
+      <Card title={t('settings.policy.graceAndSettlement')}>
+        <p className="type-caption mb-4">{t('settings.policy.noLateFees')}</p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Select
-            label={t('settings.policy.lateFeeType')}
-            value={form.late_fee_type}
-            options={LATE_FEE_TYPES.map((v) => ({
-              value: v,
-              label: t(`settings.policy.lateFeeTypes.${v}`),
-            }))}
-            onChange={(e) => set('late_fee_type', e.target.value as PolicyForm['late_fee_type'])}
-          />
-          {form.late_fee_type !== 'none' && (
-            <>
-              {form.late_fee_type === 'percent' ? (
-                <NumberInput
-                  label={t('settings.policy.lateFeeValue')}
-                  decimals={2}
-                  suffix="%"
-                  value={form.late_fee_value}
-                  onValueChange={(v) => set('late_fee_value', v)}
-                />
-              ) : (
-                <MoneyInput
-                  label={t('settings.policy.lateFeeValue')}
-                  value={form.late_fee_value}
-                  onValueChange={(v) => set('late_fee_value', v)}
-                />
-              )}
-              <MoneyInput
-                label={t('settings.policy.lateFeeCap')}
-                help={t('settings.optional')}
-                value={form.late_fee_cap}
-                onValueChange={(v) => set('late_fee_cap', v)}
-              />
-              <Checkbox
-                label={t('settings.policy.lateFeeRecurring')}
-                checked={form.late_fee_recurring}
-                onChange={(e) => set('late_fee_recurring', e.target.checked)}
-              />
-            </>
-          )}
           <NumberInput
             label={t('settings.policy.graceDays')}
+            help={t('settings.policy.graceHelp')}
             decimals={0}
             value={form.grace_days}
             onValueChange={(v) => set('grace_days', v)}

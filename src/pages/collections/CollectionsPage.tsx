@@ -113,14 +113,18 @@ export default function CollectionsPage() {
                     <td className={td}>
                       <span dir="ltr">{c.customer.phone ?? '—'}</span>
                     </td>
-                    <td className={`${tdNum} num`}>{formatMoney(c.remaining)}</td>
-                    <td
-                      className={`${tdNum} num ${c.overdue_amount !== '0.00' ? 'text-danger-600' : ''}`}
-                    >
-                      {formatMoney(c.overdue_amount)}
+                    <td className={tdNum}>
+                      <span className="num">{formatMoney(c.remaining)}</span>
                     </td>
-                    <td className={`${tdNum} num`}>
-                      {c.max_days_late ? formatNumber(c.max_days_late) : '—'}
+                    <td
+                      className={`${tdNum} ${c.overdue_amount !== '0.00' ? 'text-danger-600' : ''}`}
+                    >
+                      <span className="num">{formatMoney(c.overdue_amount)}</span>
+                    </td>
+                    <td className={tdNum}>
+                      <span className="num">
+                        {c.max_days_late ? formatNumber(c.max_days_late) : '—'}
+                      </span>
                     </td>
                     <td className={td}>
                       {c.next_due_date ? formatBusinessDate(c.next_due_date) : '—'}

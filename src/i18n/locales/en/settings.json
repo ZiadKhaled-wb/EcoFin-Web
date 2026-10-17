@@ -174,17 +174,10 @@
     "markupPct": "Markup (%)",
     "addTier": "Add row",
     "removeTier": "Remove row",
-    "lateFees": "Late fees and settlement",
-    "lateFeeType": "Late fee",
-    "lateFeeTypes": {
-      "none": "None",
-      "fixed": "Fixed amount",
-      "percent": "Percent of the installment"
-    },
-    "lateFeeValue": "Late fee value",
-    "lateFeeCap": "Late fee cap",
-    "lateFeeRecurring": "Charge again every overdue period",
+    "graceAndSettlement": "Grace and early settlement",
+    "noLateFees": "No late fees are ever charged (Islamic finance): a late customer never owes more because of the delay. Late installments are followed up on the Overdue page.",
     "graceDays": "Grace days",
+    "graceHelp": "An installment counts as late only after its due date plus these days.",
     "earlySettlement": "Early settlement",
     "earlyRules": {
       "no_discount": "No discount",

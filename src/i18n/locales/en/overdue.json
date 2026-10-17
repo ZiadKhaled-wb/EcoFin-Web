@@ -1,0 +1,120 @@
+{
+  "nav": {
+    "title": "Overdue"
+  },
+  "title": "Overdue installments",
+  "description": "Contracts with late installments in every branch. An installment is late only after its due date plus the policy's grace days. No late fees are ever charged: what a customer owes never grows because of a delay.",
+  "tabs": {
+    "contracts": "Overdue contracts",
+    "warnings": "Warnings",
+    "referrals": "Legal referrals"
+  },
+  "run": {
+    "button": "Run the check now",
+    "done": "Check done: {warnings} new warnings, {blocked} customers blocked, {referrals} legal referrals.",
+    "failed": "The check could not run. Try again."
+  },
+  "filters": {
+    "search": "Contract number, customer name, phone or national ID",
+    "branch": "Branch",
+    "allBranches": "All branches",
+    "minDays": "At least days late",
+    "status": "Status"
+  },
+  "totals": {
+    "contracts": "Overdue contracts",
+    "overdueAmount": "Overdue amount",
+    "late_1_30": "1–30 days",
+    "late_31_60": "31–60 days",
+    "late_61_90": "61–90 days",
+    "late_90_plus": "Over 90 days"
+  },
+  "columns": {
+    "contract": "Contract",
+    "customer": "Customer",
+    "branch": "Branch",
+    "overdueAmount": "Overdue",
+    "daysLate": "Days late",
+    "oldestDue": "Oldest due date",
+    "remaining": "Left to pay",
+    "flags": "Flags",
+    "date": "Date",
+    "daysLateThen": "Days late then",
+    "overdueNow": "Overdue now",
+    "status": "Status"
+  },
+  "flags": {
+    "blocked": "Blocked",
+    "warning": "Open warning",
+    "legal": {
+      "open": "Legal referral",
+      "case_opened": "Legal case",
+      "dismissed": "Referral dismissed",
+      "handled": "Legal referral",
+      "superseded": "Legal referral",
+      "resolved": "Legal referral"
+    }
+  },
+  "contracts": {
+    "empty": "No contract is overdue.",
+    "collect": "Collect"
+  },
+  "warnings": {
+    "help": "A warning appears the first day a contract is late, then again every few days while it stays late. Call the customer and record what happened.",
+    "empty": "No warnings here.",
+    "actions": "Actions",
+    "handle": "Mark handled",
+    "dialogTitle": "Warning on contract {number}",
+    "dialogDescription": "{name} has {amount} overdue.",
+    "outcome": "What happened",
+    "note": "Note",
+    "noteRequired": "Required for \"Other\" (at least 3 characters).",
+    "save": "Save",
+    "done": "Warning marked handled.",
+    "filter": {
+      "open": "Open",
+      "handled": "Handled",
+      "all": "All"
+    }
+  },
+  "referrals": {
+    "help": "A contract is flagged once when it is late more than the shop's legal days. It stays here until the owner dismisses it or a legal case is opened.",
+    "empty": "No legal referrals here.",
+    "actions": "Actions",
+    "dismiss": "Dismiss",
+    "dialogTitle": "Dismiss the legal referral of contract {number}",
+    "dialogDescription": "The same late installment will not be referred again. A later one may be.",
+    "reason": "Reason",
+    "confirm": "Dismiss",
+    "done": "Referral dismissed.",
+    "filter": {
+      "open": "Open",
+      "dismissed": "Dismissed",
+      "case_opened": "Case opened",
+      "all": "All"
+    }
+  },
+  "status": {
+    "open": "Open",
+    "handled": "Handled",
+    "superseded": "Replaced by a newer warning",
+    "resolved": "Caught up",
+    "dismissed": "Dismissed",
+    "case_opened": "Case opened"
+  },
+  "outcomes": {
+    "contacted": "Reached the customer",
+    "promised": "Promised to pay",
+    "no_answer": "No answer",
+    "wrong_number": "Wrong number",
+    "other": "Other"
+  },
+  "errors": {
+    "notOpen": "Someone already dealt with this. The list has been refreshed.",
+    "failed": "Could not save. Try again."
+  },
+  "loadFailed": "The list could not be loaded.",
+  "more": "Show more",
+  "cancel": "Cancel",
+  "optional": "Optional"
+}
