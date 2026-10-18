@@ -1,0 +1,101 @@
+{
+  "nav": {
+    "title": "Contract changes"
+  },
+  "kind": {
+    "early_settlement": "Early settlement",
+    "reschedule": "Reschedule",
+    "write_off": "Write-off",
+    "return_adjustment": "Return adjustment"
+  },
+  "actions": {
+    "settle": "Settle early",
+    "reschedule": "Reschedule",
+    "writeOff": "Write off"
+  },
+  "cancel": "Cancel",
+  "errors": {
+    "dueChanged": "What is left on this contract changed (a payment was just taken). The figures were reloaded: check them and try again.",
+    "notOpen": "This contract is no longer open.",
+    "failed": "The change could not be saved."
+  },
+  "settle": {
+    "title": "Settle contract {number} early",
+    "description": "The customer pays everything left today and the contract closes. A manager may waive part of the profit of the installments not yet due; it is a decision made now, never promised in advance.",
+    "quoteFailed": "The payoff could not be loaded.",
+    "payoff": "Left to pay (payoff)",
+    "principalLeft": "Principal left",
+    "profitLeft": "Profit left",
+    "futureProfit": "Profit of installments not yet due",
+    "suggestion": "The shop's policy suggests waiving {amount}. This is a suggestion only: you decide.",
+    "useSuggestion": "Use the suggestion",
+    "waiver": "Profit waived",
+    "max": "At most {amount}",
+    "reason": "Reason for the waiver",
+    "toPay": "The customer pays",
+    "toPayment": "Continue to payment",
+    "errors": {
+      "waiverTooHigh": "The waiver can be at most {max}."
+    }
+  },
+  "reschedule": {
+    "title": "Reschedule contract {number}",
+    "description": "What is left is spread over new installments. The total never grows: the new installments add up to exactly what is left. The old schedule stays on the contract.",
+    "count": "Number of installments",
+    "previewFailed": "The new schedule could not be worked out.",
+    "totalSame": "The new installments add up to {amount}, exactly what is left.",
+    "caption": "The new schedule",
+    "reason": "Reason",
+    "confirm": "Reschedule",
+    "violations": {
+      "frequency_not_allowed": "The shop's policy doesn't allow this frequency.",
+      "first_due_date_out_of_range": "The first installment must fall between tomorrow and 60 days from today.",
+      "rounding": "Too many installments for what is left: choose fewer."
+    },
+    "errors": {
+      "invalid": "The new schedule doesn't meet the rules: check the preview."
+    }
+  },
+  "writeOff": {
+    "title": "Write off contract {number}",
+    "description": "What is left is marked as lost and the contract closes. It shows in the reports.",
+    "amount": "Written off",
+    "final": "This can't be undone.",
+    "reason": "Reason",
+    "confirm": "Write off",
+    "errors": {
+      "ownerOnly": "Only the owner can write off a contract."
+    }
+  },
+  "history": {
+    "title": "Changes to this contract",
+    "settled": "Paid off {amount}, profit waived {waived}",
+    "writtenOff": "Written off {amount}",
+    "rescheduled": "{amount} spread over schedule {version}",
+    "versions": "Schedules",
+    "version": "Schedule",
+    "versionCurrent": "Schedule {version} (current)",
+    "versionOld": "Schedule {version} (replaced)",
+    "versionCaption": "Schedule {version}",
+    "supersededBy": "Replaced by a {kind}."
+  },
+  "list": {
+    "title": "Contract changes",
+    "description": "Early settlements, reschedules and write-offs, newest first.",
+    "kind": "Change",
+    "allKinds": "All changes",
+    "from": "From",
+    "to": "To",
+    "waived": "Profit waived: {amount}",
+    "loadFailed": "The changes could not be loaded.",
+    "empty": "No contract changes yet.",
+    "caption": "Contract changes",
+    "date": "Date",
+    "contract": "Contract",
+    "customer": "Customer",
+    "amount": "Amount left",
+    "profitWaived": "Profit waived",
+    "reason": "Reason",
+    "more": "Show more"
+  }
+}

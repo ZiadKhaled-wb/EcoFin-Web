@@ -207,7 +207,9 @@
       "payment_reversal": "Payment reversal",
       "return": "Return",
       "fee": "Late fee",
-      "fee_waiver": "Fee waiver"
+      "fee_waiver": "Fee waiver",
+      "profit_waiver": "Profit waived at early settlement",
+      "write_off": "Written off"
     },
     "ofSale": "for sale {number}"
   },

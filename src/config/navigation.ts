@@ -232,6 +232,19 @@ export const NAV: NavItem[] = [
     to: '/installments/overdue',
     permission: 'overdue.view',
   },
+  // N05 (D80): the shop's early settlements, reschedules and write-offs (with the waived profit).
+  {
+    id: 'contract-changes',
+    labelKey: 'contractChanges.nav.title',
+    icon: AlertIcon,
+    to: '/installments/changes',
+    permissionsAny: [
+      'report.financial',
+      'contract.settle_early',
+      'schedule.change',
+      'contract.write_off',
+    ],
+  },
   // R03 (D72): credit exceptions waiting for a manager. The page itself is open to every customer
   // reader (a cashier follows their own requests from the customer's credit card).
   {

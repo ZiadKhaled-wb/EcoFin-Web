@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Uuid } from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import EmptyState from '@/components/ui/EmptyState';
 import ErrorState from '@/components/ui/ErrorState';
@@ -15,6 +17,8 @@ import { useCan } from '@/features/me/useCan';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
 import { relationLabel } from '../customers/guarantorShared';
+import { RescheduleDialog, SettleDialog, WriteOffDialog } from './ContractChangeDialogs';
+import ContractHistory from './ContractHistory';
 
 const th = 'type-label px-4 py-3 text-start';
 const thNum = 'type-label px-4 py-3 text-end';
@@ -45,7 +49,8 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
 /**
  * N02 (D77): one installment contract: its terms (cash price, down payment, financed amount, the
  * profit for the whole term, the installment price), the customer and guarantors, the schedule
- * with what was paid and the balance. A contract is never edited; N05 changes it by new records.
+ * with what was paid and the balance. A contract is never edited; N05 (D80) changes it by new
+ * records: early settlement, reschedule and (the owner) write-off, with every schedule version kept.
  */
 export default function ContractPage() {
   const { id = '' } = useParams();
@@ -53,6 +58,10 @@ export default function ContractPage() {
   const orgId = useAuthStore((s) => s.orgId);
   // N03: a contract with something left can be collected from here.
   const canCollect = useCan('collection.create');
+  const canSettle = useCan('contract.settle_early');
+  const canReschedule = useCan('schedule.change');
+  const isOwner = useAuthStore((s) => s.user?.role === 'OWNER');
+  const [changing, setChanging] = useState<'settle' | 'reschedule' | 'writeOff' | null>(null);
   const query = useQuery({
     queryKey: installmentKeys.contract(orgId, id),
     queryFn: () => installmentsApi.contract(id),
@@ -74,6 +83,8 @@ export default function ContractPage() {
   }
   const c = query.data;
   if (!c) return <LoadingState />;
+  const open =
+    (c.status === 'active' || c.status === 'rescheduled') && Number(c.balance.remaining) > 0;
 
   return (
     <PageContainer>
@@ -89,12 +100,32 @@ export default function ContractPage() {
                 {t('collections.search.collect')}
               </Link>
             )}
+            {open && canSettle && (
+              <Button variant="secondary" onClick={() => setChanging('settle')}>
+                {t('contractChanges.actions.settle')}
+              </Button>
+            )}
+            {open && canReschedule && (
+              <Button variant="secondary" onClick={() => setChanging('reschedule')}>
+                {t('contractChanges.actions.reschedule')}
+              </Button>
+            )}
+            {open && isOwner && (
+              <Button variant="danger" onClick={() => setChanging('writeOff')}>
+                {t('contractChanges.actions.writeOff')}
+              </Button>
+            )}
             <Link to={`/customers/${c.customer.id}`} className="btn btn-ghost">
               {t('installments.contract.toCustomer')}
             </Link>
           </div>
         }
       />
+      {changing === 'settle' && <SettleDialog contract={c} onClose={() => setChanging(null)} />}
+      {changing === 'reschedule' && (
+        <RescheduleDialog contract={c} onClose={() => setChanging(null)} />
+      )}
+      {changing === 'writeOff' && <WriteOffDialog contract={c} onClose={() => setChanging(null)} />}
       <div className="space-y-4">
         <Card>
           <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -245,6 +276,7 @@ export default function ContractPage() {
             </table>
           </div>
         </Card>
+        <ContractHistory contractId={c.id} currentVersion={c.current_version} />
       </div>
     </PageContainer>
   );
