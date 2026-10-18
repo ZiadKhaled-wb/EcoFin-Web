@@ -142,7 +142,9 @@
       "not_latest": "A later payment was taken on one of these contracts: reverse that one first.",
       "shift_closed": "The shift that took this payment is closed: the cash can't go back out of its drawer.",
       "insufficient": "There is not enough cash in the drawer to give back.",
-      "failed": "The collection could not be reversed."
+      "failed": "The collection could not be reversed.",
+      "settlement": "This collection paid an early settlement: it can't be reversed.",
+      "contract_changed": "The contract was rescheduled or settled after this collection: it can't be reversed."
     }
   }
 }

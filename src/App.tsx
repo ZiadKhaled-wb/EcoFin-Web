@@ -66,6 +66,7 @@ import CollectionsPage from '@/pages/collections/CollectionsPage';
 import CollectPage from '@/pages/collections/CollectPage';
 import CollectionReceiptPage from '@/pages/collections/CollectionReceiptPage';
 import OverduePage from '@/pages/installments/OverduePage';
+import ContractChangesPage from '@/pages/installments/ContractChangesPage';
 import ShiftPage from '@/pages/accounting/ShiftPage';
 import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
@@ -117,6 +118,7 @@ const REAL_ROUTES = new Set([
   '/customers/surveys',
   '/collections',
   '/installments/overdue',
+  '/installments/changes',
   '/purchasing/invoices',
   '/purchasing/approvals',
   '/purchasing/returns',
@@ -141,6 +143,7 @@ const SURVEYS_ITEM = navLeaves().find((i) => i.id === 'surveys')!;
 const COLLECTIONS_ITEM = navLeaves().find((i) => i.id === 'collections')!;
 /** N04: the overdue page follows its menu item (overdue.view); the server checks every call (D79). */
 const OVERDUE_ITEM = navLeaves().find((i) => i.id === 'overdue')!;
+const CONTRACT_CHANGES_ITEM = navLeaves().find((i) => i.id === 'contract-changes')!;
 /** U02: the purchase invoice pages follow their menu item (same roles as purchasing). */
 const PURCHASE_INVOICES_ITEM = navLeaves().find((i) => i.id === 'purchase-invoices')!;
 /** U04: the purchase return pages follow their menu item (same roles as purchasing). */
@@ -321,6 +324,14 @@ export default function App() {
                     element={
                       <RequireNavItem item={OVERDUE_ITEM}>
                         <OverduePage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/installments/changes"
+                    element={
+                      <RequireNavItem item={CONTRACT_CHANGES_ITEM}>
+                        <ContractChangesPage />
                       </RequireNavItem>
                     }
                   />
