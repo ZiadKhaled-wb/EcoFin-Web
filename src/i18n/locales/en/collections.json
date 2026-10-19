@@ -101,6 +101,7 @@
       "date": "Date",
       "branch": "Branch",
       "cashier": "Received by",
+      "fieldCollector": "Collected in the field by",
       "customer": "Customer",
       "phone": "Phone",
       "contract": "Contract {number}",
@@ -144,7 +145,8 @@
       "insufficient": "There is not enough cash in the drawer to give back.",
       "failed": "The collection could not be reversed.",
       "settlement": "This collection paid an early settlement: it can't be reversed.",
-      "contract_changed": "The contract was rescheduled or settled after this collection: it can't be reversed."
+      "contract_changed": "The contract was rescheduled or settled after this collection: it can't be reversed.",
+      "handed_in": "The collector already handed this cash in: it can't be reversed."
     }
   }
 }

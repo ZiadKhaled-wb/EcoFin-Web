@@ -471,13 +471,6 @@ function SalesFields({ form, set }: FieldProps) {
           value={form.purchase_approval_threshold}
           onValueChange={(v) => set('purchase_approval_threshold', v)}
         />
-        <NumberInput
-          label={t('settings.sales.collectorCommission')}
-          decimals={2}
-          suffix="%"
-          value={form.collector_commission_pct}
-          onValueChange={(v) => set('collector_commission_pct', v)}
-        />
       </Grid>
       <Switch
         label={t('settings.sales.allowNegativeBank')}

@@ -103,7 +103,6 @@
     "returnDays": "Return period (days)",
     "purchaseThreshold": "Purchases above this need approval",
     "purchaseThresholdHelp": "Leave empty for no approval.",
-    "collectorCommission": "Collector commission",
     "allowNegativeBank": "Allow bank accounts to go below zero",
     "allowNegativeBankHelp": "Safes, drawers and wallets never go below zero."
   },

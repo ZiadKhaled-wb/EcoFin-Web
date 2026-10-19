@@ -103,7 +103,6 @@
     "returnDays": "مدة الاسترجاع (أيام)",
     "purchaseThreshold": "المشتريات فوق هذا المبلغ تحتاج موافقة",
     "purchaseThresholdHelp": "اتركه فارغًا لعدم طلب موافقة.",
-    "collectorCommission": "عمولة المحصّل",
     "allowNegativeBank": "السماح للحسابات البنكية بالسالب",
     "allowNegativeBankHelp": "الخزن والأدراج والمحافظ لا تنزل تحت الصفر أبدًا."
   },

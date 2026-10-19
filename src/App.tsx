@@ -67,6 +67,9 @@ import CollectPage from '@/pages/collections/CollectPage';
 import CollectionReceiptPage from '@/pages/collections/CollectionReceiptPage';
 import OverduePage from '@/pages/installments/OverduePage';
 import ContractChangesPage from '@/pages/installments/ContractChangesPage';
+import FieldHomePage from '@/pages/collections/FieldHomePage';
+import WalletsPage from '@/pages/installments/WalletsPage';
+import WalletPage from '@/pages/installments/WalletPage';
 import ShiftPage from '@/pages/accounting/ShiftPage';
 import PurchaseInvoicesPage from '@/pages/purchasing/PurchaseInvoicesPage';
 import PurchaseInvoicePage from '@/pages/purchasing/PurchaseInvoicePage';
@@ -119,6 +122,8 @@ const REAL_ROUTES = new Set([
   '/collections',
   '/installments/overdue',
   '/installments/changes',
+  '/field',
+  '/installments/wallets',
   '/purchasing/invoices',
   '/purchasing/approvals',
   '/purchasing/returns',
@@ -144,6 +149,9 @@ const COLLECTIONS_ITEM = navLeaves().find((i) => i.id === 'collections')!;
 /** N04: the overdue page follows its menu item (overdue.view); the server checks every call (D79). */
 const OVERDUE_ITEM = navLeaves().find((i) => i.id === 'overdue')!;
 const CONTRACT_CHANGES_ITEM = navLeaves().find((i) => i.id === 'contract-changes')!;
+/** N06: the collector's home and the wallets pages follow their menu items; the server checks every call (D81). */
+const FIELD_ITEM = navLeaves().find((i) => i.id === 'field')!;
+const WALLETS_ITEM = navLeaves().find((i) => i.id === 'wallets')!;
 /** U02: the purchase invoice pages follow their menu item (same roles as purchasing). */
 const PURCHASE_INVOICES_ITEM = navLeaves().find((i) => i.id === 'purchase-invoices')!;
 /** U04: the purchase return pages follow their menu item (same roles as purchasing). */
@@ -332,6 +340,30 @@ export default function App() {
                     element={
                       <RequireNavItem item={CONTRACT_CHANGES_ITEM}>
                         <ContractChangesPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/field"
+                    element={
+                      <RequireNavItem item={FIELD_ITEM}>
+                        <FieldHomePage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/installments/wallets"
+                    element={
+                      <RequireNavItem item={WALLETS_ITEM}>
+                        <WalletsPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/installments/wallets/:id"
+                    element={
+                      <RequireNavItem item={WALLETS_ITEM}>
+                        <WalletPage />
                       </RequireNavItem>
                     }
                   />
