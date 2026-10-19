@@ -31,6 +31,12 @@
   "forbidden": {
     "title": "You do not have permission to open this page",
     "description": "Ask the shop owner to give your account the right permission.",
+    "ownerDescription": "This page is not meant for your role in the shop.",
+    "back": "Back to the dashboard"
+  },
+  "notFound": {
+    "title": "This page does not exist",
+    "description": "The link may be old or mistyped.",
     "back": "Back to the dashboard"
   },
   "permissionsFailed": {

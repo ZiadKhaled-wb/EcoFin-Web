@@ -42,7 +42,7 @@
     "vat": "الضريبة",
     "lineTotal": "الإجمالي",
     "warranty": "الضمان حتى {date}",
-    "subtotal": "الإجمالي قبل الضريبة",
+    "subtotal": "الإجمالي قبل الخصم",
     "discountTotal": "الخصومات",
     "vatTotal": "الضريبة",
     "total": "الإجمالي",

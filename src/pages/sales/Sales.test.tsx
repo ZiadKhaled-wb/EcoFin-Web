@@ -695,6 +695,31 @@ describe('S01 sale details', () => {
     expect(within(payments).getByText('MAIN-PY-26-000001')).toBeInTheDocument();
   });
 
+  it('labels the subtotal as before discounts and shows the discount between it and the total', async () => {
+    vi.spyOn(salesHistoryApi, 'get').mockResolvedValue(
+      SaleHistoryDetails.parse({
+        ...sale({
+          subtotal: '5500.00',
+          discount_total: '100.00',
+          tax_total: '663.16',
+          total: '5400.00',
+        }),
+        branch: { id: MAIN, name: 'Main' },
+        cashier: { id: OTHER, name: 'Mona Cashier' },
+        customer: null,
+        status: 'completed',
+        voidable: false,
+        void_block_reason: 'PERMISSION_DENIED',
+        returns: [],
+      }),
+    );
+    await renderApp(detail, { lang: 'en', route: `/sales/${SALE}` });
+    expect(await screen.findByText('Subtotal before discounts')).toBeInTheDocument();
+    expect(screen.getByText('Discounts')).toBeInTheDocument();
+    expect(screen.getByTestId('sale-discount')).toHaveTextContent(/−100\.00/);
+    expect(screen.getByTestId('sale-total')).toHaveTextContent(/5[,٬]?400\.00/);
+  });
+
   it('in Arabic; a sale that is not the caller’s is not found; a bad id makes no call', async () => {
     const get = vi.spyOn(salesHistoryApi, 'get').mockResolvedValue(
       SaleHistoryDetails.parse({

@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { t } from '@/i18n';
 import { api, ApiError } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
-import { loginResponse, ORG_B, selectShopResponse, shopA, shopB } from '@/test/authFixtures';
+import { loginResponse, ORG_A, ORG_B, selectShopResponse, shopA, shopB } from '@/test/authFixtures';
 import ShopPickerPage from './ShopPickerPage';
 
 beforeEach(() => {
@@ -38,6 +38,15 @@ describe('ShopPickerPage', () => {
     expect(current).toHaveTextContent('Shop B');
     expect(current).toHaveTextContent(t('auth.picker.current'));
     expect(screen.getAllByText(t('auth.picker.current'))).toHaveLength(1);
+  });
+
+  it('with a single shop that is already active there is nothing to choose: back to the dashboard', () => {
+    useAuthStore
+      .getState()
+      .setLogin(loginResponse({ shops: [shopA], requiresShopSelection: true }));
+    useAuthStore.setState({ orgId: ORG_A });
+    renderPicker();
+    expect(screen.getByText('dashboard page')).toBeInTheDocument();
   });
 
   it('no shop is marked current before one is chosen', () => {

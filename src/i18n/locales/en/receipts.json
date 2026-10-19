@@ -42,7 +42,7 @@
     "vat": "VAT",
     "lineTotal": "Total",
     "warranty": "Warranty until {date}",
-    "subtotal": "Subtotal",
+    "subtotal": "Subtotal before discounts",
     "discountTotal": "Discounts",
     "vatTotal": "VAT",
     "total": "Total",

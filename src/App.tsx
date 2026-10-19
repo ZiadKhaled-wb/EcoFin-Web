@@ -21,6 +21,7 @@ import AppShell from '@/components/layout/AppShell';
 import { navLeaves } from '@/config/navigation';
 import DashboardPage from '@/pages/DashboardPage';
 import ModulePlaceholderPage from '@/pages/ModulePlaceholderPage';
+import NotFoundPage from '@/pages/NotFoundPage';
 import RequireSuperAdmin from '@/components/guards/RequireSuperAdmin';
 import AdminLayout from '@/components/layout/AdminLayout';
 import AdminShopsPage from '@/pages/admin/AdminShopsPage';
@@ -608,6 +609,8 @@ export default function App() {
                         }
                       />
                     ))}
+                  {/* Any other address inside the app: a 404 with the menu still around it */}
+                  <Route path="*" element={<NotFoundPage />} />
                 </Route>
               </Route>
             </Route>

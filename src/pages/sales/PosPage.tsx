@@ -386,6 +386,8 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
         <CustomerPicker
           onPick={(customer) => {
             cart.setCustomer(customer);
+            // The "choose a customer first" hint is answered now.
+            if (error === t('installments.pos.needCustomer')) setError('');
             close();
           }}
           onClose={close}

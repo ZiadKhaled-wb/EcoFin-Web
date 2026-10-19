@@ -10,7 +10,7 @@
   "pairing": "Pairing",
   "lastSeen": "Last seen",
   "never": "Never",
-  "state": "Device",
+  "state": "Status",
   "add": {
     "open": "Add device",
     "title": "New POS device",
