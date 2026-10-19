@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Uuid } from '@ziadkhaled-wb/contracts';
+import { compareMoney, Uuid } from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import Card from '@/components/ui/Card';
@@ -146,6 +146,14 @@ export default function SalePage() {
           <dl className="ms-auto grid max-w-xs grid-cols-2 gap-x-4 gap-y-1">
             <dt className="type-caption">{t('sales.detail.subtotal')}</dt>
             <dd className="num text-end">{formatMoney(sale.subtotal)}</dd>
+            {compareMoney(sale.discount_total, '0.00') > 0 && (
+              <>
+                <dt className="type-caption">{t('sales.detail.discountTotal')}</dt>
+                <dd className="num text-end" data-testid="sale-discount">
+                  −{formatMoney(sale.discount_total)}
+                </dd>
+              </>
+            )}
             <dt className="type-caption">{t('sales.detail.vatTotal')}</dt>
             <dd className="num text-end">{formatMoney(sale.tax_total)}</dd>
             <dt className="type-label">{t('sales.detail.total')}</dt>

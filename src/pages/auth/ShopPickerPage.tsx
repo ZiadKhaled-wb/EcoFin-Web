@@ -38,6 +38,10 @@ export default function ShopPickerPage() {
 
   const logout = () => authApi.logout().then(() => navigate('/login', { replace: true }));
   if (isSuperAdmin) return <Navigate to="/admin" replace />;
+  // Nothing to choose: the only shop is already the active one.
+  if (shops.length === 1 && shops[0]?.orgId === currentOrgId) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <AuthLayout title={t('auth.picker.title')} subtitle={t('auth.picker.subtitle')}>

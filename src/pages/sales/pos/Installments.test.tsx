@@ -289,6 +289,36 @@ describe('N02 installment sale in the POS', () => {
   }
   const termsButton = () => screen.getByRole('button', { name: /Installment terms/ });
 
+  it(
+    'the "choose the customer first" hint goes away once a customer is picked',
+    { timeout: 20_000 },
+    async () => {
+      vi.spyOn(customersApi, 'list').mockResolvedValue({
+        items: [
+          {
+            id: MONA,
+            full_name: 'Mona Adel',
+            phones: ['01001234567'],
+            status: 'active',
+          } as Customer,
+        ],
+        page: 1,
+        pageSize: 10,
+        total: 1,
+      } as Awaited<ReturnType<typeof customersApi.list>>);
+      const user = await open('/sales/pos');
+      await user.click(await screen.findByRole('button', { name: 'Installments' }));
+      await waitFor(() => expect(termsButton()).toBeEnabled());
+      await user.click(termsButton());
+      const hint = 'Choose the customer first: an installment sale needs one.';
+      expect(screen.getByText(hint)).toBeInTheDocument();
+      const picker = await screen.findByRole('dialog');
+      await user.type(within(picker).getByRole('searchbox'), 'Mona');
+      await user.click(await within(picker).findByRole('button', { name: /Mona Adel/ }));
+      await waitFor(() => expect(screen.queryByText(hint)).not.toBeInTheDocument());
+    },
+  );
+
   it('shows the switch only with installment.create', async () => {
     setPermissions(['sale.create', 'customer.create']);
     await open();
