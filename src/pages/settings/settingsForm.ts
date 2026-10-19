@@ -48,7 +48,6 @@ export interface SettingsForm {
   discount_caps: Record<CapRole, string>;
   return_policy_days: string;
   purchase_approval_threshold: string;
-  collector_commission_pct: string;
   allow_negative_bank: boolean;
   credit_min_score: string;
   credit_limit_income_multiple: string;
@@ -84,7 +83,6 @@ export const TAB_FIELDS: Record<FieldTab, readonly (keyof SettingsForm)[]> = {
     'discount_caps',
     'return_policy_days',
     'purchase_approval_threshold',
-    'collector_commission_pct',
     'allow_negative_bank',
   ],
   credit: ['credit_min_score', 'credit_limit_income_multiple', 'credit_score_weights'],
@@ -115,7 +113,6 @@ export function toForm(s: ShopSettings): SettingsForm {
     discount_caps: mapOf(DISCOUNT_CAP_ROLES, (r) => str(s.discount_caps[r])),
     return_policy_days: str(s.return_policy_days),
     purchase_approval_threshold: str(s.purchase_approval_threshold),
-    collector_commission_pct: str(s.collector_commission_pct),
     allow_negative_bank: s.allow_negative_bank,
     credit_min_score: str(s.credit_min_score),
     credit_limit_income_multiple: str(s.credit_limit_income_multiple),
@@ -171,8 +168,6 @@ function apiValue(form: SettingsForm, key: keyof SettingsForm): unknown {
         : padDecimals(form.purchase_approval_threshold.trim(), 2);
     case 'credit_limit_income_multiple':
       return orNull(decimal(form.credit_limit_income_multiple));
-    case 'collector_commission_pct':
-      return decimal(form.collector_commission_pct);
     case 'return_policy_days':
     case 'credit_min_score':
     case 'customer_ban_days':

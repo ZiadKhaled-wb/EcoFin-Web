@@ -17,6 +17,7 @@ exports[`menu by role (TEST-2) > ACCOUNTANT sees these pages 1`] = `
   "/purchasing/payments",
   "/customers",
   "/installments/overdue",
+  "/installments/wallets",
   "/installments/changes",
   "/suppliers",
   "/tax/eta-receipts",
@@ -55,6 +56,7 @@ exports[`menu by role (TEST-2) > BRANCH_MANAGER sees these pages 1`] = `
   "/customers",
   "/collections",
   "/installments/overdue",
+  "/installments/wallets",
   "/installments/changes",
   "/customers/credit-exceptions",
   "/customers/surveys",
@@ -84,6 +86,7 @@ exports[`menu by role (TEST-2) > CASHIER sees these pages 1`] = `
   "/inventory/units",
   "/customers",
   "/collections",
+  "/field",
   "/accounting/shifts",
 ]
 `;
@@ -94,6 +97,7 @@ exports[`menu by role (TEST-2) > COLLECTOR sees these pages 1`] = `
   "/customers",
   "/collections",
   "/installments/overdue",
+  "/field",
   "/customers/surveys",
 ]
 `;
@@ -132,6 +136,7 @@ exports[`menu by role (TEST-2) > OWNER sees these pages 1`] = `
   "/customers",
   "/collections",
   "/installments/overdue",
+  "/installments/wallets",
   "/installments/changes",
   "/customers/credit-exceptions",
   "/customers/surveys",

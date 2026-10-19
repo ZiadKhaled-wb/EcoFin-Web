@@ -19,6 +19,7 @@ import Card from '@/components/ui/Card';
 import Checkbox from '@/components/ui/Checkbox';
 import EmptyState from '@/components/ui/EmptyState';
 import ErrorState from '@/components/ui/ErrorState';
+import { ConfirmDialog } from '@/components/ui/Dialog';
 import MoneyInput from '@/components/ui/MoneyInput';
 import Notice from '@/components/ui/Notice';
 import Skeleton from '@/components/ui/Skeleton';
@@ -29,6 +30,7 @@ import { shiftKeys, shiftsApi } from '@/services/shiftsApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
 import PaymentDialog from '../sales/PaymentDialog';
+import { walletError } from '../installments/walletShared';
 
 const ZERO: Money = '0.00';
 const positive = (v: string): Money | null => {
@@ -57,8 +59,14 @@ export default function CollectPage() {
   const contractParam = params.get('contract');
   const validCustomer = Uuid.safeParse(customerId).success;
   const ticked = contractParam && Uuid.safeParse(contractParam).success ? contractParam : null;
+  // N06: `mode=field` takes the payment in the field: no shift, the cash goes to the caller's wallet.
+  const field = params.get('mode') === 'field';
   const orgId = useAuthStore((s) => s.orgId);
-  const current = useQuery({ queryKey: shiftKeys.current(orgId), queryFn: shiftsApi.current });
+  const current = useQuery({
+    queryKey: shiftKeys.current(orgId),
+    queryFn: shiftsApi.current,
+    enabled: !field,
+  });
 
   if (!validCustomer)
     return (
@@ -73,8 +81,13 @@ export default function CollectPage() {
         title={t('collections.collect.title')}
         description={t('collections.collect.description')}
       />
-      {current.data?.device_revoked ||
-      (current.error instanceof ApiError && current.error.code === 'DEVICE_REVOKED') ? (
+      {field ? (
+        <div className="space-y-4">
+          <Notice tone="info">{t('wallets.collect.banner')}</Notice>
+          <Collect customerId={customerId} ticked={ticked} field />
+        </div>
+      ) : current.data?.device_revoked ||
+        (current.error instanceof ApiError && current.error.code === 'DEVICE_REVOKED') ? (
         <Notice tone="error">{t('collections.collect.revoked')}</Notice>
       ) : current.isPending ? (
         <Skeleton className="h-40" />
@@ -99,7 +112,15 @@ export default function CollectPage() {
   );
 }
 
-function Collect({ customerId, ticked }: { customerId: string; ticked: string | null }) {
+function Collect({
+  customerId,
+  ticked,
+  field = false,
+}: {
+  customerId: string;
+  ticked: string | null;
+  field?: boolean;
+}) {
   const orgId = useAuthStore((s) => s.orgId);
   const cache = useQueryClient();
   const navigate = useNavigate();
@@ -118,6 +139,7 @@ function Collect({ customerId, ticked }: { customerId: string; ticked: string | 
   const [paying, setPaying] = useState(false);
   const [busy, setBusy] = useState(false);
   const [stale, setStale] = useState<'dueChanged' | 'exceeds' | 'notOpen' | null>(null);
+  const [fieldError, setFieldError] = useState('');
 
   // The ticked contract from the link, or the only open one, until the cashier ticks for themself.
   const defaultId =
@@ -147,7 +169,8 @@ function Collect({ customerId, ticked }: { customerId: string; ticked: string | 
   async function collect(payments: SalePaymentInput[]) {
     setBusy(true);
     try {
-      const receipt = await collectionsApi.collect(
+      const send = field ? collectionsApi.collectField : collectionsApi.collect;
+      const receipt = await send(
         {
           customer_id: customerId,
           contracts: lines.map(({ c, amount }) => ({
@@ -176,6 +199,15 @@ function Collect({ customerId, ticked }: { customerId: string; ticked: string | 
     }
   }
 
+  async function takeField() {
+    setFieldError('');
+    const err = await collect([{ method: 'cash', amount: total }]);
+    if (err) {
+      setPaying(false);
+      setFieldError(walletError(err));
+    }
+  }
+
   if (contracts.isPending) return <Skeleton className="h-40" />;
   if (contracts.isError)
     return (
@@ -192,6 +224,7 @@ function Collect({ customerId, ticked }: { customerId: string; ticked: string | 
         {t('collections.collect.customer', { name: open[0]!.customer.name })}
       </p>
       {stale && <Notice tone="error">{t(`collections.collect.errors.${stale}`)}</Notice>}
+      {fieldError && <Notice tone="error">{fieldError}</Notice>}
       {open.map((c) => (
         <ContractCard
           key={c.id}
@@ -221,7 +254,18 @@ function Collect({ customerId, ticked }: { customerId: string; ticked: string | 
           </div>
         </div>
       </Card>
-      {paying && (
+      {paying && field && (
+        <ConfirmDialog
+          open
+          onOpenChange={(open) => !open && setPaying(false)}
+          title={t('wallets.collect.confirmTitle', { amount: formatMoney(total) })}
+          description={t('wallets.collect.confirmText')}
+          confirmLabel={t('wallets.collect.confirm')}
+          loading={busy}
+          onConfirm={() => void takeField()}
+        />
+      )}
+      {paying && !field && (
         <PaymentDialog
           total={total}
           customerId={null}

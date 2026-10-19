@@ -226,6 +226,23 @@ describe('P03 settings page', () => {
     expect(Object.keys(body).filter((k) => k.startsWith('late_fee'))).toEqual([]);
   });
 
+  it('has no collector commission field and never sends one (N06: collectors are salaried)', async () => {
+    const update = vi.spyOn(settingsApi, 'update').mockResolvedValue(settings);
+    await renderApp(<SettingsPage />, { lang: 'en' });
+    const u = userEvent.setup();
+    await u.click(screen.getByRole('tab', { name: t('settings.tabs.sales') }));
+    expect(await screen.findByLabelText(t('settings.sales.returnDays'))).toBeInTheDocument();
+    expect(screen.queryByLabelText(/commission/i)).not.toBeInTheDocument();
+    const days = screen.getByLabelText(t('settings.sales.returnDays'));
+    await u.clear(days);
+    await u.type(days, '21');
+    await u.click(screen.getByRole('button', { name: t('settings.save') }));
+    expect(update).toHaveBeenCalledWith({ return_policy_days: 21 });
+    expect(Object.keys(update.mock.calls[0]![0] as object)).not.toContain(
+      'collector_commission_pct',
+    );
+  });
+
   it('refuses a guarantor count outside 1-3 without calling the API', async () => {
     const publish = vi.spyOn(settingsApi, 'publishPolicy');
     await renderApp(<SettingsPage />, { lang: 'en' });

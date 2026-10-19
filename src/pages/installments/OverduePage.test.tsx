@@ -22,7 +22,13 @@ const W1 = 'a0790000-0000-4000-8000-0000000000c1';
 
 const row: OverdueContractRow = {
   contract: { id: C1, number: 'MAIN-CT-26-000001', frequency: 'monthly', branch_id: BRANCH_MAIN },
-  customer: { id: CUSTOMER, name: 'Bassem Ban', phone: '01011110003', status: 'blocked' },
+  customer: {
+    id: CUSTOMER,
+    name: 'Bassem Ban',
+    phone: '01011110003',
+    status: 'blocked',
+    collector_id: null,
+  },
   overdue_amount: '2000.00',
   overdue_lines: 2,
   max_days_late: 64,

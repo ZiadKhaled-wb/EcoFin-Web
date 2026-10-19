@@ -1,0 +1,140 @@
+{
+  "nav": {
+    "field": "Field work",
+    "wallets": "Collector wallets"
+  },
+  "errors": {
+    "failed": "The request could not be completed.",
+    "CUSTOMER_NOT_ASSIGNED": "This customer is not assigned to you. Ask a manager to assign them to you.",
+    "COLLECTOR_INVALID": "That employee can't be a collector: they must be active and allowed to take collections.",
+    "WALLET_BALANCE_CHANGED": "The wallet balance changed while you were typing. Check the new balance and try again.",
+    "SELF_SETTLEMENT": "You can't settle your own wallet. Another manager has to take it.",
+    "WALLET_NOT_FOUND": "This wallet was not found.",
+    "INSUFFICIENT_FUNDS": "The wallet does not hold that much.",
+    "CASH_ACCOUNT_NOT_FOUND": "Choose an active safe of the wallet's branch.",
+    "PERMISSION_DENIED": "You are not allowed to do this."
+  },
+  "field": {
+    "title": "My field work",
+    "description": "Your wallet and the customers to visit today.",
+    "loadFailed": "Your field work could not be loaded.",
+    "wallet": {
+      "title": "My wallet",
+      "empty": "You have no wallet yet. It is made by your first collection.",
+      "balance": "Cash in my wallet",
+      "today": "Collected today",
+      "todayCount": "{count} collections",
+      "oldest": "Oldest cash from",
+      "last": "Last handed in: {amount} on {date}",
+      "none": "Nothing handed in yet",
+      "hint": "The cash you collect stays here until a manager takes it from you."
+    },
+    "route": {
+      "title": "Today's route",
+      "date": "For {date}",
+      "empty": "None of your customers has anything due today.",
+      "due": "Due",
+      "overdue": "Overdue",
+      "daysLate": "{days} days late",
+      "next": "Next due {date}",
+      "noAddress": "No address",
+      "call": "Call",
+      "map": "Map",
+      "collect": "Collect",
+      "totals": "{customers} customers · {amount} due"
+    }
+  },
+  "collect": {
+    "banner": "Collecting in the field: the cash goes into your wallet, not a drawer.",
+    "cashOnly": "Field collections are taken in cash.",
+    "confirmTitle": "Take {amount} in cash?",
+    "confirmText": "The cash goes into your wallet. The receipt says it was collected in the field.",
+    "confirm": "Take payment"
+  },
+  "list": {
+    "title": "Collector wallets",
+    "description": "The cash collectors hold from their field collections. Take it into a safe with a settlement.",
+    "loadFailed": "The wallets could not be loaded.",
+    "empty": "No collector has taken a field collection yet.",
+    "columns": {
+      "collector": "Collector",
+      "branch": "Branch",
+      "balance": "Balance",
+      "oldest": "Oldest cash",
+      "last": "Last settlement"
+    },
+    "none": "None",
+    "open": "Ledger",
+    "settle": "Settle"
+  },
+  "ledger": {
+    "title": "Wallet of {name}",
+    "description": "Every movement of this wallet with the balance after it.",
+    "back": "Wallets",
+    "loadFailed": "The wallet could not be loaded.",
+    "empty": "No movements yet.",
+    "more": "Show more",
+    "balance": "Balance",
+    "oldest": "Oldest cash from {date}",
+    "columns": {
+      "date": "Date",
+      "type": "Type",
+      "number": "Number",
+      "amount": "Amount",
+      "balance": "Balance after",
+      "note": "Note"
+    },
+    "shortage": "Shortage {amount}: {reason}"
+  },
+  "settle": {
+    "title": "Settle the wallet of {name}",
+    "description": "Take the cash into a safe. Anything missing is recorded as a shortage with a reason; it is not deducted from anyone.",
+    "balance": "Wallet balance: {amount}",
+    "safe": "Safe",
+    "safePlaceholder": "Choose a safe",
+    "safeHelp": "A safe of the wallet's branch.",
+    "handed": "Handed in",
+    "shortage": "Shortage",
+    "shortageHelp": "Cash that is missing. Leave empty when nothing is missing.",
+    "reason": "Reason for the shortage",
+    "after": "Left in the wallet after this: {amount}",
+    "tooMuch": "Handed in plus shortage can't be more than the balance.",
+    "needHanded": "Enter the amount handed in.",
+    "needSafe": "Choose a safe.",
+    "needReason": "A shortage needs a reason.",
+    "confirm": "Settle",
+    "cancel": "Cancel",
+    "done": "Settled: transfer {number}.",
+    "loadSafesFailed": "The safes could not be loaded."
+  },
+  "collector": {
+    "title": "Collector",
+    "description": "The collector who visits this customer and takes their installments in the field.",
+    "none": "No collector assigned",
+    "assign": "Assign",
+    "change": "Change",
+    "clear": "Remove",
+    "pick": "Collector",
+    "pickPlaceholder": "Choose a collector",
+    "pickHelp": "One collector covers all this customer's contracts.",
+    "reason": "Reason",
+    "reasonHelp": "Optional. Kept in the audit log.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saved": "The collector was saved.",
+    "cleared": "The collector was removed.",
+    "clearTitle": "Remove the collector?",
+    "clearText": "The customer will have no collector until you assign one.",
+    "selfOnly": "You can only choose yourself: the employee list needs the employee management permission.",
+    "failed": "The employees could not be loaded.",
+    "me": "{name} (me)",
+    "byOverride": "{name} (extra permission)"
+  },
+  "receipt": {
+    "field": "Collected in the field by {name}. The cash is in their wallet until a manager settles it."
+  },
+  "overdue": {
+    "collector": "Collector",
+    "allCollectors": "All collectors"
+  }
+}

@@ -73,7 +73,13 @@ export default function CollectionReceipt({
         {formatDateTime(collection.paid_at, lang, timezone)}
       </Row>
       {collection.received_by_name && (
-        <Row label={tr('collections.receipt.doc.cashier')}>
+        <Row
+          label={tr(
+            collection.shift_id === null
+              ? 'collections.receipt.doc.fieldCollector'
+              : 'collections.receipt.doc.cashier',
+          )}
+        >
           <span dir="auto">{collection.received_by_name}</span>
         </Row>
       )}

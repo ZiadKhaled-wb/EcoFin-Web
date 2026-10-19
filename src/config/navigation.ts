@@ -42,6 +42,8 @@ export interface NavItem {
   roles?: Role[];
   permission?: string;
   permissionsAny?: string[];
+  /** Hidden from anyone holding one of these (N06: the field home is for collectors, not managers). */
+  permissionsNone?: string[];
   /** Drawn at the end of the menu line (a count of what waits). */
   badge?: ComponentType;
 }
@@ -232,6 +234,24 @@ export const NAV: NavItem[] = [
     to: '/installments/overdue',
     permission: 'overdue.view',
   },
+  // N06 (D81): the collector's home (their wallet and today's route). Managers hold collector.settle
+  // and work from the wallets page instead.
+  {
+    id: 'field',
+    labelKey: 'wallets.nav.field',
+    icon: CheckCircleIcon,
+    to: '/field',
+    permissionsAny: ['collection.create'],
+    permissionsNone: ['collector.settle'],
+  },
+  // N06 (D81): every collector's wallet, its ledger and the settlement (collector.settle or cash.view).
+  {
+    id: 'wallets',
+    labelKey: 'wallets.nav.wallets',
+    icon: CalculatorIcon,
+    to: '/installments/wallets',
+    permissionsAny: ['collector.settle', 'cash.view'],
+  },
   // N05 (D80): the shop's early settlements, reschedules and write-offs (with the waived profit).
   {
     id: 'contract-changes',
@@ -371,6 +391,7 @@ export const NAV: NavItem[] = [
 
 /** The one visibility rule: the menu (filterNav) and the route guard (RequireNavItem) both use it. */
 export function canSee(item: NavItem, user: AuthUser): boolean {
+  if (item.permissionsNone?.some((key) => user.permissions.includes(key))) return false;
   if (!item.roles && !item.permission && !item.permissionsAny) return true;
   return !!(
     item.roles?.includes(user.role) ||

@@ -24,6 +24,7 @@ import Skeleton from '@/components/ui/Skeleton';
 import Textarea from '@/components/ui/Textarea';
 import { useBranches } from '@/features/me/useBranches';
 import { useCan } from '@/features/me/useCan';
+import { useCollectorOptions } from './walletShared';
 import { ApiError } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { formatBusinessDate, formatMoney, formatNumber } from '@/lib/format';
@@ -168,6 +169,10 @@ function ContractsTab() {
   const [q, setQ] = useState('');
   const [branch, setBranch] = useState('');
   const [minDays, setMinDays] = useState('');
+  // N06: managers filter by collector; a collector already sees only their own customers.
+  const canFilterCollector = useCan('collector.settle');
+  const collectorOptions = useCollectorOptions(canFilterCollector);
+  const [collector, setCollector] = useState('');
 
   useEffect(() => {
     const id = setTimeout(() => setQ(input.trim()), 300);
@@ -178,6 +183,7 @@ function ContractsTab() {
   const filters: OverdueListQueryInput = {
     ...(q ? { q } : {}),
     ...(branch ? { branch_id: branch } : {}),
+    ...(collector ? { collector_id: collector } : {}),
     ...(Number.isInteger(min) && min >= 1 ? { min_days: min } : {}),
   };
   const list = useInfiniteQuery({
@@ -225,6 +231,19 @@ function ContractsTab() {
               onChange={(e) => setBranch(e.target.value)}
             />
           </div>
+          {canFilterCollector && (
+            <div className="w-48">
+              <Select
+                label={t('wallets.overdue.collector')}
+                options={[
+                  { value: '', label: t('wallets.overdue.allCollectors') },
+                  ...collectorOptions.options,
+                ]}
+                value={collector}
+                onChange={(e) => setCollector(e.target.value)}
+              />
+            </div>
+          )}
           <div className="w-36">
             <NumberInput
               label={t('overdue.filters.minDays')}

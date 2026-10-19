@@ -21,6 +21,7 @@ import CustomerSurveysCard from '@/pages/surveys/CustomerSurveysCard';
 import { t, type TranslationKey } from '@/i18n';
 import CustomerAccountTab from './CustomerAccountTab';
 import CustomerForm from './CustomerForm';
+import CustomerCollectorCard from './CustomerCollectorCard';
 import CustomerCreditCard from './CustomerCreditCard';
 import CustomerGuarantorsCard from './CustomerGuarantorsCard';
 import CustomerStatusDialog from './CustomerStatusDialog';
@@ -295,6 +296,8 @@ export default function CustomerPage() {
                   )}
                 </dl>
               </Card>
+
+              <CustomerCollectorCard customer={data} onChanged={() => void refresh()} />
 
               <CustomerCreditCard customer={data} />
 

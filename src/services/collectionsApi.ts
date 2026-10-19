@@ -41,6 +41,15 @@ export const collectionsApi = {
       (await api.post('/api/collections', body, { headers: { 'Idempotency-Key': key } })).data,
     ),
   receipt: async (id: string) => Collection.parse((await api.get(`/api/collections/${id}`)).data),
+  /**
+   * N06: the same collection taken in the field (no shift): the cash goes into the caller's own
+   * wallet. The customer must be assigned to the caller unless they settle wallets.
+   */
+  collectField: async (body: CollectionBody, key: string) =>
+    Collection.parse(
+      (await api.post('/api/collections/field', body, { headers: { 'Idempotency-Key': key } }))
+        .data,
+    ),
   /** The print log: the first print is the original, later ones copies. */
   recordPrint: async (id: string) =>
     Collection.parse((await api.post(`/api/collections/${id}/prints`)).data),

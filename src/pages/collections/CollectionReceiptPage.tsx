@@ -90,6 +90,11 @@ export default function CollectionReceiptPage() {
         }
       />
       {notice && <Notice tone="success">{notice}</Notice>}
+      {c.shift_id === null && (
+        <Notice tone="info">
+          {t('wallets.receipt.field', { name: c.received_by_name ?? '' })}
+        </Notice>
+      )}
       <div className="flex flex-wrap gap-3">
         <Link to="/collections" className="btn btn-ghost">
           {t('collections.receipt.back')}
@@ -100,7 +105,10 @@ export default function CollectionReceiptPage() {
           </Link>
         )}
         {canCollect && (
-          <Link to={`/collections/new?customer=${c.customer.id}`} className="btn btn-ghost">
+          <Link
+            to={`/collections/new?customer=${c.customer.id}${c.shift_id === null ? '&mode=field' : ''}`}
+            className="btn btn-ghost"
+          >
             {t('collections.receipt.another')}
           </Link>
         )}

@@ -48,6 +48,7 @@ const customer = (): Customer => ({
   status: 'active',
   notes: null,
   id_photos_count: 0,
+  collector: null,
   created_at: AT,
   updated_at: AT,
 });

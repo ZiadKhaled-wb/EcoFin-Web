@@ -46,6 +46,7 @@ const customer = (over: Partial<Customer> = {}): Customer => ({
   status: 'active',
   notes: null,
   id_photos_count: 2,
+  collector: null,
   created_at: timestamp,
   updated_at: timestamp,
   ...over,

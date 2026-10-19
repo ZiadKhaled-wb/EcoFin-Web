@@ -43,6 +43,31 @@ describe('menu by role (TEST-2)', () => {
     expect(filterNav(NAV, null).every((i) => !i.roles && !i.permission)).toBe(true);
   });
 
+  // N06 (D81): the field home is for collectors; whoever settles wallets works from the wallets page.
+  it('the field home shows for a collection holder who does not settle wallets', () => {
+    const field = navLeaves().find((i) => i.id === 'field')!;
+    expect(canSee(field, user('COLLECTOR', defaults('COLLECTOR')))).toBe(true);
+    expect(canSee(field, user('CASHIER', defaults('CASHIER')))).toBe(true);
+    expect(canSee(field, user('BRANCH_MANAGER', defaults('BRANCH_MANAGER')))).toBe(false);
+    expect(canSee(field, user('ACCOUNTANT', defaults('ACCOUNTANT')))).toBe(false);
+    expect(canSee(field, user('WAREHOUSE', defaults('WAREHOUSE')))).toBe(false);
+    // An extra collector.settle takes it away; an extra collection.create gives it.
+    expect(canSee(field, user('COLLECTOR', [...defaults('COLLECTOR'), 'collector.settle']))).toBe(
+      false,
+    );
+    expect(canSee(field, user('WAREHOUSE', [...defaults('WAREHOUSE'), 'collection.create']))).toBe(
+      true,
+    );
+  });
+
+  it('the wallets page shows for whoever settles wallets or reads cash', () => {
+    const wallets = navLeaves().find((i) => i.id === 'wallets')!;
+    expect(canSee(wallets, user('ACCOUNTANT', defaults('ACCOUNTANT')))).toBe(true);
+    expect(canSee(wallets, user('BRANCH_MANAGER', defaults('BRANCH_MANAGER')))).toBe(true);
+    expect(canSee(wallets, user('COLLECTOR', defaults('COLLECTOR')))).toBe(false);
+    expect(canSee(wallets, user('CASHIER', defaults('CASHIER')))).toBe(false);
+  });
+
   // The visible pages per role, written down so a change to who sees what is deliberate.
   it.each(EMPLOYEE_ROLES)('%s sees these pages', (role) => {
     const visible = navLeaves(filterNav(NAV, user(role, defaults(role)))).map((i) => i.to);
