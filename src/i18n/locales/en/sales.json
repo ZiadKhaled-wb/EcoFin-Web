@@ -174,7 +174,7 @@
     "productArchived": "A product in the cart is archived and can not be sold.",
     "priceOverrideDenied": "You are not allowed to change prices.",
     "customerNotFound": "This customer was not found.",
-    "dayClosed": "This day is closed.",
+    "dayClosed": "The day is closed for this branch. Ask the owner to reopen it from Day close.",
     "moduleNotInPlan": "Sales are not part of your plan.",
     "expired": "The subscription has expired. Sales are stopped.",
     "permission": "You are not allowed to do this.",

@@ -6,6 +6,7 @@ import PageContainer from '@/components/ui/PageContainer';
 import { t } from '@/i18n';
 import { useCan } from '@/features/me/useCan';
 import LowStockCard from '@/features/stock/LowStockCard';
+import DayCloseAlertsCard from '@/features/dayClose/DayCloseAlertsCard';
 import { useAuthStore } from '@/store/authStore';
 import { readOnboardingProgress, type OnboardingProgress } from '@/features/onboarding/progress';
 
@@ -19,6 +20,10 @@ export default function DashboardPage() {
   const [setup] = useState<OnboardingProgress>(() => readOnboardingProgress(orgId));
   // I06: products below their min level (stock.view; the server limits the branches).
   const canSeeStock = useCan('stock.view');
+  // K04: days not closed and the night check's findings (day.close or cash.view).
+  const canCloseDays = useCan('day.close');
+  const canSeeCash = useCan('cash.view');
+  const canSeeDays = canCloseDays || canSeeCash;
   return (
     <PageContainer>
       <PageHeader
@@ -43,6 +48,7 @@ export default function DashboardPage() {
         </Card>
       )}
       {canSeeStock && <LowStockCard />}
+      {canSeeDays && <DayCloseAlertsCard />}
     </PageContainer>
   );
 }

@@ -156,7 +156,11 @@ describe('U03 supplier payment form', () => {
       undefined,
       'The split over the invoices is not valid. Refresh and try again.',
     ],
-    ['DAY_CLOSED', undefined, 'The day is closed for this branch.'],
+    [
+      'DAY_CLOSED',
+      undefined,
+      'The day is closed for this branch. Ask the owner to reopen it from Day close.',
+    ],
   ])('%s shows its message', async (code, details, message) => {
     vi.spyOn(supplierPaymentsApi, 'create').mockRejectedValue(
       Object.assign(new ApiError(409, code, 'No.'), { details }),
