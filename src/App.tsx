@@ -89,6 +89,7 @@ import PurchaseOrderPage from '@/pages/purchasing/PurchaseOrderPage';
 import PurchaseOrderFormPage from '@/pages/purchasing/PurchaseOrderFormPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
+import ImportPage from '@/pages/settings/ImportPage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
@@ -106,6 +107,7 @@ const REAL_ROUTES = new Set([
   '/settings/branches',
   '/settings/eta',
   '/settings/devices',
+  '/settings/import',
   '/settings/employees',
   '/employees',
   '/inventory/categories',
@@ -233,6 +235,10 @@ export default function App() {
                   </Route>
                   <Route element={<RequirePermission permission="device.manage" />}>
                     <Route path="/settings/devices" element={<DevicesPage />} />
+                  </Route>
+                  {/* M01: the server checks import.data (and the kind's own keys) on every call. */}
+                  <Route element={<RequirePermission permission="import.data" />}>
+                    <Route path="/settings/import" element={<ImportPage />} />
                   </Route>
                   {/* O03: any employee may type a pairing code; the server checks shift.operate
                       or device.manage. */}

@@ -385,6 +385,13 @@ export const NAV: NavItem[] = [
         to: '/settings/devices',
         permission: 'device.manage',
       },
+      // M01 (D83): load products, customers, suppliers and opening stock from Excel or CSV.
+      {
+        id: 'settings-import',
+        labelKey: 'imports.title',
+        to: '/settings/import',
+        permission: 'import.data',
+      },
     ],
   },
 ];

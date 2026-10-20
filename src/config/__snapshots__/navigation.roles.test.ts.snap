@@ -153,6 +153,7 @@ exports[`menu by role (TEST-2) > OWNER sees these pages 1`] = `
   "/settings/branches",
   "/settings/eta",
   "/settings/devices",
+  "/settings/import",
 ]
 `;
 

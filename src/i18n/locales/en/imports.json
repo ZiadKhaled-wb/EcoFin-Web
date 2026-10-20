@@ -1,0 +1,198 @@
+{
+  "title": "Import data",
+  "description": "Load what you already have from Excel or CSV: suppliers, products, customers and opening stock. Every file is checked first and nothing is saved until you confirm.",
+  "tabs": {
+    "new": "New import",
+    "history": "History"
+  },
+  "order": "Suggested order: suppliers, then products, then customers, then opening stock (it needs the products).",
+  "kinds": {
+    "suppliers": {
+      "title": "Suppliers",
+      "description": "Names, phones, tax numbers and payment terms."
+    },
+    "products": {
+      "title": "Products",
+      "description": "SKU, names, prices, categories, warranty and serial tracking."
+    },
+    "customers": {
+      "title": "Customers",
+      "description": "Names, phones, national IDs and work details."
+    },
+    "opening_stock": {
+      "title": "Opening stock",
+      "description": "What you hold today in one branch, with the cost of each unit."
+    }
+  },
+  "template": {
+    "label": "Download template",
+    "xlsx": "Excel",
+    "csv": "CSV",
+    "failed": "The template could not be downloaded. Try again."
+  },
+  "start": "Import from a file",
+  "actions": {
+    "create": "New",
+    "update": "Updated",
+    "unchanged": "Unchanged"
+  },
+  "wizard": {
+    "title": "Import: {kind}",
+    "close": "Close",
+    "steps": {
+      "file": "File",
+      "columns": "Columns",
+      "review": "Check",
+      "import": "Import"
+    },
+    "file": {
+      "choose": "Choose a file",
+      "none": "No file chosen",
+      "help": "Excel (.xlsx) or CSV, up to 5 MB and 5,000 rows. The first row holds the column names.",
+      "branch": "Branch",
+      "branchHelp": "The stock in this file is counted in this branch.",
+      "next": "Read the file",
+      "reading": "Reading the file…"
+    },
+    "columns": {
+      "title": "Match your columns",
+      "help": "We matched the columns of your file to our fields. Change any that are wrong. Fields marked * are required.",
+      "sheet": "Sheet",
+      "field": "Field",
+      "fileColumn": "Column in your file",
+      "example": "Example from your file",
+      "notUsed": "Not used",
+      "required": "required",
+      "oneOf": "one of these is required",
+      "missing": "Choose a column for: {fields}",
+      "unused": "Columns that will be ignored: {columns}",
+      "rows": "{count} rows found",
+      "check": "Check the file",
+      "checking": "Checking every row…",
+      "back": "Choose another file"
+    },
+    "review": {
+      "title": "Result of the check",
+      "ok": "No errors. Nothing has been saved yet.",
+      "bad": "The file has errors. Nothing was saved. Fix the file and check it again.",
+      "errorsCount": "Errors",
+      "rows": "{count} rows",
+      "warnings": "Notes",
+      "categories": "Categories that will be created: {list}",
+      "preview": "First rows",
+      "row": "Row",
+      "action": "Action",
+      "errorsTitle": "Errors by row",
+      "errorRow": "Row",
+      "errorColumn": "Column",
+      "errorMessage": "What is wrong",
+      "wholeRow": "Whole row",
+      "moreErrors": "Only the first {shown} of {total} errors are listed.",
+      "downloadErrors": "Download errors (CSV)",
+      "downloadFailed": "The errors file could not be opened.",
+      "back": "Change columns",
+      "restart": "Start over",
+      "import": "Import",
+      "importHelp": "Import is available only when the file has no errors."
+    },
+    "confirm": {
+      "title": "Import {kind}?",
+      "text": "{create} will be added, {update} updated and {unchanged} left as they are. The import is all or nothing.",
+      "stockText": "{create} lines will be added, {update} updated and {unchanged} left as they are in stock. The import is all or nothing.",
+      "yes": "Import now",
+      "no": "Not yet"
+    },
+    "running": {
+      "title": "Importing…",
+      "text": "This can take a minute for a big file. You can leave this page; the import continues and appears in the History tab."
+    },
+    "done": {
+      "title": "Import finished",
+      "text": "{create} added, {update} updated, {unchanged} unchanged.",
+      "open": "Open the list",
+      "again": "Import another file",
+      "history": "See in history"
+    },
+    "failed": {
+      "title": "The import did not run",
+      "text": "Nothing was saved. If errors are listed below, fix the file and import it again. Otherwise try again in a few minutes."
+    }
+  },
+  "history": {
+    "empty": "No imports yet",
+    "emptyHint": "Imports you check or run appear here.",
+    "columns": {
+      "kind": "What",
+      "file": "File",
+      "status": "Status",
+      "counts": "New / updated / unchanged",
+      "errors": "Errors",
+      "by": "By",
+      "when": "When",
+      "actions": "Actions"
+    },
+    "view": "View",
+    "cancel": "Cancel import",
+    "cancelTitle": "Cancel this import?",
+    "cancelText": "The checked file is dropped and cannot be imported. You can upload it again.",
+    "cancelYes": "Cancel import",
+    "cancelNo": "Keep",
+    "loadMore": "Load more",
+    "reportTitle": "Import report",
+    "failedLoad": "The history could not be loaded."
+  },
+  "status": {
+    "uploaded": "Uploaded",
+    "validating": "Checking",
+    "validated": "Checked",
+    "importing": "Importing",
+    "completed": "Completed",
+    "failed": "Failed",
+    "cancelled": "Cancelled"
+  },
+  "rowErrors": {
+    "IMPORT_REQUIRED": "A required value is missing.",
+    "IMPORT_INVALID_VALUE": "The value is not valid for this column.",
+    "IMPORT_DUPLICATE_ROW": "This row repeats row {row}.",
+    "IMPORT_AMBIGUOUS_MATCH": "More than one existing record matches this row.",
+    "IMPORT_APPLY_FAILED": "This row could not be saved.",
+    "PRODUCT_ARCHIVED": "The product is archived. Restore it first.",
+    "PRODUCT_NOT_FOUND": "No product has this code. Import the product first.",
+    "PRODUCT_SKU_TAKEN": "Another product already has this SKU.",
+    "PRODUCT_BARCODE_TAKEN": "Another product already has this barcode.",
+    "PRODUCT_SERIAL_LOCKED": "Serial tracking cannot change: the product already has stock movements.",
+    "PRODUCT_CATEGORY_ARCHIVED": "The category is archived.",
+    "CATEGORY_DEPTH": "Categories go one level deep: a category and one sub-category.",
+    "CATEGORY_NAME_TAKEN": "This category name already exists under another category.",
+    "CUSTOMER_NATIONAL_ID_TAKEN": "Another customer already has this national ID.",
+    "CUSTOMER_NATIONAL_ID_LOCKED": "This customer already has a different national ID.",
+    "NATIONAL_ID_INVALID": "The national ID is not valid (14 digits).",
+    "SUPPLIER_PHONE_TAKEN": "Another supplier already has this phone.",
+    "SUPPLIER_NAME_TAKEN": "Another supplier already has this name.",
+    "SERIAL_INVALID": "The serial number is not valid.",
+    "SERIAL_TAKEN": "This serial number is already in the shop.",
+    "UNIT_NOT_ALLOWED": "This product has no serial numbers: use a quantity.",
+    "UNIT_REQUIRED": "This product has serial numbers: give one row per serial.",
+    "OPENING_STOCK_LOCKED": "This product already has movements in this branch. Use a stock adjustment instead.",
+    "TAX_CLASS_NOT_FOUND": "No tax class has this name.",
+    "MODULE_NOT_IN_PLAN": "Your plan does not include this feature.",
+    "OUT_OF_STOCK": "Part of this stock is reserved for orders, so it cannot go below the reserved amount."
+  },
+  "errors": {
+    "IMPORT_FILE_UNREADABLE": "This file cannot be read. Use an Excel (.xlsx) or CSV file without a password.",
+    "IMPORT_MISSING_COLUMNS": "The file lacks required columns: {columns}.",
+    "IMPORT_MAPPING_INVALID": "The column choices are not valid. Choose each column only once.",
+    "IMPORT_TOO_MANY_ROWS": "The file has more than 5,000 rows. Split it into smaller files.",
+    "IMPORT_SHEET_NOT_FOUND": "That sheet is not in the file.",
+    "IMPORT_NOT_VALIDATED": "This import cannot be run: it is not checked, or it already started.",
+    "IMPORT_JOB_NOT_FOUND": "This import was not found.",
+    "FILE_NOT_FOUND": "The file was not found. Upload it again.",
+    "FILE_TOO_LARGE": "The file is too large (5 MB at most).",
+    "FILE_TYPE_NOT_ALLOWED": "Only Excel (.xlsx) and CSV files can be imported.",
+    "PERMISSION_DENIED": "You do not have permission to import data.",
+    "SUBSCRIPTION_EXPIRED": "Your subscription has expired, so imports are paused.",
+    "MODULE_NOT_IN_PLAN": "Your plan does not include this feature.",
+    "BRANCH_DENIED": "You cannot use this branch.",
+    "failed": "Something went wrong. Please try again."
+  }
+}
