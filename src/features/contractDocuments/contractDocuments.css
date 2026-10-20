@@ -1,0 +1,220 @@
+/* N07 (D82): the printed contract and promissory notes. A4, always black on white, whatever the theme. */
+.cd-doc {
+  box-sizing: border-box;
+  background: #fff;
+  color: #000;
+  font-family: var(--font-sans);
+  font-size: 11pt;
+  line-height: 1.5;
+  text-align: start;
+  overflow-wrap: anywhere;
+  position: relative;
+}
+.cd-doc *,
+.cd-doc *::before,
+.cd-doc *::after {
+  box-sizing: border-box;
+  color: #000;
+}
+.cd-doc h1,
+.cd-doc h2,
+.cd-doc h3,
+.cd-doc p {
+  margin: 0;
+}
+.cd-ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
+.cd-strong {
+  font-weight: 700;
+}
+.cd-header {
+  display: flex;
+  gap: 5mm;
+  align-items: center;
+  border-bottom: 0.5mm solid #000;
+  padding-bottom: 3mm;
+}
+.cd-logo {
+  max-height: 22mm;
+  max-width: 40mm;
+  object-fit: contain;
+}
+.cd-shop {
+  font-size: 15pt;
+  font-weight: 700;
+}
+.cd-title {
+  margin-block: 5mm 2mm;
+  text-align: center;
+  font-size: 18pt;
+  font-weight: 700;
+}
+.cd-meta,
+.cd-replaces {
+  text-align: center;
+}
+.cd-replaces {
+  margin-top: 1.5mm;
+  font-weight: 700;
+}
+.cd-status {
+  margin-top: 3mm;
+  border: 0.6mm solid #000;
+  padding: 1mm 4mm;
+  text-align: center;
+  font-size: 16pt;
+  font-weight: 700;
+}
+.cd-parties {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4mm;
+  margin-top: 4mm;
+}
+.cd-person,
+.cd-block {
+  break-inside: avoid;
+}
+.cd-person {
+  border: 0.3mm solid #000;
+  padding: 2mm 3mm;
+}
+.cd-block {
+  margin-top: 4mm;
+}
+.cd-doc h3 {
+  font-size: 12pt;
+  font-weight: 700;
+  margin-bottom: 1.5mm;
+}
+.cd-line {
+  display: flex;
+  gap: 2mm;
+}
+.cd-line dt {
+  min-width: 32mm;
+  font-weight: 700;
+}
+.cd-line dd {
+  margin: 0;
+}
+.cd-price dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 6mm;
+}
+.cd-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.cd-table th,
+.cd-table td {
+  border: 0.3mm solid #000;
+  padding: 1mm 2mm;
+  text-align: start;
+}
+.cd-table th {
+  font-weight: 700;
+}
+.cd-table tr {
+  break-inside: avoid;
+}
+.cd-table thead {
+  display: table-header-group;
+}
+.cd-num {
+  text-align: end !important;
+  font-variant-numeric: tabular-nums;
+}
+.cd-terms {
+  white-space: pre-wrap;
+}
+.cd-signatures {
+  break-inside: avoid;
+}
+.cd-sign-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4mm;
+  margin-top: 2mm;
+}
+.cd-sign {
+  flex: 1 1 40mm;
+  min-height: 28mm;
+  border-bottom: 0.3mm solid #000;
+}
+.cd-copy-mark {
+  position: fixed;
+  inset-block-start: 45%;
+  inset-inline: 0;
+  text-align: center;
+  font-size: 54pt;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transform: rotate(-24deg);
+  opacity: 0.16;
+  pointer-events: none;
+  z-index: 1;
+}
+/* Promissory notes: three to an A4 page. */
+.cd-note {
+  height: 90mm;
+  padding: 3mm 2mm 0;
+  break-inside: avoid;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5mm;
+  overflow: hidden;
+}
+.cd-note:nth-of-type(3n):not(:last-of-type) {
+  break-after: page;
+}
+.cd-note-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4mm;
+  border-bottom: 0.3mm solid #000;
+  padding-bottom: 1mm;
+}
+.cd-note-head h2 {
+  font-size: 15pt;
+  font-weight: 700;
+}
+.cd-note-amount {
+  border: 0.4mm solid #000;
+  padding: 0.5mm 3mm;
+  font-size: 13pt;
+  font-weight: 700;
+}
+.cd-note-body {
+  font-size: 10.5pt;
+}
+.cd-note .cd-sign {
+  min-height: 16mm;
+}
+.cd-note .cd-sign-row {
+  margin-top: auto;
+}
+.cd-cut {
+  margin-top: 1mm;
+  text-align: center;
+  font-size: 9pt;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/* On screen the document is a sheet of paper in the preview. */
+.cd-preview {
+  max-width: 210mm;
+  margin-inline: auto;
+  padding: 12mm;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
+}
+.print-root .cd-doc {
+  width: auto;
+}

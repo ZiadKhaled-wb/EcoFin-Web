@@ -35,6 +35,7 @@ import { useAuthStore } from '@/store/authStore';
 import { cn } from '@/lib/cn';
 import { t } from '@/i18n';
 import InstallmentPolicyTab from './InstallmentPolicyTab';
+import ContractTermsSettings from '@/features/contractDocuments/ContractTermsSettings';
 import TaxClassesSection from './TaxClassesSection';
 import {
   SETTINGS_TABS,
@@ -109,10 +110,14 @@ export default function SettingsPage() {
         ) : query.isError || !query.data ? (
           <ErrorState onRetry={() => void query.refetch()} />
         ) : tab === 'installments' ? (
-          <InstallmentPolicyTab
-            key={query.data.installment_policy?.id ?? 'none'}
-            current={query.data.installment_policy}
-          />
+          <div className="space-y-6">
+            <InstallmentPolicyTab
+              key={query.data.installment_policy?.id ?? 'none'}
+              current={query.data.installment_policy}
+            />
+            {/* N07 (D82): promissory notes mode and the terms printed on the contract. */}
+            <ContractTermsSettings key={query.data.updated_at} saved={query.data} />
+          </div>
         ) : (
           // Remounts with fresh inputs after a save (updated_at changes).
           <div className="space-y-6">

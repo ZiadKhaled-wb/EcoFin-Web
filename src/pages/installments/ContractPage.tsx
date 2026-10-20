@@ -15,6 +15,7 @@ import { formatBusinessDate, formatDateTime, formatMoney, formatNumber } from '@
 import { installmentKeys, installmentsApi } from '@/services/installmentsApi';
 import { useCan } from '@/features/me/useCan';
 import { useAuthStore } from '@/store/authStore';
+import PrintDocumentButtons from '@/features/contractDocuments/PrintDocumentButtons';
 import { t } from '@/i18n';
 import { relationLabel } from '../customers/guarantorShared';
 import { RescheduleDialog, SettleDialog, WriteOffDialog } from './ContractChangeDialogs';
@@ -115,6 +116,8 @@ export default function ContractPage() {
                 {t('contractChanges.actions.writeOff')}
               </Button>
             )}
+            {/* N07 (D82): the printed contract and promissory notes. */}
+            <PrintDocumentButtons contractId={c.id} notes={open} />
             <Link to={`/customers/${c.customer.id}`} className="btn btn-ghost">
               {t('installments.contract.toCustomer')}
             </Link>

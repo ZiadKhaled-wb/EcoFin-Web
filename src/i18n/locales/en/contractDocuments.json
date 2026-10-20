@@ -1,0 +1,70 @@
+{
+  "actions": {
+    "printContract": "Print contract",
+    "printNotes": "Print promissory notes"
+  },
+  "page": {
+    "titleContract": "Print contract {number}",
+    "titleNotes": "Print promissory notes of contract {number}",
+    "print": "Print",
+    "printing": "Printing…",
+    "back": "Back to the contract",
+    "loading": "Loading the contract documents…",
+    "loadFailed": "The contract documents could not be loaded.",
+    "notFound": "This contract was not found.",
+    "forbidden": "You are not allowed to print contracts.",
+    "preview": "Preview",
+    "originalNote": "This print will be the original.",
+    "copyNote": "This print will be marked COPY (صورة).",
+    "notLogged": "The print could not be logged, so this paper is marked COPY.",
+    "noNotes": "There are no promissory notes to print: the contract is closed or nothing is left to pay.",
+    "noteCount": "{count} promissory notes, three to an A4 page.",
+    "logoWaiting": "Loading the shop logo…"
+  },
+  "settings": {
+    "title": "Contract and promissory notes",
+    "intro": "What the printed installment contract says and how the promissory notes are issued. The documents are printed in Arabic.",
+    "mode": "Promissory notes",
+    "perInstallment": "One note per installment",
+    "single": "One note for everything that is left",
+    "singleHint": "A single note is due on the last installment's date.",
+    "terms": "Terms printed on the contract",
+    "termsHelp": "Leave it empty to use the default text. Use the buttons below to insert details of the contract.",
+    "usingDefault": "The default text is used.",
+    "usingOwn": "Your own text is used.",
+    "placeholders": "Insert",
+    "restore": "Restore the default text",
+    "previewTitle": "How it will read (sample contract)",
+    "warnWords": "This wording is not allowed on the contract: {words}. Interest, late fees and early-settlement discounts cannot be printed.",
+    "warnUnknown": "Unknown details: {names}. Use only the buttons below.",
+    "save": "Save",
+    "saved": "Saved.",
+    "tooLong": "The text is longer than {max} characters.",
+    "placeholder": {
+      "shop_name": "Shop name",
+      "shop_legal_name": "Shop legal name",
+      "commercial_register": "Commercial register",
+      "branch_name": "Branch",
+      "city": "City",
+      "contract_number": "Contract number",
+      "contract_date": "Contract date",
+      "customer_name": "Customer name",
+      "customer_national_id": "Customer national ID",
+      "installment_price": "Installment price",
+      "installment_price_words": "Installment price in words",
+      "down_payment": "Down payment",
+      "installments_count": "Number of installments",
+      "frequency": "Payment schedule",
+      "first_due_date": "First due date",
+      "last_due_date": "Last due date"
+    }
+  },
+  "errors": {
+    "failed": "The request could not be completed.",
+    "TEMPLATE_NOT_ALLOWED": "The terms use wording that is not allowed (interest, late fees or early-settlement discounts). Remove it and save again.",
+    "TEMPLATE_INVALID": "The terms use details the contract does not know. Use only the insert buttons.",
+    "PERMISSION_DENIED": "You are not allowed to change these settings.",
+    "CONTRACT_NOT_OPEN": "The promissory notes can't be printed: the contract is closed.",
+    "CONTRACT_NOT_FOUND": "This contract was not found."
+  }
+}

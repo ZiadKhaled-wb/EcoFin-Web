@@ -19,6 +19,7 @@ import ErrorState from '@/components/ui/ErrorState';
 import Notice from '@/components/ui/Notice';
 import Skeleton from '@/components/ui/Skeleton';
 import { ApiError } from '@/lib/api';
+import PrintDocumentButtons from '@/features/contractDocuments/PrintDocumentButtons';
 import PrintReceipt from '@/features/receipts/PrintReceipt';
 import { useCan } from '@/features/me/useCan';
 import { useSettings } from '@/features/settings/useSettings';
@@ -478,6 +479,8 @@ function DoneCard({
               {t('installments.done.view')}
             </Link>
           )}
+          {/* N07 (D82): the printed contract and promissory notes of the installment sale. */}
+          {contract && <PrintDocumentButtons contractId={contract.id} />}
           {/* S04 (D68): the first print is the original, every later one a copy. */}
           <PrintReceipt sale={sale} original {...(contract ? { contract } : {})} />
         </div>
