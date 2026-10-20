@@ -82,6 +82,8 @@ const settings: ShopSettings = {
   installment_markup_vat: 'not_taxed',
   delivery_fee_tax_class_id: null,
   deposit_vat_timing: 'on_delivery',
+  contract_terms: null,
+  promissory_notes_mode: 'per_installment',
   updated_at: '2026-10-07T09:00:00Z',
   updated_by: null,
   my_discount: { cap_pct: 100, above_cap_allowed: true },

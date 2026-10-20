@@ -63,6 +63,7 @@ import ExpensesPage from '@/pages/accounting/ExpensesPage';
 import PosPage from '@/pages/sales/PosPage';
 import SalePage from '@/pages/sales/SalePage';
 import ContractPage from '@/pages/installments/ContractPage';
+import ContractPrintPage from '@/pages/installments/ContractPrintPage';
 import CollectionsPage from '@/pages/collections/CollectionsPage';
 import CollectPage from '@/pages/collections/CollectPage';
 import CollectionReceiptPage from '@/pages/collections/CollectionReceiptPage';
@@ -365,6 +366,14 @@ export default function App() {
                     element={
                       <RequireNavItem item={WALLETS_ITEM}>
                         <WalletPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/contracts/:id/print"
+                    element={
+                      <RequireNavItem item={CUSTOMERS_ITEM}>
+                        <ContractPrintPage />
                       </RequireNavItem>
                     }
                   />
