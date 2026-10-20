@@ -13,10 +13,10 @@ import { ApiError } from '@/lib/api';
 import { meApi } from '@/features/me/meApi';
 import { branchApi } from '@/services/branchApi';
 import { dayClosesApi } from '@/services/dayClosesApi';
-import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
+import { meFixture, permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
 import DayClosePage from './DayClosePage';
 import DayClosesPage from './DayClosesPage';
-import { dayCloseError, issueHref, issueText } from './dayCloseShared';
+import { dayCloseError, issueHref, issueText, shopToday } from './dayCloseShared';
 
 vi.mock('@/lib/supabase', () => ({ supabase: {} }));
 
@@ -222,6 +222,22 @@ describe('K04 day close', () => {
     await waitFor(() => expect(reopen).toHaveBeenCalledWith(CLOSE, { reason: 'abc late receipt' }));
   });
 
+  it('the day picker starts on the shop today and opens it', async () => {
+    vi.spyOn(meApi, 'me').mockResolvedValue(meFixture());
+    vi.spyOn(dayClosesApi, 'list').mockResolvedValue({ items: [], from: DAY, to: DAY });
+    const load = vi.spyOn(dayClosesApi, 'preview').mockResolvedValue(preview());
+    const today = shopToday('Africa/Cairo');
+    await renderApp(routes, { lang: 'en', route: '/accounting/day-close' });
+    const user = userEvent.setup();
+    await screen.findByRole('button', { name: 'Show the day' });
+    // The first date field is the picker (the list filters come after it).
+    await waitFor(() =>
+      expect(document.querySelector<HTMLInputElement>('input[type="date"]')?.value).toBe(today),
+    );
+    await user.click(screen.getByRole('button', { name: 'Show the day' }));
+    await waitFor(() => expect(load).toHaveBeenCalledWith(MAIN, today));
+  });
+
   it('the list shows days with their status and links to them', async () => {
     vi.spyOn(dayClosesApi, 'list').mockResolvedValue({
       items: [
@@ -294,5 +310,8 @@ describe('K04 issue words and links', () => {
       'The day has warnings: write a note.',
     );
     expect(dayCloseError(new Error('boom'))).toBe('Something went wrong. Try again.');
+    // A UTC evening is already the next day in Cairo (the CI runner's browser is in UTC).
+    expect(shopToday('Africa/Cairo', new Date('2026-10-20T22:30:00Z'))).toBe('2026-10-21');
+    expect(shopToday('UTC', new Date('2026-10-20T22:30:00Z'))).toBe('2026-10-20');
   });
 });

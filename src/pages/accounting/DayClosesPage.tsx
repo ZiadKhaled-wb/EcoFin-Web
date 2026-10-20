@@ -12,21 +12,16 @@ import DataTable from '@/components/ui/DataTable';
 import FormField from '@/components/ui/FormField';
 import Select from '@/components/ui/Select';
 import { useBranches } from '@/features/me/useBranches';
+import { useMe } from '@/features/me/useMe';
 import { formatBusinessDate, formatMoney, formatNumber } from '@/lib/format';
 import { dayCloseKeys, dayClosesApi } from '@/services/dayClosesApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
-import { dayHref } from './dayCloseShared';
+import { dayHref, shopToday } from './dayCloseShared';
 
 const STATUSES = DayCloseStatus.options;
 const isStatus = (v: string): v is DayCloseStatus => (STATUSES as readonly string[]).includes(v);
 const STATUS_TONE = { open: 'warning', closed: 'success', reopened: 'danger' } as const;
-
-/** Today in the browser's local date: the server checks the shop's own date. */
-function localToday() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
 
 /**
  * K04: the business days of the caller's branches (open, closed, reopened) with their sales and
@@ -37,12 +32,16 @@ export default function DayClosesPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const branches = useBranches();
+  const me = useMe();
+  const today = shopToday(me.data?.org.timezone ?? 'Africa/Cairo');
   const [branchId, setBranchId] = useState(params.get('branch_id') ?? '');
   const [status, setStatus] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [pickBranch, setPickBranch] = useState(params.get('branch_id') ?? '');
-  const [pickDate, setPickDate] = useState(localToday());
+  // Empty until the user picks a day: the shop's today by default.
+  const [pickDate, setPickDate] = useState('');
+  const day = pickDate || today;
 
   const query = {
     ...(branchId ? { branch_id: branchId } : {}),
@@ -119,7 +118,7 @@ export default function DayClosesPage() {
           className="grid gap-3 md:grid-cols-3 md:items-end"
           onSubmit={(e) => {
             e.preventDefault();
-            if (chosenBranch && pickDate) navigate(dayHref(chosenBranch, pickDate));
+            if (chosenBranch && day) navigate(dayHref(chosenBranch, day));
           }}
         >
           <Select
@@ -132,11 +131,11 @@ export default function DayClosesPage() {
             type="date"
             ltr
             label={t('dayClose.pick.date')}
-            value={pickDate}
-            max={localToday()}
+            value={day}
+            max={today}
             onChange={(e) => setPickDate(e.target.value)}
           />
-          <Button type="submit" disabled={!chosenBranch || !pickDate}>
+          <Button type="submit" disabled={!chosenBranch || !day}>
             {t('dayClose.pick.go')}
           </Button>
         </form>
