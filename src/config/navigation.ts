@@ -332,6 +332,13 @@ export const NAV: NavItem[] = [
         to: '/accounting/expenses',
         permission: 'expense.create',
       },
+      // K04 (D84): the day close; whoever closes days (day.close) or reads cash (cash.view).
+      {
+        id: 'day-close',
+        labelKey: 'dayClose.nav',
+        to: '/accounting/day-close',
+        permissionsAny: ['day.close', 'cash.view'],
+      },
     ],
   },
   {

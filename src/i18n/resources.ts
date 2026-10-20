@@ -78,6 +78,8 @@ import enWallets from './locales/en/wallets.json';
 import enContractDocuments from './locales/en/contractDocuments.json';
 import arImports from './locales/ar/imports.json';
 import enImports from './locales/en/imports.json';
+import arDayClose from './locales/ar/dayClose.json';
+import enDayClose from './locales/en/dayClose.json';
 
 /** One JSON file per namespace and language. The first segment of a key is its namespace. */
 export const ar = {
@@ -121,6 +123,7 @@ export const ar = {
   wallets: arWallets,
   contractDocuments: arContractDocuments,
   imports: arImports,
+  dayClose: arDayClose,
 };
 
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
@@ -166,6 +169,7 @@ export const en: SameShape<typeof ar> = {
   wallets: enWallets,
   contractDocuments: enContractDocuments,
   imports: enImports,
+  dayClose: enDayClose,
 };
 
 type Leaves<T, P extends string = ''> = {

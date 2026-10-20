@@ -58,6 +58,8 @@ import SupplierStatementPage from '@/pages/suppliers/SupplierStatementPage';
 import VaultsPage from '@/pages/accounting/VaultsPage';
 import VaultLedgerPage from '@/pages/accounting/VaultLedgerPage';
 import ShiftsPage from '@/pages/accounting/ShiftsPage';
+import DayClosesPage from '@/pages/accounting/DayClosesPage';
+import DayClosePage from '@/pages/accounting/DayClosePage';
 import PairDevicePage from '@/pages/settings/PairDevicePage';
 import ExpensesPage from '@/pages/accounting/ExpensesPage';
 import PosPage from '@/pages/sales/PosPage';
@@ -136,6 +138,7 @@ const REAL_ROUTES = new Set([
   '/accounting/vaults',
   '/accounting/shifts',
   '/accounting/expenses',
+  '/accounting/day-close',
   '/sales/pos',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
@@ -168,6 +171,9 @@ const PURCHASE_ORDERS_ITEM = navLeaves().find((i) => i.id === 'purchase-orders')
 const SHIFTS_ITEM = navLeaves().find((i) => i.id === 'shifts')!;
 /** K03: the expenses page follows its menu item (expense.create). */
 const EXPENSES_ITEM = navLeaves().find((i) => i.id === 'expenses')!;
+/** K04: the day-close pages follow their menu item (day.close or cash.view); the server checks
+ * every call and the branch access (D84). */
+const DAY_CLOSE_ITEM = navLeaves().find((i) => i.id === 'day-close')!;
 /** S01: the sale screen follows its menu item (sale.create). */
 const POS_ITEM = navLeaves().find((i) => i.id === 'pos')!;
 const WARRANTY_ITEM = navLeaves().find((i) => i.id === 'sales-warranty')!;
@@ -509,6 +515,30 @@ export default function App() {
                     element={
                       <RequireNavItem item={EXPENSES_ITEM}>
                         <ExpensesPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/accounting/day-close"
+                    element={
+                      <RequireNavItem item={DAY_CLOSE_ITEM}>
+                        <DayClosesPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/accounting/day-close/closed/:id"
+                    element={
+                      <RequireNavItem item={DAY_CLOSE_ITEM}>
+                        <DayClosePage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/accounting/day-close/:branchId/:date"
+                    element={
+                      <RequireNavItem item={DAY_CLOSE_ITEM}>
+                        <DayClosePage />
                       </RequireNavItem>
                     }
                   />

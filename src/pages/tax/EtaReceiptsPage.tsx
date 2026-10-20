@@ -74,9 +74,10 @@ export default function EtaReceiptsPage() {
   const summary = useFiscalSummary();
   const initial = FiscalSituationFilter.safeParse(params.get('situation'));
   const [q, setQ] = useState('');
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
-  const [branch, setBranch] = useState('');
+  // K04: the day close links here with the branch and the day.
+  const [from, setFrom] = useState(params.get('from') ?? '');
+  const [to, setTo] = useState(params.get('to') ?? '');
+  const [branch, setBranch] = useState(params.get('branch_id') ?? '');
   const [situation, setSituation] = useState<string>(initial.success ? initial.data : '');
   // The two deadline cards filter what is on the page (the server filters by situation).
   const [deadline, setDeadline] = useState<'due_soon' | 'overdue' | null>(null);
