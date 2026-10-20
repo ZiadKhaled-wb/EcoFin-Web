@@ -171,9 +171,11 @@ test.describe('M01 import end to end', () => {
     );
     await page.getByRole('button', { name: 'Check the file' }).click();
     await expect(page.getByText('No errors. Nothing has been saved yet.')).toBeVisible();
-    const tiles = page.locator('div.grid').first();
-    await expect(tiles).toContainText('Unchanged');
-    await expect(tiles.getByText('2', { exact: true }).first()).toBeVisible();
+    // The "Unchanged" tile says 2 (and nothing is new).
+    const unchanged = page.locator('div.rounded-control').filter({ hasText: 'Unchanged' });
+    await expect(unchanged).toContainText('2');
+    const created = page.locator('div.rounded-control').filter({ hasText: /^New/ });
+    await expect(created).toContainText('0');
     expect(await count()).toBe(2);
 
     // 4. Opening stock for the main branch.
