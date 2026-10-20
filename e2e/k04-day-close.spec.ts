@@ -132,7 +132,9 @@ test.describe('K04 day close end to end', () => {
     // Day close: today for the main branch, the sale in the numbers, closed with a note.
     await page.goto('/accounting/day-close');
     await page.getByRole('button', { name: 'Show the day' }).click();
-    await expect(page).toHaveURL(new RegExp(`/accounting/day-close/${branch}/\\d{4}-\\d{2}-\\d{2}$`));
+    await expect(page).toHaveURL(
+      new RegExp(`/accounting/day-close/${branch}/\\d{4}-\\d{2}-\\d{2}$`),
+    );
     await expect(page.getByText('Today', { exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Sales' })).toBeVisible();
     await expect(page.getByText(/closed with a difference/)).toBeVisible();
@@ -152,7 +154,10 @@ test.describe('K04 day close end to end', () => {
 
     // The owner reopens with a reason; the late entry posts; the day closes again.
     await page.getByRole('button', { name: 'Reopen the day' }).click();
-    await page.getByRole('dialog').getByLabel(/Reason/).fill('Late stock receipt');
+    await page
+      .getByRole('dialog')
+      .getByLabel(/Reason/)
+      .fill('Late stock receipt');
     await page.getByRole('dialog').getByRole('button', { name: 'Reopen' }).click();
     await expect(page).toHaveURL(new RegExp(`/accounting/day-close/${branch}/`));
     await expect(page.getByText('Reopened', { exact: true })).toBeVisible();
