@@ -172,9 +172,11 @@ test.describe('M01 import end to end', () => {
     await page.getByRole('button', { name: 'Check the file' }).click();
     await expect(page.getByText('No errors. Nothing has been saved yet.')).toBeVisible();
     // The "Unchanged" tile says 2 (and nothing is new).
-    const unchanged = page.locator('div.rounded-control').filter({ hasText: 'Unchanged' });
+    const unchanged = page
+      .locator('div.rounded-control.px-4.py-3')
+      .filter({ hasText: 'Unchanged' });
     await expect(unchanged).toContainText('2');
-    const created = page.locator('div.rounded-control').filter({ hasText: /^New/ });
+    const created = page.locator('div.rounded-control.px-4.py-3').filter({ hasText: /^New/ });
     await expect(created).toContainText('0');
     expect(await count()).toBe(2);
 
