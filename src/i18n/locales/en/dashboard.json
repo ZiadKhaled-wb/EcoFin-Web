@@ -1,0 +1,63 @@
+{
+  "today": "Today, {date}",
+  "updated": "Updated {time}",
+  "loading": "Loading today's numbers",
+  "branch": "Branch",
+  "allBranches": "All branches",
+  "refresh": "Refresh",
+  "refreshing": "Refreshing",
+  "loadFailed": "Could not load today's numbers.",
+  "refreshFailed": "Could not refresh. The numbers shown may be out of date.",
+  "empty": "Nothing to show for your role",
+  "emptyHint": "The numbers on this page appear for the roles that can open the pages behind them.",
+  "attention": "Needs attention",
+  "sales": {
+    "title": "Sales today",
+    "count": "Sales: {count}",
+    "methods": "Cash {cash} · Transfer {bank} · Store credit {credit}",
+    "onContract": "On installment contracts: {amount}"
+  },
+  "collections": {
+    "title": "Collections today",
+    "count": "Collections: {count}",
+    "inField": "Collected in the field: {amount}"
+  },
+  "cash": {
+    "title": "Cash in the branches",
+    "safes": "Safes: {amount}",
+    "drawers": "Drawers of open shifts: {amount}",
+    "wallets": "Collectors' wallets: {amount}",
+    "banks": "Banks (not in the total): {amount}"
+  },
+  "shifts": {
+    "title": "Open shifts",
+    "oldest": "Oldest opened {time}",
+    "earlier": "Opened before today: {count}"
+  },
+  "overdue": {
+    "title": "Overdue installments",
+    "counts": "Contracts: {contracts} · Customers: {customers}"
+  },
+  "lowStock": {
+    "title": "Products below their minimum",
+    "hint": "Counted per branch and product"
+  },
+  "eta": {
+    "title": "ETA receipts that need action",
+    "blocked": "Blocked: {count}",
+    "send_failed": "Failed to send: {count}",
+    "rejected": "Rejected: {count}",
+    "due_soon": "Due soon: {count}",
+    "overdue": "Past the deadline: {count}"
+  },
+  "unclosed": {
+    "title": "Days not closed",
+    "branches": "Branches: {count}"
+  },
+  "approvals": {
+    "title": "Waiting for your approval",
+    "discount": "Discounts: {count}",
+    "purchase": "Purchase invoices: {count}",
+    "credit": "Credit exceptions: {count}"
+  }
+}

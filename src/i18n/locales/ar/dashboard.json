@@ -1,0 +1,63 @@
+{
+  "today": "اليوم، {date}",
+  "updated": "آخر تحديث {time}",
+  "loading": "جارٍ تحميل أرقام اليوم",
+  "branch": "الفرع",
+  "allBranches": "كل الفروع",
+  "refresh": "تحديث",
+  "refreshing": "جارٍ التحديث",
+  "loadFailed": "تعذّر تحميل أرقام اليوم.",
+  "refreshFailed": "تعذّر التحديث. قد تكون الأرقام المعروضة قديمة.",
+  "empty": "لا يوجد ما يُعرض لدورك",
+  "emptyHint": "تظهر الأرقام في هذه الصفحة للأدوار التي تستطيع فتح الصفحات التي وراءها.",
+  "attention": "يحتاج متابعة",
+  "sales": {
+    "title": "مبيعات اليوم",
+    "count": "عدد المبيعات: {count}",
+    "methods": "نقدًا {cash} · تحويل {bank} · رصيد العميل {credit}",
+    "onContract": "على عقود التقسيط: {amount}"
+  },
+  "collections": {
+    "title": "تحصيلات اليوم",
+    "count": "عدد التحصيلات: {count}",
+    "inField": "حُصّل في الميدان: {amount}"
+  },
+  "cash": {
+    "title": "النقدية في الفروع",
+    "safes": "الخزن: {amount}",
+    "drawers": "أدراج الورديات المفتوحة: {amount}",
+    "wallets": "محافظ المحصّلين: {amount}",
+    "banks": "البنوك (خارج الإجمالي): {amount}"
+  },
+  "shifts": {
+    "title": "الورديات المفتوحة",
+    "oldest": "أقدم وردية فُتحت {time}",
+    "earlier": "فُتحت قبل اليوم: {count}"
+  },
+  "overdue": {
+    "title": "أقساط متأخرة",
+    "counts": "العقود: {contracts} · العملاء: {customers}"
+  },
+  "lowStock": {
+    "title": "منتجات تحت الحد الأدنى",
+    "hint": "تُحسب لكل فرع ومنتج"
+  },
+  "eta": {
+    "title": "إيصالات ETA التي تحتاج إجراءً",
+    "blocked": "موقوفة: {count}",
+    "send_failed": "فشل إرسالها: {count}",
+    "rejected": "مرفوضة: {count}",
+    "due_soon": "اقترب موعدها: {count}",
+    "overdue": "فات موعدها: {count}"
+  },
+  "unclosed": {
+    "title": "أيام لم تُقفل",
+    "branches": "الفروع: {count}"
+  },
+  "approvals": {
+    "title": "موافقات بانتظارك",
+    "discount": "الخصومات: {count}",
+    "purchase": "فواتير الشراء: {count}",
+    "credit": "استثناءات الائتمان: {count}"
+  }
+}

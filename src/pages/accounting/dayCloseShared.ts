@@ -174,13 +174,4 @@ export const hasBlockers = (issues: readonly DayCloseIssue[]) =>
   dayCloseBlockers(issues).length > 0;
 
 /** Today in the shop's time zone (the business date the server uses), not the browser's. */
-export function shopToday(zone: string, now: Date = new Date()) {
-  const parts = new Intl.DateTimeFormat('en', {
-    timeZone: zone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).formatToParts(now);
-  const part = (name: string) => parts.find((p) => p.type === name)?.value ?? '';
-  return `${part('year')}-${part('month')}-${part('day')}`;
-}
+export { shopToday } from '@/lib/format';

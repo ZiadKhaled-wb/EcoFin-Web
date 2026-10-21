@@ -50,9 +50,12 @@ export async function session(
   orgId: string,
   lang: 'ar' | 'en' = 'en',
   warnings?: string[],
+  /** The browser's own time zone (D01 runs it in UTC, as CI does; the shop's day is the server's). */
+  timezoneId?: string,
 ) {
   const context = await browser.newContext({
     extraHTTPHeaders: { 'X-Forwarded-For': `198.51.101.${(ipCounter++ % 250) + 1}` },
+    ...(timezoneId ? { timezoneId } : {}),
   });
   await context.addInitScript((l) => window.localStorage.setItem('ecofin-lang', l), lang);
   const page = await context.newPage();

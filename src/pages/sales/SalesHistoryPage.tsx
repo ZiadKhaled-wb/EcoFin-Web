@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import { SaleStatus, type SaleHistoryRow, type SalesHistoryQuery } from '@ziadkhaled-wb/contracts';
@@ -16,6 +16,7 @@ import { useAuthStore } from '@/store/authStore';
 import { salesHistoryApi } from '@/services/salesHistoryApi';
 import { saleKeys } from '@/services/salesApi';
 import { formatDateTime, formatMoney } from '@/lib/format';
+import { dateParam, uuidParam } from '@/lib/urlFilters';
 import { t } from '@/i18n';
 import { SaleStatusBadge } from './SaleHistoryActions';
 function today(zone: string) {
@@ -32,11 +33,13 @@ export default function SalesHistoryPage() {
   const org = useAuthStore((s) => s.orgId);
   const branches = useBranches();
   const me = useMe();
+  // D01: the dashboard opens today's sales of a branch with ?from=&to=&branch_id=.
+  const [urlParams] = useSearchParams();
   const date = today(me.data?.org.timezone ?? 'Africa/Cairo');
   const [q, setQ] = useState('');
-  const [from, setFrom] = useState<string | null>(null);
-  const [to, setTo] = useState<string | null>(null);
-  const [branch, setBranch] = useState('');
+  const [from, setFrom] = useState<string | null>(() => dateParam(urlParams, 'from') || null);
+  const [to, setTo] = useState<string | null>(() => dateParam(urlParams, 'to') || null);
+  const [branch, setBranch] = useState(() => uuidParam(urlParams, 'branch_id'));
   const [cashier, setCashier] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);

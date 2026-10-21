@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { Link, useSearchParams } from 'react-router-dom';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { compareMoney, type WalletRow } from '@ziadkhaled-wb/contracts';
 import PageContainer from '@/components/ui/PageContainer';
 import PageHeader from '@/components/layout/PageHeader';
@@ -8,9 +8,12 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import EmptyState from '@/components/ui/EmptyState';
 import ErrorState from '@/components/ui/ErrorState';
+import Select from '@/components/ui/Select';
 import Skeleton from '@/components/ui/Skeleton';
 import Can from '@/features/me/Can';
+import { useBranches } from '@/features/me/useBranches';
 import { formatBusinessDate, formatMoney } from '@/lib/format';
+import { uuidParam } from '@/lib/urlFilters';
 import { walletKeys, walletsApi } from '@/services/walletsApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
@@ -28,13 +31,35 @@ const tdNum = 'type-body whitespace-nowrap px-3 py-2 text-end num';
  */
 export default function WalletsPage() {
   const orgId = useAuthStore((s) => s.orgId);
-  const list = useQuery({ queryKey: walletKeys.list(orgId), queryFn: walletsApi.list });
+  // D01: the dashboard opens the wallets of a branch with ?branch_id=.
+  const [urlParams] = useSearchParams();
+  const [branchId, setBranchId] = useState(() => uuidParam(urlParams, 'branch_id'));
+  const branches = useBranches();
+  const query = branchId ? { branch_id: branchId } : {};
+  const list = useQuery({
+    queryKey: walletKeys.list(orgId, query),
+    queryFn: () => walletsApi.list(query),
+    placeholderData: keepPreviousData,
+  });
   const [settling, setSettling] = useState<WalletRow | null>(null);
   const rows = list.data?.items ?? [];
 
   return (
     <PageContainer>
       <PageHeader title={t('wallets.list.title')} description={t('wallets.list.description')} />
+      {(branches.data?.length ?? 0) > 1 && (
+        <div className="mb-4 max-w-xs">
+          <Select
+            label={t('wallets.list.branch')}
+            value={branchId}
+            onChange={(e) => setBranchId(e.target.value)}
+            options={[
+              { value: '', label: t('wallets.list.allBranches') },
+              ...(branches.data ?? []).map((b) => ({ value: b.id, label: b.name })),
+            ]}
+          />
+        </div>
+      )}
       <Card>
         {list.isPending ? (
           <Skeleton className="h-40" />

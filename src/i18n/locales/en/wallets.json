@@ -54,6 +54,8 @@
   "list": {
     "title": "Collector wallets",
     "description": "The cash collectors hold from their field collections. Take it into a safe with a settlement.",
+    "branch": "Branch",
+    "allBranches": "All branches",
     "loadFailed": "The wallets could not be loaded.",
     "empty": "No collector has taken a field collection yet.",
     "columns": {
