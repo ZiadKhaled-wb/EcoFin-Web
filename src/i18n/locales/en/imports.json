@@ -5,7 +5,7 @@
     "new": "New import",
     "history": "History"
   },
-  "order": "Suggested order: suppliers, then products, then customers, then opening stock (it needs the products).",
+  "order": "Suggested order: suppliers, then products, then customers, then opening stock (it needs the products). Opening contracts need the customers; then sign the reconciliation under Settings > Migration.",
   "kinds": {
     "suppliers": {
       "title": "Suppliers",
@@ -22,6 +22,14 @@
     "opening_stock": {
       "title": "Opening stock",
       "description": "What you hold today in one branch, with the cost of each unit."
+    },
+    "opening_contracts": {
+      "title": "Open installment contracts",
+      "description": "Each customer's open contracts with what is left on every installment, the amount paid before and the guarantors. Import customers first."
+    },
+    "opening_cash": {
+      "title": "Opening cash",
+      "description": "The balance of each safe and bank account today. Posted once, on an account with no movements."
     }
   },
   "template": {
@@ -93,7 +101,22 @@
       "back": "Change columns",
       "restart": "Start over",
       "import": "Import",
-      "importHelp": "Import is available only when the file has no errors."
+      "importHelp": "Import is available only when the file has no errors.",
+      "contracts": {
+        "title": "Contracts in this file",
+        "ref": "Contract",
+        "customer": "Customer",
+        "lines": "Installments",
+        "open": "Left to pay",
+        "overdue": "Already late",
+        "days": "Days late",
+        "guarantors": "New guarantors",
+        "totals": "{contracts} contracts, {lines} installments, {open} left to pay",
+        "lateNote": "{amount} on {count} contracts is already late. The nightly overdue check will warn about it tomorrow; no fee is ever added.",
+        "feesNote": "Fees in the old records are not imported: only what is left of the installment price is.",
+        "more": "Only the first {shown} contracts are listed.",
+        "migrationLink": "Open the migration page to see the reconciliation report"
+      }
     },
     "confirm": {
       "title": "Import {kind}?",
@@ -176,7 +199,18 @@
     "OPENING_STOCK_LOCKED": "This product already has movements in this branch. Use a stock adjustment instead.",
     "TAX_CLASS_NOT_FOUND": "No tax class has this name.",
     "MODULE_NOT_IN_PLAN": "Your plan does not include this feature.",
-    "OUT_OF_STOCK": "Part of this stock is reserved for orders, so it cannot go below the reserved amount."
+    "OUT_OF_STOCK": "Part of this stock is reserved for orders, so it cannot go below the reserved amount.",
+    "IMPORT_CONTRACT_ROWS_DIFFER": "This row disagrees with the first row of the same contract (same contract number, different value).",
+    "IMPORT_CONTRACT_NOT_BALANCED": "Original total minus paid before must equal the installments left (and remaining principal plus profit must equal them too).",
+    "IMPORT_CONTRACT_EXISTS": "This contract number was already migrated.",
+    "IMPORT_CUSTOMER_NOT_FOUND": "No customer with this national ID or phone. Import the customers first.",
+    "IMPORT_GUARANTOR_INCOMPLETE": "A guarantor needs a valid national ID; a new one also needs a name and a phone.",
+    "IMPORT_ACCOUNT_KIND": "Only a safe or a bank can be imported, not a drawer or a collector wallet.",
+    "CASH_ACCOUNT_HAS_MOVEMENTS": "This account already has movements. Use a transfer or reopen the day instead.",
+    "CASH_ACCOUNT_INACTIVE": "This account is inactive.",
+    "CASH_ACCOUNT_NAME_TAKEN": "Another account of this branch has this name.",
+    "DAY_CLOSED": "Today is closed for this branch. Ask the owner to reopen it.",
+    "POLICY_NOT_SET": "Publish an installment policy in Settings first."
   },
   "errors": {
     "IMPORT_FILE_UNREADABLE": "This file cannot be read. Use an Excel (.xlsx) or CSV file without a password.",

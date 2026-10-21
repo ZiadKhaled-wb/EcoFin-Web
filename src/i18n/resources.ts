@@ -77,7 +77,9 @@ import arContractDocuments from './locales/ar/contractDocuments.json';
 import enWallets from './locales/en/wallets.json';
 import enContractDocuments from './locales/en/contractDocuments.json';
 import arImports from './locales/ar/imports.json';
+import arMigration from './locales/ar/migration.json';
 import enImports from './locales/en/imports.json';
+import enMigration from './locales/en/migration.json';
 import arDayClose from './locales/ar/dayClose.json';
 import enDayClose from './locales/en/dayClose.json';
 
@@ -123,6 +125,7 @@ export const ar = {
   wallets: arWallets,
   contractDocuments: arContractDocuments,
   imports: arImports,
+  migration: arMigration,
   dayClose: arDayClose,
 };
 
@@ -169,6 +172,7 @@ export const en: SameShape<typeof ar> = {
   wallets: enWallets,
   contractDocuments: enContractDocuments,
   imports: enImports,
+  migration: enMigration,
   dayClose: enDayClose,
 };
 

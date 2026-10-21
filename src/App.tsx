@@ -92,6 +92,7 @@ import PurchaseOrderFormPage from '@/pages/purchasing/PurchaseOrderFormPage';
 import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 import ImportPage from '@/pages/settings/ImportPage';
+import MigrationPage from '@/pages/settings/MigrationPage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
@@ -110,6 +111,7 @@ const REAL_ROUTES = new Set([
   '/settings/eta',
   '/settings/devices',
   '/settings/import',
+  '/settings/migration',
   '/settings/employees',
   '/employees',
   '/inventory/categories',
@@ -174,6 +176,9 @@ const EXPENSES_ITEM = navLeaves().find((i) => i.id === 'expenses')!;
 /** K04: the day-close pages follow their menu item (day.close or cash.view); the server checks
  * every call and the branch access (D84). */
 const DAY_CLOSE_ITEM = navLeaves().find((i) => i.id === 'day-close')!;
+/** M02: the migration page follows its menu item (import.data or report.financial); the server
+ * checks every call (D85). */
+const MIGRATION_ITEM = navLeaves().find((i) => i.id === 'settings-migration')!;
 /** S01: the sale screen follows its menu item (sale.create). */
 const POS_ITEM = navLeaves().find((i) => i.id === 'pos')!;
 const WARRANTY_ITEM = navLeaves().find((i) => i.id === 'sales-warranty')!;
@@ -246,6 +251,14 @@ export default function App() {
                   <Route element={<RequirePermission permission="import.data" />}>
                     <Route path="/settings/import" element={<ImportPage />} />
                   </Route>
+                  <Route
+                    path="/settings/migration"
+                    element={
+                      <RequireNavItem item={MIGRATION_ITEM}>
+                        <MigrationPage />
+                      </RequireNavItem>
+                    }
+                  />
                   {/* O03: any employee may type a pairing code; the server checks shift.operate
                       or device.manage. */}
                   <Route path="/device/pair" element={<PairDevicePage />} />

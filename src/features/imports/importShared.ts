@@ -17,6 +17,8 @@ export const KIND_LINK: Record<ImportKind, string> = {
   products: '/inventory/products',
   customers: '/customers',
   opening_stock: '/inventory/stock',
+  opening_contracts: '/settings/migration',
+  opening_cash: '/settings/migration',
 };
 
 export const STATUS_TONE: Record<ImportStatus, BadgeTone> = {
@@ -80,6 +82,17 @@ const ROW_ERRORS: Record<ImportRowErrorCode, TranslationKey> = {
   TAX_CLASS_NOT_FOUND: 'imports.rowErrors.TAX_CLASS_NOT_FOUND',
   MODULE_NOT_IN_PLAN: 'imports.rowErrors.MODULE_NOT_IN_PLAN',
   OUT_OF_STOCK: 'imports.rowErrors.OUT_OF_STOCK',
+  IMPORT_CONTRACT_ROWS_DIFFER: 'imports.rowErrors.IMPORT_CONTRACT_ROWS_DIFFER',
+  IMPORT_CONTRACT_NOT_BALANCED: 'imports.rowErrors.IMPORT_CONTRACT_NOT_BALANCED',
+  IMPORT_CONTRACT_EXISTS: 'imports.rowErrors.IMPORT_CONTRACT_EXISTS',
+  IMPORT_CUSTOMER_NOT_FOUND: 'imports.rowErrors.IMPORT_CUSTOMER_NOT_FOUND',
+  IMPORT_GUARANTOR_INCOMPLETE: 'imports.rowErrors.IMPORT_GUARANTOR_INCOMPLETE',
+  IMPORT_ACCOUNT_KIND: 'imports.rowErrors.IMPORT_ACCOUNT_KIND',
+  CASH_ACCOUNT_HAS_MOVEMENTS: 'imports.rowErrors.CASH_ACCOUNT_HAS_MOVEMENTS',
+  CASH_ACCOUNT_INACTIVE: 'imports.rowErrors.CASH_ACCOUNT_INACTIVE',
+  CASH_ACCOUNT_NAME_TAKEN: 'imports.rowErrors.CASH_ACCOUNT_NAME_TAKEN',
+  DAY_CLOSED: 'imports.rowErrors.DAY_CLOSED',
+  POLICY_NOT_SET: 'imports.rowErrors.POLICY_NOT_SET',
 };
 
 /** A row error in the active language. A repeated row names the first one ("same ... as row 4"). */

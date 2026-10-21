@@ -177,7 +177,7 @@ describe('M01 import page', () => {
   });
 
   it.each(['ar', 'en'] as const)(
-    'shows the four kinds in order with templates (%s)',
+    'shows the six kinds in order with templates (%s)',
     async (lang) => {
       await renderApp(routes, { lang });
       await screen.findByRole('heading', { name: t('imports.title') });
@@ -185,15 +185,17 @@ describe('M01 import page', () => {
         .getAllByRole('heading', { level: 2 })
         .map((h) => h.textContent)
         .filter((x) => x && /./.test(x));
-      expect(titles.slice(0, 4)).toEqual([
+      expect(titles.slice(0, 6)).toEqual([
         t('imports.kinds.suppliers.title'),
         t('imports.kinds.products.title'),
         t('imports.kinds.customers.title'),
         t('imports.kinds.opening_stock.title'),
+        t('imports.kinds.opening_contracts.title'),
+        t('imports.kinds.opening_cash.title'),
       ]);
       expect(
         screen.getAllByRole('button', { name: new RegExp(t('imports.template.label')) }),
-      ).toHaveLength(8);
+      ).toHaveLength(12);
     },
   );
 

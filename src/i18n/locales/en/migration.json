@@ -1,0 +1,131 @@
+{
+  "title": "Data migration",
+  "description": "Reconcile the opening balances you imported (open installment contracts and opening cash) with your old records, sign them off and, before any collection, undo a wrong batch.",
+  "openImport": "Go to import",
+  "tabs": {
+    "report": "Reconciliation report",
+    "signoff": "Sign-off"
+  },
+  "kinds": {
+    "opening_contracts": "Open contracts",
+    "opening_cash": "Opening cash"
+  },
+  "downloadCsv": "Download CSV to print",
+  "csvFailed": "The CSV could not be downloaded.",
+  "filters": {
+    "batch": "Batch",
+    "branch": "Branch",
+    "all": "All"
+  },
+  "totals": {
+    "contracts": "Contracts",
+    "customers": "Customers",
+    "original": "Original total",
+    "paidBefore": "Paid before",
+    "imported": "Imported (left at import)",
+    "open": "Left to pay today",
+    "overdue": "Late today",
+    "collected": "Collected since"
+  },
+  "customers": {
+    "title": "By customer",
+    "name": "Customer",
+    "nationalId": "National ID",
+    "contracts": "Contracts",
+    "original": "Original total",
+    "paidBefore": "Paid before",
+    "open": "Left to pay",
+    "overdue": "Late",
+    "collected": "Collected since"
+  },
+  "branches": {
+    "title": "By branch",
+    "name": "Branch"
+  },
+  "cash": {
+    "title": "Opening cash",
+    "empty": "No opening cash was imported.",
+    "account": "Account",
+    "branch": "Branch",
+    "shopWide": "Whole shop",
+    "posted": "Opening balance posted",
+    "now": "Balance now",
+    "total": "Total"
+  },
+  "batches": {
+    "title": "Batches",
+    "empty": "Nothing was imported yet.",
+    "when": "Imported",
+    "kind": "Kind",
+    "file": "File",
+    "contracts": "Contracts",
+    "total": "Amount",
+    "state": "State",
+    "actions": "Actions",
+    "reverse": "Reverse batch",
+    "blocked": "Cannot be reversed: {number} has a {reason}.",
+    "states": {
+      "open": "Open",
+      "signed": "Signed off",
+      "reversed": "Reversed"
+    }
+  },
+  "blocker": {
+    "collection": "collection",
+    "contract_change": "contract change",
+    "legal_case": "legal case",
+    "overdue_action": "overdue action",
+    "not_completed": "unfinished import"
+  },
+  "signOff": {
+    "title": "Sign off against the old records",
+    "description": "Enter the totals from the signed paper. The system compares them with what the batches imported; any difference is refused and nothing is saved.",
+    "nothing": "There is no batch waiting for a sign-off.",
+    "batches": "Batches to cover",
+    "batchContracts": "{count} contracts, {total} left at import",
+    "batchCash": "Opening cash {total}",
+    "openTotal": "Open debt total (from the paper)",
+    "cashTotal": "Opening cash total (optional)",
+    "help": "The open debt is compared with what was left on the import day, not with what is left after collections.",
+    "note": "Note",
+    "scan": "Scan of the signed paper (optional)",
+    "submit": "Sign off",
+    "done": "The reconciliation is signed off.",
+    "amountInvalid": "Enter an amount with at most two decimals.",
+    "batchesRequired": "Choose at least one batch.",
+    "noteRequired": "Write a note of at least 3 characters.",
+    "listTitle": "Signed reconciliations",
+    "listEmpty": "Nothing was signed off yet.",
+    "signedAt": "Signed",
+    "signedBy": "By",
+    "fields": {
+      "open_total": "open debt",
+      "cash_total": "opening cash"
+    }
+  },
+  "reverse": {
+    "title": "Reverse this batch",
+    "description": "{count} contracts will be closed through a write-off record and left out of the report. Only possible before any collection and before the sign-off.",
+    "reason": "Why is the batch wrong?",
+    "reasonRequired": "Write a reason of 3 to 300 characters.",
+    "confirm": "Reverse batch",
+    "done": "{count} contracts reversed."
+  },
+  "badge": {
+    "text": "Migrated · {ref} · paid before {paid}"
+  },
+  "errors": {
+    "failed": "The request failed. Try again.",
+    "MIGRATION_TOTAL_MISMATCH": "The {field} does not match. Paper: {expected}. System: {system}. Difference: {difference}. Nothing was saved.",
+    "MIGRATION_SIGNED_OFF": "This batch is already signed off.",
+    "MIGRATION_NOT_REVERSIBLE": "This batch cannot be reversed.",
+    "notReversible": "This batch cannot be reversed: contract {number} has a {reason}.",
+    "IMPORT_JOB_NOT_FOUND": "The batch was not found.",
+    "FILE_NOT_FOUND": "The file was not found.",
+    "FILE_TOO_LARGE": "The file is too large.",
+    "FILE_TYPE_NOT_ALLOWED": "This file type is not allowed.",
+    "PERMISSION_DENIED": "You are not allowed to do this.",
+    "SUBSCRIPTION_EXPIRED": "The subscription has expired.",
+    "VALIDATION_FAILED": "Check the values and try again."
+  }
+}
