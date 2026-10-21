@@ -399,6 +399,13 @@ export const NAV: NavItem[] = [
         to: '/settings/import',
         permission: 'import.data',
       },
+      // M02 (D85): the opening balances' reconciliation report, sign-off and undo.
+      {
+        id: 'settings-migration',
+        labelKey: 'migration.title',
+        to: '/settings/migration',
+        permissionsAny: ['import.data', 'report.financial'],
+      },
     ],
   },
 ];

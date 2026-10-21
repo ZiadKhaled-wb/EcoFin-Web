@@ -12,7 +12,7 @@ import DataTable from '@/components/ui/DataTable';
 import Notice from '@/components/ui/Notice';
 import { notify } from '@/components/ui/notify';
 import { t } from '@/i18n';
-import { formatNumber } from '@/lib/format';
+import { formatMoney, formatNumber } from '@/lib/format';
 import { importsApi } from '@/services/importsApi';
 import { columnLabel, fieldsOf, listSeparator, rowErrorText } from './importShared';
 
@@ -56,6 +56,80 @@ export function DownloadErrors({ fileId }: { fileId: string }) {
     <Button variant="secondary" size="sm" loading={busy} onClick={() => void open()}>
       {t('imports.wizard.review.downloadErrors')}
     </Button>
+  );
+}
+
+/**
+ * Opening contracts (M02): the totals, what is already late (the nightly overdue check reacts to it;
+ * a fee is never added) and one row per contract with its new guarantors.
+ */
+function ContractsReview({ report }: { report: ImportJob['report'] }) {
+  const summary = report.summary;
+  const contracts = report.contracts ?? [];
+  if (!summary) return null;
+  const late = Number(summary.overdue_total) > 0;
+  return (
+    <section className="space-y-3" aria-label={t('imports.wizard.review.contracts.title')}>
+      <h3 className="type-label">{t('imports.wizard.review.contracts.title')}</h3>
+      <p className="type-body">
+        {t('imports.wizard.review.contracts.totals', {
+          contracts: formatNumber(summary.contracts),
+          lines: formatNumber(summary.lines),
+          open: formatMoney(summary.open_total),
+        })}
+      </p>
+      {late && (
+        <Notice tone="info">
+          {t('imports.wizard.review.contracts.lateNote', {
+            amount: formatMoney(summary.overdue_total),
+            count: formatNumber(summary.overdue_contracts),
+          })}
+        </Notice>
+      )}
+      <p className="type-caption">{t('imports.wizard.review.contracts.feesNote')}</p>
+      {contracts.length > 0 && (
+        <div className="overflow-x-auto rounded-control border border-line">
+          <table className="w-full min-w-max">
+            <caption className="sr-only">{t('imports.wizard.review.contracts.title')}</caption>
+            <thead className="bg-surface-muted">
+              <tr>
+                <th className={th}>{t('imports.wizard.review.contracts.ref')}</th>
+                <th className={th}>{t('imports.wizard.review.contracts.customer')}</th>
+                <th className={th}>{t('imports.wizard.review.contracts.lines')}</th>
+                <th className={th}>{t('imports.wizard.review.contracts.open')}</th>
+                <th className={th}>{t('imports.wizard.review.contracts.overdue')}</th>
+                <th className={th}>{t('imports.wizard.review.contracts.days')}</th>
+                <th className={th}>{t('imports.wizard.review.contracts.guarantors')}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {contracts.map((c) => (
+                <tr key={`${c.row}:${c.contract_ref}`}>
+                  <td className={td}>{c.contract_ref}</td>
+                  <td className={td}>{c.customer ?? ''}</td>
+                  <td className={td + ' num'}>{formatNumber(c.lines)}</td>
+                  <td className={td + ' num'}>{formatMoney(c.open_total)}</td>
+                  <td className={td + ' num'}>
+                    {Number(c.overdue_total) > 0 ? (
+                      <Badge tone="warning">{formatMoney(c.overdue_total)}</Badge>
+                    ) : (
+                      formatMoney(c.overdue_total)
+                    )}
+                  </td>
+                  <td className={td + ' num'}>{formatNumber(c.overdue_days)}</td>
+                  <td className={td + ' num'}>{formatNumber(c.new_guarantors)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {summary.contracts > contracts.length && (
+        <p className="type-caption">
+          {t('imports.wizard.review.contracts.more', { shown: formatNumber(contracts.length) })}
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -126,6 +200,8 @@ export default function ImportReportView({ job }: { job: ImportJob }) {
           </ul>
         </div>
       )}
+
+      {report.summary && <ContractsReview report={report} />}
 
       {report.will_create_categories.length > 0 && (
         <Notice tone="info">

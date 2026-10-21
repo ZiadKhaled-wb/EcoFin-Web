@@ -16,6 +16,7 @@ import { installmentKeys, installmentsApi } from '@/services/installmentsApi';
 import { useCan } from '@/features/me/useCan';
 import { useAuthStore } from '@/store/authStore';
 import PrintDocumentButtons from '@/features/contractDocuments/PrintDocumentButtons';
+import { MigratedBadge } from '@/features/migration/MigratedNote';
 import { t } from '@/i18n';
 import { relationLabel } from '../customers/guarantorShared';
 import { RescheduleDialog, SettleDialog, WriteOffDialog } from './ContractChangeDialogs';
@@ -148,7 +149,8 @@ export default function ContractPage() {
               )}
             </Fact>
             <Fact label={t('installments.contract.sale')}>
-              {c.sale_id ? (
+              {c.migration_source && <MigratedBadge source={c.migration_source} />}
+              {!c.migration_source && c.sale_id ? (
                 <Link
                   to={`/sales/${c.sale_id}`}
                   className="text-brand-700 hover:underline"

@@ -1,3 +1,4 @@
+import { MigratedNote } from '@/features/migration/MigratedNote';
 import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -232,10 +233,14 @@ function ContractsCard({
                   >
                     {c.number}
                   </Link>
-                  {c.is_migrated && (
-                    <span className="type-caption block">
-                      {t('customerAccount.contracts.migrated')}
-                    </span>
+                  {c.migration_source ? (
+                    <MigratedNote source={c.migration_source} />
+                  ) : (
+                    c.is_migrated && (
+                      <span className="type-caption block">
+                        {t('customerAccount.contracts.migrated')}
+                      </span>
+                    )
                   )}
                 </td>
                 <td className={cn(td, 'whitespace-nowrap')}>{formatDate(c.issued_at)}</td>
