@@ -210,7 +210,8 @@ test.describe('M02 opening balances end to end', () => {
     // 5. The nightly check treats the late installment like any other: it is on the overdue list.
     await page.goto('/installments/overdue');
     await page.getByRole('button', { name: 'Run the check now' }).click();
-    await expect(page.getByText(/Check done: 1 new warnings/)).toBeVisible();
+    // The job worker may have run the nightly check already, so the count of NEW warnings is 0 or 1.
+    await expect(page.getByText(/Check done: [01] new warnings/)).toBeVisible();
     await expect(page.getByText(`M02 Customer ${STAMP}`).first()).toBeVisible();
     await expect(page.locator('body')).not.toContainText(/interest/i);
 
