@@ -406,6 +406,13 @@ export const NAV: NavItem[] = [
         to: '/settings/migration',
         permissionsAny: ['import.data', 'report.financial'],
       },
+      // M03 (D86): the full export; export.data works in an expired shop.
+      {
+        id: 'settings-export',
+        labelKey: 'exports.title',
+        to: '/settings/export',
+        permission: 'export.data',
+      },
     ],
   },
 ];

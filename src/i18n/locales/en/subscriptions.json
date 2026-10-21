@@ -1,6 +1,7 @@
 {
   "title": "Subscription",
   "expiring": "Your subscription ends in {days} days ({date}).",
+  "downloadData": "Download your data",
   "expired": "Subscription expired: read-only. Contact support to renew.",
   "limitReached": "Your plan allows {limit} {resource}. Upgrade to add more.",
   "moduleMissing": "This module is not included in your plan.",

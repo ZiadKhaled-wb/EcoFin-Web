@@ -100,6 +100,7 @@ jobs:
             echo "SUPABASE_URL=$(field API_URL)"
             echo "SUPABASE_ANON_KEY=$(field ANON_KEY)"
             echo "SUPABASE_SERVICE_ROLE_KEY=$(field SERVICE_ROLE_KEY)"
+            echo "DATABASE_URL=$(field DB_URL)"
           } >> "$GITHUB_ENV"
 
       # INT-4: the fake ETA (T02's, as a process) on 127.0.0.1 only; the API's job worker sends the
@@ -128,6 +129,8 @@ jobs:
           # Shop and staff invites (INT-2 e2e) go to the local Mailpit.
           SMTP_URL: smtp://127.0.0.1:54325
           MAIL_FROM: EcoFin CI <ci@ecotech.test>
+          # M03 (D86): the full export holds one read-only snapshot through a direct Postgres connection.
+          DATABASE_URL: ${{ env.DATABASE_URL }}
         run: |
           nohup npm start > "$RUNNER_TEMP/api.log" 2>&1 &
           for i in $(seq 1 60); do

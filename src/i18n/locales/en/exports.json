@@ -1,0 +1,62 @@
+{
+  "title": "Export data",
+  "description": "Download everything the shop has stored as one zip, to keep, to check or to move elsewhere.",
+  "contents": {
+    "title": "What is in the file",
+    "tables": "Every table of the shop: products, stock movements, customers, guarantors, sales, contracts and schedules, payments, cash, expenses, suppliers, purchases, the audit log and the rest, linked by their ids.",
+    "formats": "Each table twice: a CSV file that opens in Excel (Arabic shows correctly, no cell can run a formula) and a JSON file.",
+    "manifest": "A manifest with the row count of every table and control totals (cash, stock, open installments, sales, payments), so the data can be restored and checked.",
+    "files": "Uploaded files such as the logo and ID photos are not inside; the files table lists them.",
+    "keep": "The zip is kept for 7 days, then removed. You can export once an hour."
+  },
+  "start": {
+    "title": "New export",
+    "button": "Export all data",
+    "fullIds": "Include full national ID numbers",
+    "fullIdsHint": "Without this, national IDs show only the last four digits. A full export is recorded in the audit log.",
+    "masked": "National IDs in this export show only the last four digits.",
+    "running": "An export is in progress. This page updates by itself."
+  },
+  "started": "The export has started. It can take a few minutes.",
+  "cancelled": "The export was cancelled.",
+  "cancel": "Cancel",
+  "download": "Download",
+  "removed": "The file was removed after 7 days",
+  "status": {
+    "queued": "Waiting",
+    "running": "In progress",
+    "completed": "Ready",
+    "failed": "Failed",
+    "cancelled": "Cancelled"
+  },
+  "pii": {
+    "masked": "IDs masked",
+    "full": "Full IDs"
+  },
+  "history": {
+    "title": "Your exports",
+    "empty": "No export yet. Press Export all data to start one.",
+    "when": "Requested",
+    "by": "By",
+    "status": "Status",
+    "ids": "National IDs",
+    "rows": "Rows",
+    "size": "Size",
+    "actions": "Actions"
+  },
+  "failure": {
+    "EXPORT_TOO_LARGE": "The shop has more data than one export can hold. Contact support.",
+    "EXPORT_PERMISSION_LOST": "The person who asked for it no longer has the right to export.",
+    "EXPORT_SHOP_NOT_ACTIVE": "The shop is not active.",
+    "EXPORT_FAILED": "The export could not be completed. Try again, or contact support."
+  },
+  "errors": {
+    "failed": "Something went wrong. Please try again.",
+    "EXPORT_RUNNING": "An export is already in progress.",
+    "EXPORT_TOO_SOON": "You exported a moment ago. Try again in {{minutes}} minutes.",
+    "EXPORT_NOT_FOUND": "This export was not found.",
+    "PERMISSION_DENIED": "You do not have permission to export data.",
+    "FILE_NOT_FOUND": "The file is no longer available. Start a new export.",
+    "ORG_NOT_ACTIVE": "The shop is not active."
+  }
+}
