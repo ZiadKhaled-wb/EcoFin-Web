@@ -28,6 +28,7 @@ exports[`menu by role (TEST-2) > ACCOUNTANT sees these pages 1`] = `
   "/reports",
   "/audit",
   "/settings/migration",
+  "/settings/export",
 ]
 `;
 
@@ -160,6 +161,7 @@ exports[`menu by role (TEST-2) > OWNER sees these pages 1`] = `
   "/settings/devices",
   "/settings/import",
   "/settings/migration",
+  "/settings/export",
 ]
 `;
 

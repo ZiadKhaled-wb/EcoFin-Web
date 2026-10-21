@@ -93,6 +93,7 @@ import ShopProfilePage from '@/pages/settings/ShopProfilePage';
 import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 import ImportPage from '@/pages/settings/ImportPage';
 import MigrationPage from '@/pages/settings/MigrationPage';
+import ExportPage from '@/pages/settings/ExportPage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
@@ -112,6 +113,7 @@ const REAL_ROUTES = new Set([
   '/settings/devices',
   '/settings/import',
   '/settings/migration',
+  '/settings/export',
   '/settings/employees',
   '/employees',
   '/inventory/categories',
@@ -250,6 +252,10 @@ export default function App() {
                   {/* M01: the server checks import.data (and the kind's own keys) on every call. */}
                   <Route element={<RequirePermission permission="import.data" />}>
                     <Route path="/settings/import" element={<ImportPage />} />
+                  </Route>
+                  {/* M03: export.data works in an expired shop; the server checks every call. */}
+                  <Route element={<RequirePermission permission="export.data" />}>
+                    <Route path="/settings/export" element={<ExportPage />} />
                   </Route>
                   <Route
                     path="/settings/migration"
