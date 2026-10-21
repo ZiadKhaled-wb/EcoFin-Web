@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import { ShiftStatus, type ShiftSummary } from '@ziadkhaled-wb/contracts';
@@ -18,6 +18,7 @@ import Skeleton from '@/components/ui/Skeleton';
 import { useBranches } from '@/features/me/useBranches';
 import { useCan } from '@/features/me/useCan';
 import { formatDateTime, formatMoney } from '@/lib/format';
+import { enumParam, uuidParam } from '@/lib/urlFilters';
 import { shiftKeys, shiftsApi, type ShiftListParams } from '@/services/shiftsApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
@@ -43,8 +44,10 @@ export default function ShiftsPage() {
   const canForceClose = useCan('cash.adjust');
   const [forceClosing, setForceClosing] = useState<ShiftSummary | null>(null);
   const branches = useBranches();
-  const [branchId, setBranchId] = useState('');
-  const [status, setStatus] = useState('');
+  // D01: the dashboard opens the open shifts of a branch with ?status=open&branch_id=.
+  const [urlParams] = useSearchParams();
+  const [branchId, setBranchId] = useState(() => uuidParam(urlParams, 'branch_id'));
+  const [status, setStatus] = useState<string>(() => enumParam(urlParams, 'status', STATUSES));
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [page, setPage] = useState(1);

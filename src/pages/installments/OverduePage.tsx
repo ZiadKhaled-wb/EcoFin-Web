@@ -28,6 +28,7 @@ import { useCollectorOptions } from './walletShared';
 import { ApiError } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { formatBusinessDate, formatMoney, formatNumber } from '@/lib/format';
+import { uuidParam } from '@/lib/urlFilters';
 import { overdueApi, overdueKeys } from '@/services/overdueApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
@@ -167,7 +168,9 @@ function ContractsTab() {
   const branchOptions = useBranchOptions();
   const [input, setInput] = useState('');
   const [q, setQ] = useState('');
-  const [branch, setBranch] = useState('');
+  // D01: the dashboard opens the overdue contracts of a branch with ?branch_id=.
+  const [urlParams] = useSearchParams();
+  const [branch, setBranch] = useState(() => uuidParam(urlParams, 'branch_id'));
   const [minDays, setMinDays] = useState('');
   // N06: managers filter by collector; a collector already sees only their own customers.
   const canFilterCollector = useCan('collector.settle');

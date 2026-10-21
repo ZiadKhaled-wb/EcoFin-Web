@@ -10,6 +10,7 @@ import {
   type FieldCollectionBody,
   type SetCustomerCollectorBody,
   type SettleWalletBody,
+  type WalletListQuery,
   type WalletMovementQuery,
 } from '@ziadkhaled-wb/contracts';
 import { api } from '@/lib/api';
@@ -17,7 +18,8 @@ import { api } from '@/lib/api';
 export const walletKeys = {
   all: (orgId: string | null) => ['wallets', orgId] as const,
   mine: (orgId: string | null) => ['wallets', orgId, 'mine'] as const,
-  list: (orgId: string | null) => ['wallets', orgId, 'list'] as const,
+  list: (orgId: string | null, query: WalletListQuery = {}) =>
+    ['wallets', orgId, 'list', query] as const,
   ledger: (orgId: string | null, id: string, query: WalletMovementQuery) =>
     ['wallets', orgId, 'ledger', id, query] as const,
   route: (orgId: string | null, query: CollectorRouteQuery) =>
@@ -36,7 +38,8 @@ export const walletsApi = {
   collectField: async (body: FieldCollectionBody, key: string) =>
     Collection.parse((await api.post('/api/collections/field', body, keyed(key))).data),
   mine: async () => MyWallet.parse((await api.get('/api/wallets/me')).data),
-  list: async () => WalletListResponse.parse((await api.get('/api/wallets')).data),
+  list: async (query: WalletListQuery = {}) =>
+    WalletListResponse.parse((await api.get('/api/wallets', { params: query })).data),
   ledger: async (id: string, query: WalletMovementQuery) =>
     WalletMovementPage.parse(
       (await api.get(`/api/wallets/${id}/movements`, { params: query })).data,

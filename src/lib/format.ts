@@ -73,3 +73,15 @@ export function formatBusinessDate(value: string, lang: Language = getLanguage()
     toDate(`${value}T00:00:00Z`),
   );
 }
+
+/** Today in the shop's time zone (the business date the server uses), never the browser's. */
+export function shopToday(zone: string = DEFAULT_TIME_ZONE, now: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat('en', {
+    timeZone: zone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(now);
+  const part = (name: string) => parts.find((p) => p.type === name)?.value ?? '';
+  return `${part('year')}-${part('month')}-${part('day')}`;
+}

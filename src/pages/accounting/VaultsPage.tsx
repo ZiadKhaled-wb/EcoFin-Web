@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { CashAccount, CashAccountStatus } from '@ziadkhaled-wb/contracts';
@@ -14,6 +14,7 @@ import { notify } from '@/components/ui/notify';
 import Can from '@/features/me/Can';
 import { useBranches } from '@/features/me/useBranches';
 import { formatMoney } from '@/lib/format';
+import { uuidParam } from '@/lib/urlFilters';
 import { cashApi, cashKeys, type CashAccountListParams } from '@/services/cashApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
@@ -33,7 +34,9 @@ export default function VaultsPage() {
   const cache = useQueryClient();
   const branches = useBranches();
   const [status, setStatus] = useState<CashAccountStatus>('active');
-  const [branchId, setBranchId] = useState(ALL_BRANCHES);
+  // D01: the dashboard opens the safes and banks of a branch with ?branch_id=.
+  const [urlParams] = useSearchParams();
+  const [branchId, setBranchId] = useState(() => uuidParam(urlParams, 'branch_id') || ALL_BRANCHES);
   const [form, setForm] = useState<{ account: CashAccount | null } | null>(null);
   const [opening, setOpening] = useState<CashAccount | null>(null);
   const [transfer, setTransfer] = useState<{ from?: CashAccount } | null>(null);
