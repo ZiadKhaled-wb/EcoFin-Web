@@ -436,7 +436,7 @@ function CheckLine({ data, lang }: { data: SalesReport; lang: 'ar' | 'en' }) {
   const d = data.check.differences;
   const shown = (v: string | null) => (v === null ? '—' : formatCell(v, 'money', lang));
   return (
-    <p role="alert" className="mt-3 text-danger-700">
+    <p role="alert" className="mt-3 text-danger-600">
       {t('reports.sales.check.warning', {
         revenue: shown(d.revenue),
         tax: shown(d.tax),
