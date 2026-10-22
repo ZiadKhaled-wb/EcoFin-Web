@@ -220,7 +220,10 @@ test.describe('D02 sales and margin report end to end', () => {
       page.getByRole('button', { name: 'Export CSV' }).click(),
     ]);
     expect(download.suggestedFilename()).toBe(`sales-report-${day}-${day}-product.csv`);
-    const csv = (await readFile(await download.path(), 'utf8')).replace(/^﻿/, '');
+    const csv = (await readFile(await download.path(), 'utf8')).replace(
+      String.fromCharCode(0xfeff),
+      '',
+    );
     const lines = csv.trim().split('\r\n');
     expect(lines).toHaveLength(4); // header, two products, totals
     const header = lines[0]!.split(',');
