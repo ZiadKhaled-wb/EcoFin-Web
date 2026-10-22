@@ -66,6 +66,13 @@ export const NAV: NavItem[] = [
         permissionsAny: ['sale.create', 'report.view'],
       },
       {
+        id: 'sales-returns',
+        labelKey: 'returns.title',
+        to: '/sales/returns',
+        // S05 (D88): returns, voids and exchanges; the server checks the branch.
+        permissionsAny: ['refund.create', 'sale.create', 'report.view', 'cash.view'],
+      },
+      {
         id: 'sales-warranty',
         labelKey: 'sales.warranty.title',
         to: '/sales/warranty',

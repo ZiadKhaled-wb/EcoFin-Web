@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { SaleVoidBody, type SaleHistoryDetails, type SaleStatus } from '@ziadkhaled-wb/contracts';
 import Badge from '@/components/ui/Badge';
@@ -35,6 +36,7 @@ const blocks: Record<string, TranslationKey> = {
 };
 export default function SaleHistoryActions({ sale }: { sale: SaleHistoryDetails }) {
   const canVoid = useCan('sale.void');
+  const canReturn = useCan('refund.create');
   const org = useAuthStore((s) => s.orgId);
   const client = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -69,11 +71,16 @@ export default function SaleHistoryActions({ sale }: { sale: SaleHistoryDetails 
             {t(blocks[sale.void_block_reason ?? 'PERMISSION_DENIED'] ?? 'sales.history.blocked')}
           </p>
         )}
-        {/* Future S04 and S05 action slots, without placeholder controls. */}
         <div data-action-slot="sale-reprint">
           <PrintReceipt sale={sale} />
         </div>
-        <div data-action-slot="sale-start-return" />
+        <div data-action-slot="sale-start-return">
+          {canReturn && sale.status !== 'voided' && sale.status !== 'returned' && (
+            <Link to={`/sales/${sale.id}/return`} className="btn btn-secondary">
+              {t('returns.start')}
+            </Link>
+          )}
+        </div>
       </div>
       {!!sale.returns.length && (
         <section className="mt-4 space-y-3" aria-label={t('sales.history.returns')}>
@@ -82,7 +89,15 @@ export default function SaleHistoryActions({ sale }: { sale: SaleHistoryDetails 
             <dl key={r.id} className="grid gap-2 border-t border-line pt-3 sm:grid-cols-2">
               <div>
                 <dt>{t('sales.history.number')}</dt>
-                <dd dir="ltr">{r.number}</dd>
+                <dd dir="ltr">
+                  {r.kind === 'void' ? (
+                    r.number
+                  ) : (
+                    <Link to={`/sales/returns/${r.id}`} className="link">
+                      {r.number}
+                    </Link>
+                  )}
+                </dd>
               </div>
               <div>
                 <dt>{t('sales.history.total')}</dt>

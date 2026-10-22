@@ -358,6 +358,8 @@
       "replaced": "Replace",
       "rejected": "Reject",
       "closed": "Return to customer"
-    }
+    },
+    "refund": "Refund (return the item)",
+    "refundFailed": "Could not open the refund."
   }
 }

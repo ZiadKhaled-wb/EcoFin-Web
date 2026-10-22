@@ -1,4 +1,5 @@
 import {
+  ClaimRefundTarget,
   WarrantyClaim,
   WarrantyClaimOpened,
   WarrantyClaimsResponse,
@@ -25,6 +26,9 @@ export const warrantyApi = {
     ),
   move: async (id: string, body: MoveWarrantyClaimBody) =>
     WarrantyClaim.parse((await api.post('/api/warranty/claims/' + id + '/move', body)).data),
+  /** S05 (D88): an open claim's refund is a return of its line; this says what to open. */
+  refund: async (id: string) =>
+    ClaimRefundTarget.parse((await api.post('/api/warranty/claims/' + id + '/refund')).data),
   uploadPhoto: async (id: string, file: File) => {
     const body = new FormData();
     body.append('purpose', 'other');
