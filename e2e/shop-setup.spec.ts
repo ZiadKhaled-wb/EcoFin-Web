@@ -119,6 +119,9 @@ test.describe('INT-2: a fresh shop is set up through the UI', () => {
       await page.getByLabel(t('shops.invite.confirm'), { exact: true }).fill(OWNER_PASSWORD);
       await page.getByRole('button', { name: t('shops.invite.accept') }).click();
       await expect(page).toHaveURL(/\/login/, { timeout: 15_000 });
+      // The URL changes a moment before the login form replaces the invite form (two password
+      // fields): wait for the login form itself before typing.
+      await expect(page.locator('input[type=password]')).toHaveCount(1, { timeout: 15_000 });
       // P02: sign in on the page the invite led to; the first login opens the setup wizard.
       await page.locator('input').first().fill(ownerEmail);
       await page.locator('input[type=password]').fill(OWNER_PASSWORD);
