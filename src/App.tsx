@@ -2,6 +2,9 @@ import WarrantyPage from '@/pages/sales/WarrantyPage';
 import WarrantyClaimPage from '@/pages/sales/WarrantyClaimPage';
 import WarrantyClaimPrintPage from '@/pages/sales/WarrantyClaimPrintPage';
 import SalesHistoryPage from '@/pages/sales/SalesHistoryPage';
+import ReturnPage from '@/pages/sales/ReturnPage';
+import ReturnsPage from '@/pages/sales/ReturnsPage';
+import ReturnDetailPage from '@/pages/sales/ReturnDetailPage';
 import EmployeesPage from '@/pages/settings/EmployeesPage';
 import SetPasswordPage from '@/pages/auth/SetPasswordPage';
 import { lazy, Suspense } from 'react';
@@ -185,6 +188,7 @@ const MIGRATION_ITEM = navLeaves().find((i) => i.id === 'settings-migration')!;
 const POS_ITEM = navLeaves().find((i) => i.id === 'pos')!;
 const WARRANTY_ITEM = navLeaves().find((i) => i.id === 'sales-warranty')!;
 const HISTORY_ITEM = navLeaves().find((i) => i.id === 'sales-history')!;
+const RETURNS_ITEM = navLeaves().find((i) => i.id === 'sales-returns')!;
 
 export default function App() {
   return (
@@ -518,6 +522,31 @@ export default function App() {
                     element={
                       <RequireNavItem item={HISTORY_ITEM}>
                         <SalesHistoryPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  {/* S05 (D88): returns; the server checks refund.create and the branch. */}
+                  <Route
+                    path="/sales/returns"
+                    element={
+                      <RequireNavItem item={RETURNS_ITEM}>
+                        <ReturnsPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/sales/returns/:id"
+                    element={
+                      <RequireNavItem item={RETURNS_ITEM}>
+                        <ReturnDetailPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/sales/:id/return"
+                    element={
+                      <RequireNavItem item={RETURNS_ITEM}>
+                        <ReturnPage />
                       </RequireNavItem>
                     }
                   />

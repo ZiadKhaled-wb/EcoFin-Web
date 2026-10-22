@@ -1,0 +1,151 @@
+{
+  "title": "Returns",
+  "start": "Return items",
+  "newTitle": "Return from sale {number}",
+  "back": "Back to the sale",
+  "toList": "All returns",
+  "loadFailed": "Could not load the sale.",
+  "notFound": "Sale not found",
+  "notFoundHint": "It may belong to another branch, or the link is wrong.",
+  "blocked": {
+    "voided": "This sale was voided: nothing can come back.",
+    "fully_returned": "Everything on this sale has already come back.",
+    "contract_closed": "The installment contract of this sale is closed."
+  },
+  "deadline": "Returns accepted until {date}",
+  "periodPassed": "The return period ended on {date}. Only the owner can take this return.",
+  "periodOwner": "The return period ended on {date}. As the owner you can still take it back; it will be recorded.",
+  "claimNote": "A warranty refund: the return period does not apply.",
+  "lines": {
+    "title": "What comes back",
+    "product": "Product",
+    "sold": "Sold",
+    "returned": "Returned",
+    "returnable": "Can return",
+    "quantity": "Quantity back",
+    "condition": "Condition",
+    "pick": "Return this unit",
+    "none": "Choose at least one item to return."
+  },
+  "conditions": {
+    "resellable": "Can be sold again",
+    "damaged": "Damaged"
+  },
+  "scan": {
+    "label": "Scan or type a serial",
+    "help": "Ticks the unit sold on this sale.",
+    "notFound": "{serial} was not sold on this sale."
+  },
+  "reason": "Reason",
+  "reasonInvalid": "Write a reason of 3 to 200 characters.",
+  "quote": {
+    "loading": "Working out the amounts",
+    "failed": "Could not work out the amounts.",
+    "subtotal": "Before VAT",
+    "vat": "VAT",
+    "total": "Returned goods",
+    "refundDue": "To give back: {amount}"
+  },
+  "contract": {
+    "title": "Installment contract {number}",
+    "remainingBefore": "Owed before",
+    "credit": "Returned goods and their share of the profit",
+    "remainingAfter": "Owed after",
+    "installments": "{count} installments of {amount}",
+    "noneLeft": "Nothing is owed after this return.",
+    "overpaid": "Paid more than the new price: {amount} goes back"
+  },
+  "refunds": {
+    "title": "How the money goes back",
+    "method": "Method",
+    "amount": "Amount",
+    "bank": "Bank",
+    "reference": "Transfer reference",
+    "add": "Add a refund line",
+    "remove": "Remove",
+    "sum": "Refund lines add up to {amount}",
+    "mismatch": "The refund lines must add up to {amount}.",
+    "available": "The sale took {amount} this way",
+    "noneNeeded": "Nothing is given back: the return lowers what is owed on the contract."
+  },
+  "methods": {
+    "cash": "Cash",
+    "bank_transfer": "Bank transfer",
+    "store_credit": "Store credit",
+    "contract_adjustment": "Contract balance"
+  },
+  "exchange": {
+    "toggle": "Exchange for other items",
+    "title": "New items",
+    "code": "Barcode or SKU",
+    "add": "Add",
+    "notFound": "No product with this code.",
+    "remove": "Remove",
+    "quantity": "Quantity",
+    "newTotal": "New items",
+    "creditUsed": "Paid by the returned goods",
+    "toPay": "Customer pays (cash)",
+    "empty": "Add the items the customer takes instead."
+  },
+  "confirm": "Confirm the return",
+  "confirmExchange": "Confirm the exchange",
+  "posted": "Return {number} posted",
+  "errors": {
+    "RETURN_QTY_EXCEEDED": "More than can still come back from a line.",
+    "RETURN_UNIT_MISMATCH": "That unit was not sold on this sale.",
+    "RETURN_PERIOD_EXPIRED": "The return period has ended. Ask the owner.",
+    "RETURN_OTHER_BRANCH": "Take this return at the branch that made the sale.",
+    "REFUND_EXCEEDS_PAID": "More goes back this way than the sale took. Use another method or store credit.",
+    "RETURN_ETA_WINDOW_PASSED": "The tax receipt of this sale is older than 540 days: it can't be returned.",
+    "EXCHANGE_NOT_FOR_CONTRACT": "An installment sale can't be exchanged: return it, then sell again.",
+    "PRICE_CHANGED": "The amounts changed. Check them and confirm again.",
+    "PAYMENT_TOTAL_MISMATCH": "The refund lines don't add up to what goes back.",
+    "INSUFFICIENT_FUNDS": "The drawer doesn't hold enough cash. Use another method.",
+    "SHIFT_REQUIRED": "Open your shift first.",
+    "CONTRACT_NOT_OPEN": "The installment contract of this sale is closed.",
+    "ALREADY_VOIDED": "This sale was voided.",
+    "VAULT_INVALID": "Choose a bank the sale was paid into.",
+    "OUT_OF_STOCK": "A new item is out of stock.",
+    "fallback": "The return was not posted. Try again."
+  },
+  "list": {
+    "number": "Number",
+    "sale": "Sale",
+    "date": "Date",
+    "branch": "Branch",
+    "customer": "Customer",
+    "kind": "Kind",
+    "total": "Total",
+    "by": "By",
+    "empty": "No returns",
+    "emptyHint": "Returns, voids and exchanges of your branches appear here.",
+    "loadFailed": "Could not load the returns.",
+    "from": "From",
+    "to": "To",
+    "allKinds": "All kinds"
+  },
+  "kinds": {
+    "return": "Return",
+    "void": "Void",
+    "exchange": "Exchange"
+  },
+  "detail": {
+    "title": "Return {number}",
+    "notFound": "Return not found",
+    "loadFailed": "Could not load the return.",
+    "walkIn": "Walk-in customer",
+    "refunds": "Money given back",
+    "noRefunds": "No money was given back.",
+    "exchangePair": "Paid into the new sale",
+    "contractChange": "Contract {number}: owed after the return {amount}",
+    "exchangeSale": "New sale {number} ({total})",
+    "fiscal": "Tax receipt: {status}"
+  },
+  "receipt": {
+    "title": "Return receipt",
+    "copy": "COPY",
+    "sale": "Original sale",
+    "print": "Print",
+    "printing": "Printing"
+  }
+}

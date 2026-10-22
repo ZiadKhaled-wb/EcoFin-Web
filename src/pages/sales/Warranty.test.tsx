@@ -231,13 +231,16 @@ describe('S12 warranty UI', () => {
     ['closed', []],
     ['rejected', []],
   ] as [ClaimStatus, ClaimStatus[]][])(
-    'only allowed actions for %s; refund is absent',
+    'only allowed actions for %s; refund (S05) only while the claim is open',
     async (status, expected) => {
       const c = { ...claim, status };
       expect(allowedClaimActions(c, true)).toEqual(expected);
       await renderApp(<WarrantyClaimActions claim={c} />, { lang: 'en' });
-      expect(screen.queryByRole('button', { name: /refund/i })).not.toBeInTheDocument();
-      expect(screen.queryAllByRole('button')).toHaveLength(expected.length);
+      const refundable = ['open', 'in_repair', 'repaired'].includes(status);
+      const refund = screen.queryByRole('button', { name: /refund/i });
+      if (refundable) expect(refund).toBeInTheDocument();
+      else expect(refund).not.toBeInTheDocument();
+      expect(screen.queryAllByRole('button')).toHaveLength(expected.length + (refundable ? 1 : 0));
     },
   );
   it('expired cashier sees Reject only', async () => {

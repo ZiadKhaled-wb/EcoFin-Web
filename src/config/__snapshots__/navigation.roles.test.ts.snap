@@ -4,6 +4,7 @@ exports[`menu by role (TEST-2) > ACCOUNTANT sees these pages 1`] = `
 [
   "/dashboard",
   "/sales/history",
+  "/sales/returns",
   "/sales/orders",
   "/sales/invoices",
   "/inventory/stock",
@@ -36,6 +37,7 @@ exports[`menu by role (TEST-2) > BRANCH_MANAGER sees these pages 1`] = `
 [
   "/dashboard",
   "/sales/history",
+  "/sales/returns",
   "/sales/warranty",
   "/sales/pos",
   "/sales/approvals",
@@ -80,6 +82,7 @@ exports[`menu by role (TEST-2) > CASHIER sees these pages 1`] = `
 [
   "/dashboard",
   "/sales/history",
+  "/sales/returns",
   "/sales/warranty",
   "/sales/pos",
   "/sales/orders",
@@ -118,6 +121,7 @@ exports[`menu by role (TEST-2) > OWNER sees these pages 1`] = `
 [
   "/dashboard",
   "/sales/history",
+  "/sales/returns",
   "/sales/warranty",
   "/sales/pos",
   "/sales/approvals",

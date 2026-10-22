@@ -57,6 +57,8 @@ import arSurveys from './locales/ar/surveys.json';
 import enCustomerAccount from './locales/en/customerAccount.json';
 import enSurveys from './locales/en/surveys.json';
 import arEta from './locales/ar/eta.json';
+import arReturns from './locales/ar/returns.json';
+import enReturns from './locales/en/returns.json';
 import enEta from './locales/en/eta.json';
 import arDevices from './locales/ar/devices.json';
 import enDevices from './locales/en/devices.json';
@@ -133,6 +135,7 @@ export const ar = {
   exports: arExports,
   dayClose: arDayClose,
   dashboard: arDashboard,
+  returns: arReturns,
 };
 
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
@@ -182,6 +185,7 @@ export const en: SameShape<typeof ar> = {
   exports: enExports,
   dayClose: enDayClose,
   dashboard: enDashboard,
+  returns: enReturns,
 };
 
 type Leaves<T, P extends string = ''> = {

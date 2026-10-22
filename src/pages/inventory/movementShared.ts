@@ -30,6 +30,8 @@ export function documentHref(m: DocumentRef): string | null {
       return `/purchasing/invoices/${encodeURIComponent(m.source_id)}`;
     case 'purchase_return':
       return `/purchasing/returns/${encodeURIComponent(m.source_id)}`;
+    case 'sales_return':
+      return `/sales/returns/${encodeURIComponent(m.source_id)}`;
     case 'import':
       // A serial registration (I04) is shown on the unit's page.
       return m.unit_id ? `/inventory/units/${encodeURIComponent(m.unit_id)}` : null;

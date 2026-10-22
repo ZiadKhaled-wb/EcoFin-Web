@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   MoveWarrantyClaimBody,
@@ -16,6 +16,7 @@ import Select from '@/components/ui/Select';
 import Textarea from '@/components/ui/Textarea';
 import FormField from '@/components/ui/FormField';
 import FormError from '@/components/ui/FormError';
+import { notify } from '@/components/ui/notify';
 import { useCan } from '@/features/me/useCan';
 import { useAuthStore } from '@/store/authStore';
 import { unitsApi } from '@/services/unitsApi';
@@ -86,6 +87,20 @@ export function WarrantyClaimActions({ claim }: { claim: WarrantyClaim }) {
       await client.invalidateQueries({ queryKey: warrantyKeys.all(org) });
     },
   });
+  // S05 (D88): the refund is a return of the claim's line; the return form opens with it ticked.
+  const canRefund = useCan('refund.create');
+  const navigate = useNavigate();
+  const [refunding, setRefunding] = useState(false);
+  const refund = async () => {
+    setRefunding(true);
+    try {
+      const target = await warrantyApi.refund(claim.id);
+      navigate(`/sales/${target.sale_id}/return?claim=${target.claim_id}`);
+    } catch {
+      setRefunding(false);
+      notify.error(t('sales.warranty.refundFailed'));
+    }
+  };
   const open = (status: ClaimStatus) => {
     setTo(status);
     setNote('');
@@ -116,6 +131,11 @@ export function WarrantyClaimActions({ claim }: { claim: WarrantyClaim }) {
               {t(`sales.warranty.action.${status}`)}
             </Button>
           ))}
+        {canRefund && ['open', 'in_repair', 'repaired'].includes(claim.status) && (
+          <Button variant="secondary" loading={refunding} onClick={() => void refund()}>
+            {t('sales.warranty.refund')}
+          </Button>
+        )}
         <Link
           className="btn-link"
           to={'/warranty/claims/' + claim.id + '/print'}
