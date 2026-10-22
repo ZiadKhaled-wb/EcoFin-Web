@@ -86,8 +86,10 @@ import enExports from './locales/en/exports.json';
 import enMigration from './locales/en/migration.json';
 import arDayClose from './locales/ar/dayClose.json';
 import arDashboard from './locales/ar/dashboard.json';
+import arReports from './locales/ar/reports.json';
 import enDayClose from './locales/en/dayClose.json';
 import enDashboard from './locales/en/dashboard.json';
+import enReports from './locales/en/reports.json';
 
 /** One JSON file per namespace and language. The first segment of a key is its namespace. */
 export const ar = {
@@ -135,6 +137,7 @@ export const ar = {
   exports: arExports,
   dayClose: arDayClose,
   dashboard: arDashboard,
+  reports: arReports,
   returns: arReturns,
 };
 
@@ -185,6 +188,7 @@ export const en: SameShape<typeof ar> = {
   exports: enExports,
   dayClose: enDayClose,
   dashboard: enDashboard,
+  reports: enReports,
   returns: enReturns,
 };
 

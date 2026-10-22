@@ -40,7 +40,8 @@ export default function SalesHistoryPage() {
   const [from, setFrom] = useState<string | null>(() => dateParam(urlParams, 'from') || null);
   const [to, setTo] = useState<string | null>(() => dateParam(urlParams, 'to') || null);
   const [branch, setBranch] = useState(() => uuidParam(urlParams, 'branch_id'));
-  const [cashier, setCashier] = useState('');
+  // D02: the sales report opens a seller's sales with ?cashier_id=.
+  const [cashier, setCashier] = useState(() => uuidParam(urlParams, 'cashier_id'));
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
   const start = from ?? date;
