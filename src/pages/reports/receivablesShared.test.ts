@@ -144,3 +144,16 @@ describe('D03 receivables helpers', () => {
     expect(tableFields('contract').map((f) => f.field)).not.toContain('contracts');
   });
 });
+
+describe('CSV cells (D02 and D03 exports)', () => {
+  it('neutralises a text that a spreadsheet would run as a formula, and keeps numbers as numbers', async () => {
+    const { csvCell } = await import('./salesReportShared');
+    expect(csvCell('=HYPERLINK("http://x")')).toBe('"\'=HYPERLINK(""http://x"")"');
+    expect(csvCell('+201000')).toBe("'+201000");
+    expect(csvCell('@SUM(A1)')).toBe("'@SUM(A1)");
+    expect(csvCell('-cmd')).toBe("'-cmd");
+    expect(csvCell('-17700.00')).toBe('-17700.00');
+    expect(csvCell('24000.00')).toBe('24000.00');
+    expect(csvCell('Amal, Aging')).toBe('"Amal, Aging"');
+  });
+});

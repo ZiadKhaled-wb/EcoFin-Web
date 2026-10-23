@@ -332,7 +332,12 @@ export function drillLink(
 
 const BOM = String.fromCharCode(0xfeff);
 
-function csvCell(value: string): string {
+/**
+ * One CSV cell. A text that a spreadsheet would read as a formula (=, +, -, @, tab or CR first: a customer or
+ * product name typed by staff) gets a leading apostrophe; a number (a negative amount too) stays as it is.
+ */
+export function csvCell(raw: string): string {
+  const value = /^[=+\-@\t\r]/.test(raw) && !/^-?\d+(\.\d+)?$/.test(raw) ? `'${raw}` : raw;
   return /[",\r\n]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
 }
 
