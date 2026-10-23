@@ -1,0 +1,87 @@
+.quotation-page {
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+.quotation-page h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.quotation-filters,
+.quotation-line,
+.quotation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: end;
+}
+.quotation-line {
+  border-block-end: 1px solid #aaa;
+  padding-block: 1rem;
+}
+.quotation-page label {
+  display: grid;
+  gap: 0.25rem;
+}
+.quotation-page input,
+.quotation-page select,
+.quotation-page textarea {
+  border: 1px solid #999;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #111);
+}
+.quotation-page button,
+.quotation-page a {
+  padding: 0.5rem;
+  text-decoration: underline;
+}
+.quotation-page button:disabled {
+  opacity: 0.5;
+}
+.quotation-page table,
+.quotation-print table {
+  width: 100%;
+  text-align: start;
+  border-collapse: collapse;
+}
+.quotation-page th,
+.quotation-page td,
+.quotation-print th,
+.quotation-print td {
+  padding: 0.5rem;
+  border-block-end: 1px solid #aaa;
+  text-align: start;
+}
+.quotation-print {
+  max-width: 190mm;
+  margin: auto;
+  padding: 10mm;
+  color: #000;
+  background: white;
+  overflow-wrap: anywhere;
+}
+.quotation-print dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.quotation-print-root {
+  display: none;
+}
+@media print {
+  .quotation-print-root {
+    display: block !important;
+  }
+  .quotation-print {
+    padding: 0;
+    width: 100%;
+  }
+  .quotation-print tr {
+    break-inside: avoid;
+  }
+  .quotation-print thead {
+    display: table-header-group;
+  }
+}

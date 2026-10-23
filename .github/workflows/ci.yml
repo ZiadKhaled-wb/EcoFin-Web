@@ -54,10 +54,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # A change that spans both repos (S08) has a branch of the same name in the API repo: the e2e
+      # suite runs against it. Any other branch runs against the API's main.
+      - name: API branch
+        id: api-ref
+        env:
+          API_REPO_TOKEN: ${{ secrets.API_REPO_TOKEN }}
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          ref=main
+          if git ls-remote --exit-code --heads \
+              "https://x-access-token:${API_REPO_TOKEN}@github.com/ZiadKhaled-wb/EcoFin-API.git" \
+              "refs/heads/$BRANCH" > /dev/null; then
+            ref="$BRANCH"
+          fi
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+          echo "API ref: $ref"
+
       - uses: actions/checkout@v4
         with:
           repository: ZiadKhaled-wb/EcoFin-API
-          ref: main
+          ref: ${{ steps.api-ref.outputs.ref }}
           path: api
           token: ${{ secrets.API_REPO_TOKEN }}
 

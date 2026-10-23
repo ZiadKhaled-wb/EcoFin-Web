@@ -21,6 +21,8 @@ const ERRORS: Partial<Record<string, TranslationKey>> = {
   DAY_NOT_CLOSED: 'dayClose.errors.notClosed',
   REASON_REQUIRED: 'dayClose.errors.reason',
   VALIDATION_FAILED: 'dayClose.errors.validation',
+  // S08 (D12.8): offline sales of the day still wait to be posted or decided.
+  OFFLINE_SALES_OPEN: 'offline.errors.OFFLINE_SALES_OPEN',
 };
 
 /** A translated message for a refused day-close call. */

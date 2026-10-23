@@ -1,0 +1,174 @@
+{
+  "banner": {
+    "offline": "Offline",
+    "unsynced": "{count} sales waiting to sync",
+    "leaseLeft": "Offline time left: {time}",
+    "deadline": "Connect now: receipts must reach the tax authority within 24 hours",
+    "expired": "Offline time limit reached",
+    "unavailable": "Offline selling is not available on this device"
+  },
+  "pos": {
+    "title": "Offline sale",
+    "rules": "Offline: cash only, walk-in customer, no discounts. Installments, returns, credit and approvals wait for the connection.",
+    "search": "Find a product",
+    "searchPlaceholder": "Name, SKU or barcode",
+    "noResults": "No product matches",
+    "inStock": "In stock: {count}",
+    "add": "Add",
+    "chooseUnit": "Choose the serial",
+    "quantity": "Quantity",
+    "remove": "Remove",
+    "empty": "Add products to the cart.",
+    "subtotal": "Subtotal",
+    "tax": "VAT",
+    "total": "Total",
+    "tendered": "Cash received",
+    "change": "Change",
+    "pay": "Save and print",
+    "newSale": "New sale",
+    "print": "Print receipt",
+    "notSellable": {
+      "NO_ETA_CODE": "No ETA item code",
+      "NO_PRICE": "No price"
+    },
+    "refusals": {
+      "NO_LEASE": "Offline selling is not available on this device.",
+      "LEASE_EXPIRED": "Offline time limit reached. Connect to the internet to keep selling.",
+      "NOT_SELLABLE": "This product can't be sold offline.",
+      "OUT_OF_STOCK": "Not enough stock on this device's count.",
+      "SERIAL_TAKEN": "This serial was already sold.",
+      "MAX_SALE": "This sale is over the offline limit for one sale.",
+      "MAX_SALES": "The number of offline sales allowed is reached.",
+      "MAX_LEASE_TOTAL": "The offline sales total allowed is reached.",
+      "TENDERED_SHORT": "The cash received is less than the total.",
+      "EMPTY": "The cart is empty."
+    },
+    "done": {
+      "title": "Offline sale {number} saved",
+      "body": "It will reach the server when the connection is back."
+    },
+    "unavailable": "Online-only actions are hidden while offline."
+  },
+  "lock": {
+    "title": "Enter your PIN",
+    "description": "The point of sale is offline. Your PIN opens it.",
+    "pin": "PIN",
+    "unlock": "Unlock",
+    "wrong": "Wrong PIN. {left} tries left.",
+    "locked": "Too many wrong PINs. Log in again when the internet is back.",
+    "login": "Log in again",
+    "setTitle": "Set your offline PIN",
+    "setDescription": "If the internet drops, this PIN opens the point of sale on this computer. 4 to 6 digits.",
+    "confirm": "Confirm the PIN",
+    "mismatch": "The two PINs are not the same.",
+    "invalid": "A PIN is 4 to 6 digits.",
+    "set": "Save the PIN"
+  },
+  "device": {
+    "title": "Offline selling on this computer",
+    "storage": "Persistent storage",
+    "granted": "granted",
+    "denied": "not granted: the browser may delete offline data, so offline selling is off on this computer",
+    "lease": "Offline lease",
+    "noLease": "none yet (opens with your shift)",
+    "expires": "valid until {time}",
+    "key": "Signing key",
+    "keyYes": "registered",
+    "keyNo": "not registered yet",
+    "unsynced": "Sales waiting to sync",
+    "rejected": "Sales the server refused",
+    "export": "Export unsynced sales",
+    "exportHelp": "Downloads the sales still on this computer, for a manager to import.",
+    "leaseErrors": {
+      "OFFLINE_DISABLED": "Offline selling is turned off for this shop.",
+      "OFFLINE_ETA_NOT_READY": "This computer or the shop's ETA data is not ready for offline receipts.",
+      "OFFLINE_NOT_SHIFT_OWNER": "The open shift on this computer is another cashier's.",
+      "DEVICE_REVOKED": "This computer is no longer a paired point of sale.",
+      "UNKNOWN": "The lease could not be renewed."
+    }
+  },
+  "shift": {
+    "syncFirst": "Sync first: {count} offline sales are still on this computer."
+  },
+  "review": {
+    "title": "Offline sales",
+    "description": "Sales made without the internet: what was posted, and what waits for a decision.",
+    "status": "Status",
+    "statuses": {
+      "all": "All",
+      "received": "Received",
+      "posted": "Posted",
+      "conflict": "Needs a decision",
+      "duplicate": "Duplicate",
+      "rejected": "Rejected"
+    },
+    "codes": {
+      "SHIFT_CLOSED": "The shift was closed",
+      "TIME_INVALID": "Time outside the offline lease",
+      "LIMIT_EXCEEDED": "Over the offline limits",
+      "PRICE_MISMATCH": "Price differs from the device's list",
+      "TOTALS_MISMATCH": "Totals don't add up (reported as a bug)",
+      "SERIAL_UNAVAILABLE": "Serial not available",
+      "VERIFY_FAILED": "Signature or receipt check failed",
+      "NOT_OURS": "Not this shop's sale",
+      "LEASE_REVOKED": "Made after the device was unpaired",
+      "RECEIPT_MISMATCH": "Receipt held: it doesn't match the sale"
+    },
+    "number": "Number",
+    "device": "Device",
+    "cashier": "Cashier",
+    "issuedAt": "Sold at",
+    "total": "Total",
+    "code": "Reason",
+    "open": "Open",
+    "empty": "No offline sales.",
+    "lines": "Printed lines",
+    "payment": "Cash received {tendered}, change {change}",
+    "noActions": "Nothing to decide here.",
+    "actions": {
+      "accept": "Accept as printed",
+      "use_serial": "Use another serial",
+      "post_to_shift": "Post to an open shift",
+      "reject": "Reject (lost or stolen device)"
+    },
+    "reason": "Reason",
+    "reasonHelp": "Required: at least 3 characters.",
+    "unitFor": "Serial unit id for line {line}",
+    "shiftId": "Open shift id (same branch)",
+    "submit": "Apply",
+    "done": "Done: the sale will be processed again.",
+    "import": {
+      "title": "Import a device file",
+      "device": "Device",
+      "file": "Export file",
+      "submit": "Import",
+      "result": "{received} received, {duplicate} already here, {rejected} refused",
+      "invalid": "This is not an offline sales file."
+    }
+  },
+  "settings": {
+    "title": "Offline point of sale",
+    "description": "Let cashiers keep selling for cash when the internet drops.",
+    "enabled": "Allow offline selling",
+    "maxSale": "Largest offline sale (below 150,000)",
+    "maxHours": "Hours a lease lasts (1 to 20)",
+    "maxSales": "Sales per lease (1 to 1000)",
+    "maxLeaseTotal": "Total per lease",
+    "save": "Save",
+    "saved": "Offline settings saved."
+  },
+  "errors": {
+    "RESOLUTION_NOT_ALLOWED": "That action is not allowed for this sale.",
+    "REASON_REQUIRED": "Write a reason.",
+    "OFFLINE_SALES_OPEN": "Offline sales of this shift or day still wait to be posted or decided.",
+    "OFFLINE_SALE_NOT_FOUND": "Offline sale not found.",
+    "UNIT_PRODUCT_MISMATCH": "That unit is another product's.",
+    "UNIT_NOT_AVAILABLE": "That unit is not in stock in this branch.",
+    "UNIT_NOT_FOUND": "Unit not found.",
+    "SHIFT_NOT_FOUND": "No such open shift in this branch.",
+    "SHIFT_CLOSED": "That shift is closed.",
+    "DEVICE_NOT_FOUND": "Device not found.",
+    "VALIDATION_FAILED": "Check the values.",
+    "failed": "Something went wrong. Try again."
+  }
+}

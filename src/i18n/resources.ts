@@ -1,4 +1,6 @@
 import arEmployees from './locales/ar/employees.json';
+import arQuotations from './locales/ar/quotations.json';
+import enQuotations from './locales/en/quotations.json';
 import enEmployees from './locales/en/employees.json';
 import arAudit from './locales/ar/audit.json';
 import arBranches from './locales/ar/branches.json';
@@ -90,9 +92,12 @@ import arReports from './locales/ar/reports.json';
 import enDayClose from './locales/en/dayClose.json';
 import enDashboard from './locales/en/dashboard.json';
 import enReports from './locales/en/reports.json';
+import arOffline from './locales/ar/offline.json';
+import enOffline from './locales/en/offline.json';
 
 /** One JSON file per namespace and language. The first segment of a key is its namespace. */
 export const ar = {
+  quotations: arQuotations,
   employees: arEmployees,
   branches: arBranches,
   settings: arSettings,
@@ -139,11 +144,13 @@ export const ar = {
   dashboard: arDashboard,
   reports: arReports,
   returns: arReturns,
+  offline: arOffline,
 };
 
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
 type SameShape<T> = { [K in keyof T]: T[K] extends string ? string : SameShape<T[K]> };
 export const en: SameShape<typeof ar> = {
+  quotations: enQuotations,
   employees: enEmployees,
   branches: enBranches,
   settings: enSettings,
@@ -190,6 +197,7 @@ export const en: SameShape<typeof ar> = {
   dashboard: enDashboard,
   reports: enReports,
   returns: enReturns,
+  offline: enOffline,
 };
 
 type Leaves<T, P extends string = ''> = {

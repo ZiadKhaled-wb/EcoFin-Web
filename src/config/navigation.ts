@@ -79,6 +79,12 @@ export const NAV: NavItem[] = [
         permission: 'warranty.manage',
       },
       {
+        id: 'sales-quotations',
+        labelKey: 'quotations.title',
+        to: '/sales/quotations',
+        permission: 'quotation.manage',
+      },
+      {
         id: 'pos',
         labelKey: 'nav.pos',
         to: '/sales/pos',
@@ -92,6 +98,13 @@ export const NAV: NavItem[] = [
         // S03 (D65): over-cap discount requests waiting for a manager; the count is the badge.
         permission: 'discount.above_cap',
         badge: DiscountApprovalsBadge,
+      },
+      {
+        id: 'offline-sales',
+        labelKey: 'offline.review.title',
+        to: '/sales/offline',
+        // S08 (D11): offline sales waiting for a decision, and the import of a device's file.
+        permission: 'offline.resolve',
       },
       {
         id: 'orders',
@@ -406,6 +419,13 @@ export const NAV: NavItem[] = [
         id: 'settings-eta',
         labelKey: 'eta.title',
         to: '/settings/eta',
+        permission: 'org.settings_manage',
+      },
+      // S08 (D16): offline selling and its limits.
+      {
+        id: 'settings-offline',
+        labelKey: 'offline.settings.title',
+        to: '/settings/offline',
         permission: 'org.settings_manage',
       },
       {

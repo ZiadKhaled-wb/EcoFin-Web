@@ -16,6 +16,8 @@ import { initMonitoring } from '@/lib/monitoring';
 
 // Q02: error tracking first, so errors during the first render are reported too.
 initMonitoring();
+// S08 (D15): the service worker of the production build (none in the dev server or tests).
+if (import.meta.env.PROD) void import('@/offline/pwa').then((pwa) => pwa.registerApp());
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
