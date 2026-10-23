@@ -23,6 +23,7 @@ import { formatDateTime, formatMoney } from '@/lib/format';
 import { cashKeys } from '@/services/cashApi';
 import { shiftKeys, shiftsApi } from '@/services/shiftsApi';
 import { useAuthStore } from '@/store/authStore';
+import { useOfflineStore } from '@/offline/store';
 import { t } from '@/i18n';
 import { isZero } from './cashShared';
 import { moneyDifference, movementLabel, shiftError } from './shiftShared';
@@ -357,6 +358,8 @@ export function CloseShiftDialog({ shift, onClose }: { shift: Shift; onClose: ()
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const posting = useRef(false);
+  /** S08 (D14.5): offline sales still on this computer are synced before the shift closes. */
+  const unsynced = useOfflineStore((s) => s.unsynced);
 
   const parsed: ShiftCounts = {};
   for (const d of SHIFT_DENOMINATIONS) {
@@ -368,7 +371,7 @@ export function CloseShiftDialog({ shift, onClose }: { shift: Shift; onClose: ()
   const differs = !isZero(difference);
 
   async function submit() {
-    if (posting.current) return;
+    if (posting.current || unsynced > 0) return;
     setError('');
     setReasonError('');
     setVaultError('');
@@ -470,7 +473,13 @@ export function CloseShiftDialog({ shift, onClose }: { shift: Shift; onClose: ()
           />
         )}
         <FormError message={error} />
-        <Button variant="danger" loading={busy} disabled={busy} onClick={() => void submit()}>
+        {unsynced > 0 && <FormError message={t('offline.shift.syncFirst', { count: unsynced })} />}
+        <Button
+          variant="danger"
+          loading={busy}
+          disabled={busy || unsynced > 0}
+          onClick={() => void submit()}
+        >
           {t('cash.shifts.close.submit')}
         </Button>
       </div>

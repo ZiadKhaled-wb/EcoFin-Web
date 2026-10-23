@@ -18,6 +18,7 @@ import { setDeviceToken } from '@/features/devices/deviceToken';
 import { useCurrentDevice } from '@/features/devices/useCurrentDevice';
 import { deviceKeys, devicesApi } from '@/services/devicesApi';
 import { useAuthStore } from '@/store/authStore';
+import OfflineDevicePanel from '@/pages/sales/offline/OfflineDevicePanel';
 import { t } from '@/i18n';
 
 /**
@@ -104,6 +105,9 @@ export default function PairDevicePage() {
           </form>
         </div>
       </Card>
+      <div className="mt-4">
+        <OfflineDevicePanel />
+      </div>
     </PageContainer>
   );
 }

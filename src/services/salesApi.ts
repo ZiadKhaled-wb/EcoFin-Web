@@ -21,8 +21,16 @@ export const salesApi = {
   quote: async (body: SaleQuoteBody) =>
     SaleQuote.parse((await api.post('/api/sales/quote', body)).data),
   /** `key` belongs to the cart: the same cart sent twice is one sale. */
-  create: async (body: SaleCreateInput, key: string) =>
-    Sale.parse((await api.post('/api/sales', body, { headers: { 'Idempotency-Key': key } })).data),
+  /** S08 (D1.3): `timeoutMs` = the POS's 8 s, after which the sale goes offline with its key. */
+  create: async (body: SaleCreateInput, key: string, timeoutMs?: number) =>
+    Sale.parse(
+      (
+        await api.post('/api/sales', body, {
+          headers: { 'Idempotency-Key': key },
+          ...(timeoutMs ? { timeout: timeoutMs } : {}),
+        })
+      ).data,
+    ),
   /** S02: the banks a transfer can go into (names only); empty without an open shift. */
   paymentAccounts: async () =>
     SalePaymentAccountList.parse((await api.get('/api/sales/payment-accounts')).data),

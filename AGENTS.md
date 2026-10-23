@@ -52,3 +52,5 @@ EcoTech Pro: multi-tenant SaaS POS with in-house installments for Egyptian furni
 
 Any POS write on an open shift (sale, return, cash move, collection at the counter) calls `app.require_shift_device(shift_id)`; only `force_close_shift` skips it.
 Tenant from token only · decimal money · stock/cash only through ledger inserts · one transaction per multi-table write · idempotency keys · no editing issued documents · types from shared contracts · permission + audit on every write · schema only through new migrations · no hard-coded UI text. Full list: the `ecotech-build` skill.
+
+Any new POS write path must state how it behaves offline. Offline sales are posted only by `app.offline_process`.

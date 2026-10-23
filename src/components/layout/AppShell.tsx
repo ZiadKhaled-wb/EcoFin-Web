@@ -6,11 +6,16 @@ import BranchSwitcher from '@/components/layout/BranchSwitcher';
 import Wordmark from '@/components/ui/Wordmark';
 import SidebarNav from '@/components/layout/SidebarNav';
 import Topbar from '@/components/layout/Topbar';
-import { NAV, filterNav } from '@/config/navigation';
+import { NAV, filterNav, navLeaves } from '@/config/navigation';
 import { usePermissions } from '@/features/me/usePermissions';
 import { t } from '@/i18n';
 import { useAuthStore } from '@/store/authStore';
 import SubscriptionBanner from '@/features/subscription/SubscriptionBanner';
+import OfflineController from '@/offline/OfflineController';
+import { useOfflineStore } from '@/offline/store';
+
+/** S08 (D4): offline, the menu keeps only the sale screen; everything else needs the server. */
+const OFFLINE_NAV = navLeaves().filter((i) => i.id === 'pos');
 
 /**
  * Signed-in frame: sidebar (lg+) or drawer (mobile), topbar, and the page outlet.
@@ -20,14 +25,19 @@ export default function AppShell() {
   const user = useAuthStore((s) => s.user);
   const permissions = usePermissions();
   const keys = permissions.data?.keys;
+  const offline = useOfflineStore((s) => s.mode.mode === 'offline');
   const items = useMemo(
-    () => filterNav(NAV, user && keys ? { ...user, permissions: [...keys] } : user),
-    [user, keys],
+    () =>
+      offline
+        ? OFFLINE_NAV
+        : filterNav(NAV, user && keys ? { ...user, permissions: [...keys] } : user),
+    [user, keys, offline],
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
     <div className="min-h-dvh bg-paper lg:grid lg:grid-cols-[16rem_minmax(0,1fr)]">
+      <OfflineController />
       <a
         href="#main"
         className="sr-only z-(--z-toast) rounded-control bg-brand-600 px-4 py-2 text-white focus:not-sr-only focus:fixed focus:start-4 focus:top-4"

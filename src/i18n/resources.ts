@@ -88,6 +88,8 @@ import arDayClose from './locales/ar/dayClose.json';
 import arDashboard from './locales/ar/dashboard.json';
 import enDayClose from './locales/en/dayClose.json';
 import enDashboard from './locales/en/dashboard.json';
+import arOffline from './locales/ar/offline.json';
+import enOffline from './locales/en/offline.json';
 
 /** One JSON file per namespace and language. The first segment of a key is its namespace. */
 export const ar = {
@@ -136,6 +138,7 @@ export const ar = {
   dayClose: arDayClose,
   dashboard: arDashboard,
   returns: arReturns,
+  offline: arOffline,
 };
 
 /** English must have exactly the shape of Arabic (checked here and by a key-parity test). */
@@ -186,6 +189,7 @@ export const en: SameShape<typeof ar> = {
   dayClose: enDayClose,
   dashboard: enDashboard,
   returns: enReturns,
+  offline: enOffline,
 };
 
 type Leaves<T, P extends string = ''> = {
