@@ -1,4 +1,5 @@
 import WarrantyPage from '@/pages/sales/WarrantyPage';
+import QuotationsPage, { QuotationEditor, QuotationPrintPage } from '@/pages/sales/QuotationsPage';
 import WarrantyClaimPage from '@/pages/sales/WarrantyClaimPage';
 import WarrantyClaimPrintPage from '@/pages/sales/WarrantyClaimPrintPage';
 import SalesHistoryPage from '@/pages/sales/SalesHistoryPage';
@@ -153,6 +154,7 @@ const REAL_ROUTES = new Set([
   '/accounting/day-close',
   '/sales/pos',
   '/sales/offline',
+  '/sales/quotations',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
  * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
@@ -503,6 +505,38 @@ export default function App() {
                           <PosPage />
                         </RequireNavItem>
                       </PosRoute>
+                    }
+                  />
+                  <Route
+                    path="/sales/quotations"
+                    element={
+                      <RequirePermission permission="quotation.manage">
+                        <QuotationsPage />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/sales/quotations/new"
+                    element={
+                      <RequirePermission permission="quotation.manage">
+                        <QuotationEditor key="new" />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/sales/quotations/:id"
+                    element={
+                      <RequirePermission permission="quotation.manage">
+                        <QuotationEditor />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/sales/quotations/:id/print"
+                    element={
+                      <RequirePermission permission="quotation.manage">
+                        <QuotationPrintPage />
+                      </RequirePermission>
                     }
                   />
                   <Route
