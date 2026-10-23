@@ -41,8 +41,12 @@ export default defineConfig({
           url: PREVIEW_URL,
           reuseExistingServer: true,
           timeout: 300_000,
-          // The build talks to the local Supabase only (never the one in .env).
-          env: { VITE_SUPABASE_URL: process.env.E2E_SUPABASE_URL ?? 'http://127.0.0.1:54321' },
+          // The build talks to the local Supabase only (never the one in .env). NODE_ENV is pinned: an
+          // inherited `development` (the API's .env.local) makes a dev build without the service worker.
+          env: {
+            NODE_ENV: 'production',
+            VITE_SUPABASE_URL: process.env.E2E_SUPABASE_URL ?? 'http://127.0.0.1:54321',
+          },
         },
       ]
     : undefined,
