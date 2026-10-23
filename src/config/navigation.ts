@@ -79,6 +79,12 @@ export const NAV: NavItem[] = [
         permission: 'warranty.manage',
       },
       {
+        id: 'sales-quotations',
+        labelKey: 'quotations.title',
+        to: '/sales/quotations',
+        permission: 'quotation.manage',
+      },
+      {
         id: 'pos',
         labelKey: 'nav.pos',
         to: '/sales/pos',
