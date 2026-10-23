@@ -359,8 +359,16 @@ export const NAV: NavItem[] = [
     id: 'reports',
     labelKey: 'nav.reports',
     icon: ChartIcon,
-    to: '/reports',
-    roles: [OWNER, BRANCH_MANAGER, 'ACCOUNTANT'],
+    children: [
+      // D02 (D89): what sold and what it earned; whoever reads reports (report.view). Cost and margin
+      // columns need report.financial and are hidden by the server without it. Later report slices add items.
+      {
+        id: 'sales-report',
+        labelKey: 'reports.nav.sales',
+        to: '/reports/sales',
+        permission: 'report.view',
+      },
+    ],
   },
   // F07: the owner's audit screen; shown to anyone holding audit.view (an F06 override included).
   { id: 'audit', labelKey: 'nav.audit', icon: EyeIcon, to: '/audit', permission: 'audit.view' },

@@ -2,6 +2,7 @@ import WarrantyPage from '@/pages/sales/WarrantyPage';
 import WarrantyClaimPage from '@/pages/sales/WarrantyClaimPage';
 import WarrantyClaimPrintPage from '@/pages/sales/WarrantyClaimPrintPage';
 import SalesHistoryPage from '@/pages/sales/SalesHistoryPage';
+import SalesReportPage from '@/pages/reports/SalesReportPage';
 import ReturnPage from '@/pages/sales/ReturnPage';
 import ReturnsPage from '@/pages/sales/ReturnsPage';
 import ReturnDetailPage from '@/pages/sales/ReturnDetailPage';
@@ -193,6 +194,7 @@ const MIGRATION_ITEM = navLeaves().find((i) => i.id === 'settings-migration')!;
 const POS_ITEM = navLeaves().find((i) => i.id === 'pos')!;
 const WARRANTY_ITEM = navLeaves().find((i) => i.id === 'sales-warranty')!;
 const HISTORY_ITEM = navLeaves().find((i) => i.id === 'sales-history')!;
+const SALES_REPORT_ITEM = navLeaves().find((i) => i.id === 'sales-report')!;
 const RETURNS_ITEM = navLeaves().find((i) => i.id === 'sales-returns')!;
 
 export default function App() {
@@ -533,6 +535,15 @@ export default function App() {
                     element={
                       <RequireNavItem item={HISTORY_ITEM}>
                         <SalesHistoryPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  {/* D02 (D89): the sales and margin report; the server checks report.view and report.financial. */}
+                  <Route
+                    path="/reports/sales"
+                    element={
+                      <RequireNavItem item={SALES_REPORT_ITEM}>
+                        <SalesReportPage />
                       </RequireNavItem>
                     }
                   />

@@ -86,8 +86,10 @@ import enExports from './locales/en/exports.json';
 import enMigration from './locales/en/migration.json';
 import arDayClose from './locales/ar/dayClose.json';
 import arDashboard from './locales/ar/dashboard.json';
+import arReports from './locales/ar/reports.json';
 import enDayClose from './locales/en/dayClose.json';
 import enDashboard from './locales/en/dashboard.json';
+import enReports from './locales/en/reports.json';
 import arOffline from './locales/ar/offline.json';
 import enOffline from './locales/en/offline.json';
 
@@ -137,6 +139,7 @@ export const ar = {
   exports: arExports,
   dayClose: arDayClose,
   dashboard: arDashboard,
+  reports: arReports,
   returns: arReturns,
   offline: arOffline,
 };
@@ -188,6 +191,7 @@ export const en: SameShape<typeof ar> = {
   exports: enExports,
   dayClose: enDayClose,
   dashboard: enDashboard,
+  reports: enReports,
   returns: enReturns,
   offline: enOffline,
 };
