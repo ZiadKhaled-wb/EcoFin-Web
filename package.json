@@ -29,7 +29,7 @@
     "@supabase/supabase-js": "^2.117.2",
     "@tanstack/react-query": "^5.104.0",
     "@tanstack/react-table": "^8.21.3",
-    "@ziadkhaled-wb/contracts": "0.59.0",
+    "@ziadkhaled-wb/contracts": "file:vendor/ziadkhaled-wb-contracts-0.61.0.tgz",
     "axios": "^1.20.0",
     "i18next": "^26.4.2",
     "lucide-react": "^1.49.0",
@@ -66,6 +66,7 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.69.0",
     "vite": "^8.3.0",
+    "vite-plugin-pwa": "2.0.0",
     "vitest": "5.0.3"
   }
 }

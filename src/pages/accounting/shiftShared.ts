@@ -20,6 +20,8 @@ const ERRORS: Partial<Record<string, TranslationKey>> = {
   BRANCH_DENIED: 'cash.shifts.errors.branchDenied',
   PERMISSION_DENIED: 'cash.shifts.errors.permission',
   VALIDATION_FAILED: 'cash.shifts.errors.validation',
+  // S08 (D12.5): offline sales of the shift still wait to be posted or decided.
+  OFFLINE_SALES_OPEN: 'offline.errors.OFFLINE_SALES_OPEN',
 };
 
 /** A translated message for a refused shift call. */

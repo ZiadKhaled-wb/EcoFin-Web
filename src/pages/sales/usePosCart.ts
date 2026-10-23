@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Discount,
+  OFFLINE_SALE_TIMEOUT_MS,
   SaleQuoteBody,
   compareMoney,
   type Contract,
@@ -20,6 +21,7 @@ import { saleKeys, salesApi } from '@/services/salesApi';
 import { shiftKeys } from '@/services/shiftsApi';
 import { stockKeys } from '@/services/stockApi';
 import { useAuthStore } from '@/store/authStore';
+import { sellThroughOutbox } from '@/offline/onlineSale';
 import {
   readActiveCart,
   writeActiveCart,
@@ -246,18 +248,24 @@ export function usePosCart(enabled: boolean, scope: string) {
     posting.current = true;
     setBusy(true);
     try {
-      const sale = await salesApi.create(
-        {
-          lines: wanted,
-          expected_total: quote.data.total,
-          payments,
-          ...(customerId ? { customer_id: customerId } : {}),
-          ...(saleDiscountInput ? { sale_discount: saleDiscountInput } : {}),
-          ...(hasDiscount ? { discount_reason: reasonText } : {}),
-          ...(approvalId ? { discount_approval_id: approvalId } : {}),
-        },
-        key,
+      const body = {
+        lines: wanted,
+        expected_total: quote.data.total,
+        payments,
+        ...(customerId ? { customer_id: customerId } : {}),
+        ...(saleDiscountInput ? { sale_discount: saleDiscountInput } : {}),
+        ...(hasDiscount ? { discount_reason: reasonText } : {}),
+        ...(approvalId ? { discount_approval_id: approvalId } : {}),
+      };
+      // S08 (D1): through the outbox; no answer in 8 s and the cart is an offline sale.
+      const outcome = await sellThroughOutbox(body, key, () =>
+        salesApi.create(body, key, OFFLINE_SALE_TIMEOUT_MS),
       );
+      if ('offline' in outcome) {
+        load(null);
+        return null;
+      }
+      const sale = outcome.sale;
       setDone(sale);
       await Promise.all([
         cache.invalidateQueries({ queryKey: shiftKeys.all(orgId) }),

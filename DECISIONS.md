@@ -44,3 +44,6 @@ F09 builds `usePermissions()` + `<RequirePermission>`; F06 adds `useCan`, `<Can>
 - The page is Tax -> ETA receipts (`/tax/eta-receipts`, `fiscal.view`); each receipt shows one action (Retry, Retry now, Correct and resend, Check now, Assign a POS) and it is disabled while the server's diagnosis says `ready: false`. The shell bell (`fiscal.view` only, refreshed every 60 s) links to the page filtered to `problem`. Corrections run as a job on the server: after "Correct and resend" the drawer reads the receipt again every 3 s for at most 30 s.
 
 EC-147: POS writes recheck the shift device on every call; only force_close_shift (cash.adjust) skips it. Trusted service-role jobs without auth.uid() are exempt. A NULL current_device_id returns DEVICE_REVOKED; a different valid device returns DEVICE_MISMATCH.
+
+### S08 offline POS (EC-75)
+- Decisions D1, D8, D10 and D11 of S08 are in EcoFin-API `DECISIONS.md` (D90). On the Web: every sale goes through the IndexedDB outbox (`src/offline/`); offline, the POS is cash-only on the lease's snapshot, opened with the cashier's PIN, and the app shell is served by the service worker of the production build.

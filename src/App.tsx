@@ -1,4 +1,5 @@
 import WarrantyPage from '@/pages/sales/WarrantyPage';
+import QuotationsPage, { QuotationEditor, QuotationPrintPage } from '@/pages/sales/QuotationsPage';
 import WarrantyClaimPage from '@/pages/sales/WarrantyClaimPage';
 import WarrantyClaimPrintPage from '@/pages/sales/WarrantyClaimPrintPage';
 import SalesHistoryPage from '@/pages/sales/SalesHistoryPage';
@@ -67,6 +68,7 @@ import DayClosePage from '@/pages/accounting/DayClosePage';
 import PairDevicePage from '@/pages/settings/PairDevicePage';
 import ExpensesPage from '@/pages/accounting/ExpensesPage';
 import PosPage from '@/pages/sales/PosPage';
+import { PosRoute } from '@/pages/sales/offline/OfflinePos';
 import SalePage from '@/pages/sales/SalePage';
 import ContractPage from '@/pages/installments/ContractPage';
 import ContractPrintPage from '@/pages/installments/ContractPrintPage';
@@ -98,6 +100,8 @@ import OnboardingWizardPage from '@/pages/OnboardingWizardPage';
 import ImportPage from '@/pages/settings/ImportPage';
 import MigrationPage from '@/pages/settings/MigrationPage';
 import ExportPage from '@/pages/settings/ExportPage';
+import OfflineSettingsPage from '@/pages/settings/OfflineSettingsPage';
+import OfflineSalesPage from '@/pages/sales/offline/OfflineSalesPage';
 
 // Dev-only living style guide; never reachable in production builds.
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
@@ -118,6 +122,7 @@ const REAL_ROUTES = new Set([
   '/settings/import',
   '/settings/migration',
   '/settings/export',
+  '/settings/offline',
   '/settings/employees',
   '/employees',
   '/inventory/categories',
@@ -148,6 +153,8 @@ const REAL_ROUTES = new Set([
   '/accounting/expenses',
   '/accounting/day-close',
   '/sales/pos',
+  '/sales/offline',
+  '/sales/quotations',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
  * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
@@ -262,6 +269,10 @@ export default function App() {
                   {/* M03: export.data works in an expired shop; the server checks every call. */}
                   <Route element={<RequirePermission permission="export.data" />}>
                     <Route path="/settings/export" element={<ExportPage />} />
+                  </Route>
+                  {/* S08 (D16): the server checks org.settings_manage on every call. */}
+                  <Route element={<RequirePermission permission="org.settings_manage" />}>
+                    <Route path="/settings/offline" element={<OfflineSettingsPage />} />
                   </Route>
                   <Route
                     path="/settings/migration"
@@ -489,9 +500,43 @@ export default function App() {
                   <Route
                     path="/sales/pos"
                     element={
-                      <RequireNavItem item={POS_ITEM}>
-                        <PosPage />
-                      </RequireNavItem>
+                      <PosRoute>
+                        <RequireNavItem item={POS_ITEM}>
+                          <PosPage />
+                        </RequireNavItem>
+                      </PosRoute>
+                    }
+                  />
+                  <Route
+                    path="/sales/quotations"
+                    element={
+                      <RequirePermission permission="quotation.manage">
+                        <QuotationsPage />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/sales/quotations/new"
+                    element={
+                      <RequirePermission permission="quotation.manage">
+                        <QuotationEditor key="new" />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/sales/quotations/:id"
+                    element={
+                      <RequirePermission permission="quotation.manage">
+                        <QuotationEditor />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/sales/quotations/:id/print"
+                    element={
+                      <RequirePermission permission="quotation.manage">
+                        <QuotationPrintPage />
+                      </RequirePermission>
                     }
                   />
                   <Route
@@ -684,6 +729,10 @@ export default function App() {
                   {/* S03: a manager decides over-cap discount requests (D65). */}
                   <Route element={<RequirePermission permission="discount.above_cap" />}>
                     <Route path="/sales/approvals" element={<DiscountApprovalsPage />} />
+                  </Route>
+                  {/* S08 (D11): offline sales review; the server checks offline.resolve and the branch. */}
+                  <Route element={<RequirePermission permission="offline.resolve" />}>
+                    <Route path="/sales/offline" element={<OfflineSalesPage />} />
                   </Route>
                   <Route element={<RequirePermission permission="stock.count" />}>
                     <Route path="/inventory/counts" element={<CountsPage />} />
