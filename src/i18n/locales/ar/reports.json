@@ -1,0 +1,113 @@
+{
+  "nav": { "sales": "المبيعات والهامش" },
+  "sales": {
+    "title": "المبيعات والهامش",
+    "description": "ما بِيع في فترة وكم حقق من ربح. كل الأرقام من الخادم.",
+    "empty": "لا مبيعات ولا مرتجعات في هذه الفترة",
+    "emptyHint": "غيّر التواريخ أو المرشّحات لرؤية مستندات أخرى.",
+    "loadFailed": "تعذّر تحميل التقرير.",
+    "periodInvalid": "يجب أن تبدأ الفترة قبل نهايتها وألا تزيد على ٣٦٦ يومًا.",
+    "updated": "آخر تحديث {time}",
+    "filters": {
+      "title": "الفترة والمرشّحات",
+      "from": "من",
+      "to": "إلى",
+      "presets": "فترات سريعة",
+      "today": "اليوم",
+      "thisWeek": "هذا الأسبوع",
+      "thisMonth": "هذا الشهر",
+      "lastMonth": "الشهر الماضي",
+      "thisYear": "هذه السنة",
+      "groupBy": "تجميع حسب",
+      "branch": "الفرع",
+      "allBranches": "كل الفروع",
+      "employee": "البائع",
+      "allEmployees": "كل البائعين",
+      "category": "التصنيف",
+      "allCategories": "كل التصنيفات",
+      "topLevel": "تجميع التصنيفات على المستوى الأعلى",
+      "product": "المنتج",
+      "allProducts": "كل المنتجات",
+      "saleType": "نوع البيع",
+      "allTypes": "نقدي وتقسيط"
+    },
+    "group": {
+      "day": "اليوم",
+      "month": "الشهر",
+      "branch": "الفرع",
+      "employee": "البائع",
+      "category": "التصنيف",
+      "product": "المنتج",
+      "sale_type": "نقدي أو تقسيط",
+      "payment_type": "طريقة الدفع"
+    },
+    "saleType": { "cash": "نقدي", "installment": "تقسيط" },
+    "paymentType": {
+      "cash": "نقدًا",
+      "bank_transfer": "تحويل بنكي",
+      "store_credit": "رصيد المتجر",
+      "on_contract": "على العقد"
+    },
+    "noCategory": "بدون تصنيف",
+    "columns": {
+      "salesCount": "المبيعات",
+      "quantity": "الكمية",
+      "revenue": "الإيراد",
+      "gross": "شامل الضريبة",
+      "tax": "الضريبة",
+      "discount": "الخصومات",
+      "cost": "التكلفة",
+      "margin": "الهامش",
+      "marginPct": "الهامش %",
+      "returnCount": "مستندات المرتجع",
+      "returnedQuantity": "الكمية المرتجعة",
+      "returnedGross": "المرتجع شامل الضريبة",
+      "returnedRevenue": "المرتجعات",
+      "returnedTax": "ضريبة المرتجع",
+      "returnedCost": "تكلفة المرتجع",
+      "returnedMargin": "هامش المرتجع",
+      "netQuantity": "صافي الكمية",
+      "netRevenue": "صافي الإيراد",
+      "netCost": "صافي التكلفة",
+      "netMargin": "صافي الهامش",
+      "netMarginPct": "صافي الهامش %",
+      "contractProfit": "ربح التقسيط",
+      "contractProfitReturned": "ربح التقسيط المرتجع",
+      "amount": "المقبوض",
+      "refunded": "المردود",
+      "netAmount": "الصافي"
+    },
+    "totals": {
+      "title": "إجمالي الفترة",
+      "salesCount": "المبيعات",
+      "revenue": "الإيراد",
+      "cost": "التكلفة",
+      "marginPct": "الهامش %",
+      "returns": "المرتجعات",
+      "netRevenue": "صافي الإيراد",
+      "netMargin": "صافي الهامش",
+      "amount": "المقبوض",
+      "refunded": "المردود"
+    },
+    "check": {
+      "ok": "الإجمالي مطابق لـ {count} مستند بيع",
+      "okMoney": "الإجمالي مطابق لمستندات البيع في الفترة",
+      "warning": "الصفوف لا تطابق مستندات الفترة. الفروق: الإيراد {revenue}، الضريبة {tax}، التكلفة {cost}، المرتجعات {returnedRevenue}، شامل الضريبة {gross}، المرتجع شامل الضريبة {returnedGross}.",
+      "filtered": "هناك مرشّح مفعّل: الإجمالي هو إجمالي الصفوف وليس كل مستندات الفترة."
+    },
+    "notes": {
+      "payment": "يعرض هذا التجميع المال حسب طريقة استلامه. الكمية والتكلفة والهامش تخص البضاعة فلا تظهر هنا.",
+      "contractSplit": "يُوزَّع ربح البيع بالتقسيط على منتجاته بنسبة أسعارها.",
+      "contractProfit": "ربح التقسيط هو الربح المثبّت عند توقيع العقد، وليس جزءًا من الهامش.",
+      "voided": "المبيعات الملغاة غير محسوبة. وتُحسب المرتجعات في يوم حدوثها."
+    },
+    "table": { "caption": "المبيعات والهامش حسب {group}", "open": "افتح مبيعات {name}" },
+    "export": {
+      "button": "تصدير CSV",
+      "working": "جارٍ تجهيز الملف",
+      "failed": "تعذّر تصدير التقرير.",
+      "totals": "الإجمالي",
+      "file": "تقرير-المبيعات-{from}-{to}-{group}"
+    }
+  }
+}
