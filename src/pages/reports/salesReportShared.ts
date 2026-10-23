@@ -337,8 +337,13 @@ function csvCell(value: string): string {
 }
 
 /** A measure exactly as the server sent it ('' for a value the grouping does not have). */
-function rawCell(value: string | number | null): string {
+export function rawCell(value: string | number | null | undefined): string {
   return value === null || value === undefined ? '' : String(value);
+}
+
+/** CSV text of the lines (the first is the header): quoted where needed, CRLF, UTF-8 BOM so Excel shows Arabic. */
+export function csvText(lines: string[][]): string {
+  return `${BOM}${lines.map((r) => r.map(csvCell).join(',')).join('\r\n')}\r\n`;
 }
 
 /**
@@ -362,5 +367,5 @@ export function buildCsv(
     t('reports.sales.export.totals'),
     ...fields.map((f) => rawCell(totals[f.field])),
   ];
-  return `${BOM}${[header, ...lines, totalLine].map((r) => r.map(csvCell).join(',')).join('\r\n')}\r\n`;
+  return csvText([header, ...lines, totalLine]);
 }

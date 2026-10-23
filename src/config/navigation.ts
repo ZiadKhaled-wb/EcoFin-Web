@@ -361,6 +361,13 @@ export const NAV: NavItem[] = [
         to: '/reports/sales',
         permission: 'report.view',
       },
+      // D03 (D90): who owes the shop money today and how late; report.financial (owner, accountant).
+      {
+        id: 'receivables-report',
+        labelKey: 'reports.nav.receivables',
+        to: '/reports/receivables',
+        permission: 'report.financial',
+      },
     ],
   },
   // F07: the owner's audit screen; shown to anyone holding audit.view (an F06 override included).

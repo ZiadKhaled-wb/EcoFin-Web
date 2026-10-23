@@ -1,5 +1,8 @@
 {
-  "nav": { "sales": "المبيعات والهامش" },
+  "nav": {
+    "sales": "المبيعات والهامش",
+    "receivables": "أعمار الديون"
+  },
   "sales": {
     "title": "المبيعات والهامش",
     "description": "ما بِيع في فترة وكم حقق من ربح. كل الأرقام من الخادم.",
@@ -41,7 +44,10 @@
       "sale_type": "نقدي أو تقسيط",
       "payment_type": "طريقة الدفع"
     },
-    "saleType": { "cash": "نقدي", "installment": "تقسيط" },
+    "saleType": {
+      "cash": "نقدي",
+      "installment": "تقسيط"
+    },
     "paymentType": {
       "cash": "نقدًا",
       "bank_transfer": "تحويل بنكي",
@@ -101,13 +107,110 @@
       "contractProfit": "ربح التقسيط هو الربح المثبّت عند توقيع العقد، وليس جزءًا من الهامش.",
       "voided": "المبيعات الملغاة غير محسوبة. وتُحسب المرتجعات في يوم حدوثها."
     },
-    "table": { "caption": "المبيعات والهامش حسب {group}", "open": "افتح مبيعات {name}" },
+    "table": {
+      "caption": "المبيعات والهامش حسب {group}",
+      "open": "افتح مبيعات {name}"
+    },
     "export": {
       "button": "تصدير CSV",
       "working": "جارٍ تجهيز الملف",
       "failed": "تعذّر تصدير التقرير.",
       "totals": "الإجمالي",
       "file": "تقرير-المبيعات-{from}-{to}-{group}"
+    }
+  },
+  "receivables": {
+    "title": "أعمار الديون",
+    "description": "من يدين للمحل اليوم ومدة تأخره. كل الأرقام من الخادم.",
+    "asOf": "حتى تاريخ {date}",
+    "empty": "لا توجد مديونيات هنا",
+    "emptyHint": "لا توجد أرصدة تقسيط مفتوحة بهذه الفلاتر.",
+    "loadFailed": "تعذّر تحميل التقرير.",
+    "updated": "آخر تحديث {time}",
+    "filters": {
+      "title": "الفلاتر",
+      "groupBy": "التجميع حسب",
+      "branch": "الفرع",
+      "allBranches": "كل الفروع",
+      "collector": "المحصل",
+      "allCollectors": "كل المحصلين",
+      "noCollector": "بدون محصل",
+      "search": "ابحث عن عميل أو عقد",
+      "searchHint": "الاسم أو الهاتف أو الرقم القومي أو رقم العقد",
+      "minDays": "متأخر على الأقل (يوم)",
+      "clear": "مسح الفلاتر"
+    },
+    "group": {
+      "customer": "العميل",
+      "branch": "الفرع",
+      "collector": "المحصل",
+      "contract": "العقد"
+    },
+    "noCollector": "بدون محصل",
+    "columns": {
+      "outstanding": "المتبقي",
+      "principal": "الأصل",
+      "profit": "الربح",
+      "not_due": "لم يتأخر",
+      "late_1_30": "١–٣٠ يوم",
+      "late_31_60": "٣١–٦٠ يوم",
+      "late_61_90": "٦١–٩٠ يوم",
+      "late_90_plus": "أكثر من ٩٠ يوم",
+      "overdue": "المتأخر",
+      "overduePct": "نسبة المتأخر",
+      "contracts": "العقود",
+      "customers": "العملاء",
+      "maxDaysLate": "أطول تأخير",
+      "oldestDue": "أقدم قسط غير مدفوع",
+      "lastPayment": "آخر دفعة",
+      "phone": "الهاتف",
+      "branch": "الفرع",
+      "collector": "المحصل",
+      "customer": "العميل"
+    },
+    "totals": {
+      "title": "اليوم",
+      "outstanding": "المتبقي",
+      "principal": "الأصل",
+      "profit": "الربح",
+      "overdue": "المتأخر",
+      "overduePct": "نسبة المتأخر",
+      "contracts": "العقود المفتوحة",
+      "customers": "العملاء"
+    },
+    "buckets": {
+      "title": "حسب مدة التأخير",
+      "share": "{pct}% من المتبقي",
+      "split": "الأصل {principal} · الربح {profit}"
+    },
+    "notes": {
+      "grace": "لا يُعد القسط متأخرًا إلا بعد أيام السماح في السياسة، وتُحسب أيام التأخير من تاريخ استحقاقه.",
+      "noFees": "لا توجد غرامات تأخير: لا يزيد ما على العميل بسبب تأخره.",
+      "closed": "العقود المكتملة والمعدومة والمرتجعة غير محسوبة."
+    },
+    "drill": {
+      "all": "الكل",
+      "customers": "عملاء {name}",
+      "contracts": "عقود {name}",
+      "openCustomers": "اعرض عملاء {name}",
+      "openContracts": "اعرض عقود {name}",
+      "openContract": "افتح العقد {number}",
+      "customerPage": "صفحة العميل",
+      "migrated": "رصيد افتتاحي"
+    },
+    "check": {
+      "ok": "تمت مطابقة الإجمالي مع الرصيد المفتوح لعدد {count} عقد.",
+      "warning": "مجموع الصفوف لا يساوي الإجمالي (المتبقي {outstanding}، الأصل {principal}، لم يتأخر {notDue}، ١–٣٠ {l30}، ٣١–٦٠ {l60}، ٦١–٩٠ {l90}، أكثر من ٩٠ {l90p}؛ عقود بلا جدول: {missing}). يرجى الإبلاغ عن ذلك."
+    },
+    "table": {
+      "caption": "الديون حسب {group}"
+    },
+    "export": {
+      "button": "تصدير CSV",
+      "working": "جارٍ تجهيز الملف",
+      "failed": "تعذّر تصدير التقرير.",
+      "totals": "الإجمالي",
+      "file": "أعمار-الديون-{date}-{group}"
     }
   }
 }

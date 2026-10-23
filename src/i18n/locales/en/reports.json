@@ -1,5 +1,8 @@
 {
-  "nav": { "sales": "Sales and margin" },
+  "nav": {
+    "sales": "Sales and margin",
+    "receivables": "Receivables aging"
+  },
   "sales": {
     "title": "Sales and margin",
     "description": "What sold in a period and what it earned. Every number comes from the server.",
@@ -41,7 +44,10 @@
       "sale_type": "Cash or installments",
       "payment_type": "Payment type"
     },
-    "saleType": { "cash": "Cash", "installment": "Installments" },
+    "saleType": {
+      "cash": "Cash",
+      "installment": "Installments"
+    },
     "paymentType": {
       "cash": "Cash",
       "bank_transfer": "Bank transfer",
@@ -101,13 +107,110 @@
       "contractProfit": "Contract profit is the profit fixed when the contract is signed. It is not part of the margin.",
       "voided": "Voided sales are left out. Returns are counted on the day they were made."
     },
-    "table": { "caption": "Sales and margin by {group}", "open": "Open the sales of {name}" },
+    "table": {
+      "caption": "Sales and margin by {group}",
+      "open": "Open the sales of {name}"
+    },
     "export": {
       "button": "Export CSV",
       "working": "Preparing the file",
       "failed": "Could not export the report.",
       "totals": "Totals",
       "file": "sales-report-{from}-{to}-{group}"
+    }
+  },
+  "receivables": {
+    "title": "Receivables aging",
+    "description": "Who owes the shop money today and how late they are. Every number comes from the server.",
+    "asOf": "As of {date}",
+    "empty": "Nobody owes anything here",
+    "emptyHint": "There are no open installment balances for these filters.",
+    "loadFailed": "Could not load the report.",
+    "updated": "Updated {time}",
+    "filters": {
+      "title": "Filters",
+      "groupBy": "Group by",
+      "branch": "Branch",
+      "allBranches": "All branches",
+      "collector": "Collector",
+      "allCollectors": "All collectors",
+      "noCollector": "No collector",
+      "search": "Search a customer or contract",
+      "searchHint": "Name, phone, national ID or contract number",
+      "minDays": "Late at least (days)",
+      "clear": "Clear filters"
+    },
+    "group": {
+      "customer": "Customer",
+      "branch": "Branch",
+      "collector": "Collector",
+      "contract": "Contract"
+    },
+    "noCollector": "No collector",
+    "columns": {
+      "outstanding": "Outstanding",
+      "principal": "Principal",
+      "profit": "Profit",
+      "not_due": "Not due",
+      "late_1_30": "1–30 days",
+      "late_31_60": "31–60 days",
+      "late_61_90": "61–90 days",
+      "late_90_plus": "Over 90 days",
+      "overdue": "Overdue",
+      "overduePct": "Overdue %",
+      "contracts": "Contracts",
+      "customers": "Customers",
+      "maxDaysLate": "Most days late",
+      "oldestDue": "Oldest unpaid",
+      "lastPayment": "Last payment",
+      "phone": "Phone",
+      "branch": "Branch",
+      "collector": "Collector",
+      "customer": "Customer"
+    },
+    "totals": {
+      "title": "Today",
+      "outstanding": "Outstanding",
+      "principal": "Principal",
+      "profit": "Profit",
+      "overdue": "Overdue",
+      "overduePct": "Overdue share",
+      "contracts": "Open contracts",
+      "customers": "Customers"
+    },
+    "buckets": {
+      "title": "By age",
+      "share": "{pct}% of the outstanding",
+      "split": "Principal {principal} · Profit {profit}"
+    },
+    "notes": {
+      "grace": "An installment counts as late only after the policy’s grace days; days late count from its due date.",
+      "noFees": "There are no late fees: what a customer owes never grows because they are late.",
+      "closed": "Completed, written-off and returned contracts are not included."
+    },
+    "drill": {
+      "all": "All",
+      "customers": "Customers of {name}",
+      "contracts": "Contracts of {name}",
+      "openCustomers": "Show the customers of {name}",
+      "openContracts": "Show the contracts of {name}",
+      "openContract": "Open contract {number}",
+      "customerPage": "Customer page",
+      "migrated": "Opening balance"
+    },
+    "check": {
+      "ok": "Total checked against the open balance of {count} contracts.",
+      "warning": "The rows do not add up to the total (outstanding {outstanding}, principal {principal}, not due {notDue}, 1–30 {l30}, 31–60 {l60}, 61–90 {l90}, over 90 {l90p}; contracts without a schedule: {missing}). Please report this."
+    },
+    "table": {
+      "caption": "Receivables by {group}"
+    },
+    "export": {
+      "button": "Export CSV",
+      "working": "Preparing the file",
+      "failed": "Could not export the report.",
+      "totals": "Total",
+      "file": "receivables-{date}-{group}"
     }
   }
 }
