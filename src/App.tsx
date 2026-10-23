@@ -4,6 +4,7 @@ import WarrantyClaimPage from '@/pages/sales/WarrantyClaimPage';
 import WarrantyClaimPrintPage from '@/pages/sales/WarrantyClaimPrintPage';
 import SalesHistoryPage from '@/pages/sales/SalesHistoryPage';
 import SalesReportPage from '@/pages/reports/SalesReportPage';
+import ReceivablesReportPage from '@/pages/reports/ReceivablesReportPage';
 import ReturnPage from '@/pages/sales/ReturnPage';
 import ReturnsPage from '@/pages/sales/ReturnsPage';
 import ReturnDetailPage from '@/pages/sales/ReturnDetailPage';
@@ -197,6 +198,7 @@ const POS_ITEM = navLeaves().find((i) => i.id === 'pos')!;
 const WARRANTY_ITEM = navLeaves().find((i) => i.id === 'sales-warranty')!;
 const HISTORY_ITEM = navLeaves().find((i) => i.id === 'sales-history')!;
 const SALES_REPORT_ITEM = navLeaves().find((i) => i.id === 'sales-report')!;
+const RECEIVABLES_REPORT_ITEM = navLeaves().find((i) => i.id === 'receivables-report')!;
 const RETURNS_ITEM = navLeaves().find((i) => i.id === 'sales-returns')!;
 
 export default function App() {
@@ -578,6 +580,15 @@ export default function App() {
                     element={
                       <RequireNavItem item={SALES_REPORT_ITEM}>
                         <SalesReportPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  {/* D03 (D90): receivables aging; the server checks report.financial. */}
+                  <Route
+                    path="/reports/receivables"
+                    element={
+                      <RequireNavItem item={RECEIVABLES_REPORT_ITEM}>
+                        <ReceivablesReportPage />
                       </RequireNavItem>
                     }
                   />

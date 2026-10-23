@@ -332,13 +332,23 @@ export function drillLink(
 
 const BOM = String.fromCharCode(0xfeff);
 
-function csvCell(value: string): string {
+/**
+ * One CSV cell. A text that a spreadsheet would read as a formula (=, +, -, @, tab or CR first: a customer or
+ * product name typed by staff) gets a leading apostrophe; a number (a negative amount too) stays as it is.
+ */
+export function csvCell(raw: string): string {
+  const value = /^[=+\-@\t\r]/.test(raw) && !/^-?\d+(\.\d+)?$/.test(raw) ? `'${raw}` : raw;
   return /[",\r\n]/.test(value) ? `"${value.replaceAll('"', '""')}"` : value;
 }
 
 /** A measure exactly as the server sent it ('' for a value the grouping does not have). */
-function rawCell(value: string | number | null): string {
+export function rawCell(value: string | number | null | undefined): string {
   return value === null || value === undefined ? '' : String(value);
+}
+
+/** CSV text of the lines (the first is the header): quoted where needed, CRLF, UTF-8 BOM so Excel shows Arabic. */
+export function csvText(lines: string[][]): string {
+  return `${BOM}${lines.map((r) => r.map(csvCell).join(',')).join('\r\n')}\r\n`;
 }
 
 /**
@@ -362,5 +372,5 @@ export function buildCsv(
     t('reports.sales.export.totals'),
     ...fields.map((f) => rawCell(totals[f.field])),
   ];
-  return `${BOM}${[header, ...lines, totalLine].map((r) => r.map(csvCell).join(',')).join('\r\n')}\r\n`;
+  return csvText([header, ...lines, totalLine]);
 }
