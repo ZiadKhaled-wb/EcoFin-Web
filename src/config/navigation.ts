@@ -108,9 +108,10 @@ export const NAV: NavItem[] = [
       },
       {
         id: 'orders',
-        labelKey: 'nav.orders',
+        labelKey: 'salesOrders.title',
         to: '/sales/orders',
-        roles: [OWNER, BRANCH_MANAGER, 'CASHIER', 'ACCOUNTANT'],
+        // S10: sales orders (deposits, reservations, delivery); the server checks every call.
+        permission: 'order.manage',
       },
       {
         id: 'invoices',

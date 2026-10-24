@@ -23,6 +23,7 @@ import { saleKeys, salesApi } from '@/services/salesApi';
 import { useAuthStore } from '@/store/authStore';
 import { t, type TranslationKey } from '@/i18n';
 import { saleError } from './saleShared';
+import { salesOrderErrorMessage } from './salesOrderRules';
 
 /** One payment line as the cashier edits it (typed text). */
 interface PayLine {
@@ -67,6 +68,11 @@ const TEXT = {
     description: 'collections.pay.description',
     total: 'collections.pay.total',
   },
+  deposit: {
+    title: 'salesOrders.deposit.title',
+    description: 'salesOrders.deposit.description',
+    total: 'salesOrders.deposit.total',
+  },
 } as const satisfies Record<string, Record<'title' | 'description' | 'total', TranslationKey>>;
 
 /** The change to give back for a cash line: received - amount (null without a received amount). */
@@ -108,6 +114,10 @@ function toPayments(lines: readonly PayLine[]): SalePaymentInput[] | null {
  *
  * N03 (D78): `purpose="collection"` takes an installment payment: `total` is what the cashier puts
  * on the contracts; cash and bank transfers only (no store credit is offered without a balance).
+ *
+ * S10: `purpose="deposit"` takes a deposit on a sales order: `total` is the order's unpaid balance
+ * and Pay opens for any amount above zero up to it (not only the whole balance); a refusal is
+ * worded with the order messages.
  */
 export default function PaymentDialog({
   total,
@@ -122,7 +132,7 @@ export default function PaymentDialog({
   customerId: string | null;
   storeCreditBalance: Money | null;
   busy: boolean;
-  purpose?: 'sale' | 'downPayment' | 'collection';
+  purpose?: 'sale' | 'downPayment' | 'collection' | 'deposit';
   /** Sells with these lines; answers the error of a refused sale, or null. */
   onPay: (payments: SalePaymentInput[]) => Promise<unknown>;
   onClose: () => void;
@@ -140,7 +150,11 @@ export default function PaymentDialog({
 
   const paid = sumMoney(lines.map((l) => positive(l.amount) ?? ZERO));
   const remaining = subtractMoney(total, paid);
-  const settled = compareMoney(remaining, ZERO) === 0;
+  // A deposit may be part of the balance: anything above zero that doesn't go over it.
+  const settled =
+    purpose === 'deposit'
+      ? compareMoney(paid, ZERO) > 0 && compareMoney(remaining, ZERO) >= 0
+      : compareMoney(remaining, ZERO) === 0;
   const payments = toPayments(lines);
 
   const has = (method: SalePaymentMethod) => lines.some((l) => l.method === method);
@@ -164,7 +178,8 @@ export default function PaymentDialog({
     if (!payments || !settled || busy) return;
     setError('');
     const refused = await onPay(payments);
-    if (refused) setError(saleError(refused));
+    if (refused)
+      setError(purpose === 'deposit' ? salesOrderErrorMessage(refused) : saleError(refused));
   }
 
   /** S06: Enter in a field pays, when Pay is enabled. */

@@ -1,0 +1,219 @@
+{
+  "title": "طلبات البيع",
+  "all": "الكل",
+  "status": "الحالة",
+  "branch": "الفرع",
+  "from": "من",
+  "to": "إلى",
+  "search": "بحث",
+  "number": "الرقم",
+  "customer": "العميل",
+  "total": "الإجمالي",
+  "deposits_paid": "العربون المدفوع",
+  "unpaid": "المتبقي",
+  "empty": "لا توجد طلبات مطابقة لهذه الفلاتر.",
+  "loading": "جارٍ تحميل الطلب…",
+  "previous": "السابق",
+  "next": "التالي",
+  "pageOf": "صفحة {page} من {pages}",
+  "back": "الرجوع إلى الطلبات",
+  "states": {
+    "open": "مفتوح",
+    "partially_delivered": "مُسلَّم جزئيًا",
+    "delivered": "مُسلَّم",
+    "cancelled": "ملغى"
+  },
+  "header": {
+    "phone": "الهاتف",
+    "deliveryAddress": "عنوان التوصيل",
+    "notes": "ملاحظات",
+    "quotation": "عرض السعر",
+    "cancelledReason": "سبب الإلغاء",
+    "createdAt": "تاريخ الإنشاء",
+    "none": "—"
+  },
+  "lines": {
+    "title": "البنود",
+    "product": "المنتج",
+    "customNotes": "ملاحظات",
+    "quantity": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "discount": "الخصم",
+    "tax": "الضريبة",
+    "lineTotal": "إجمالي البند",
+    "fulfilment": "التجهيز",
+    "progress": "التقدم",
+    "delivered": "تم تسليم {delivered} من {quantity}",
+    "remaining": "المتبقي {remaining}"
+  },
+  "fulfilment": {
+    "from_stock": "من المخزون",
+    "to_order": "بالطلب",
+    "reserved": "محجوز {reserved} من {quantity}",
+    "serials": "الأرقام التسلسلية: {serials}",
+    "purchaseOrder": "أمر الشراء {number} ({status})",
+    "poReceived": "تم استلام {received} من {ordered}",
+    "noPurchaseOrder": "بالطلب، بدون أمر شراء"
+  },
+  "totals": {
+    "subtotal": "الإجمالي الفرعي",
+    "discount_total": "الخصم",
+    "tax_total": "الضريبة",
+    "total": "الإجمالي"
+  },
+  "payments": {
+    "title": "المدفوعات",
+    "number": "الرقم",
+    "direction": "النوع",
+    "method": "طريقة الدفع",
+    "amount": "المبلغ",
+    "reference": "المرجع",
+    "paidAt": "التاريخ",
+    "none": "لا يوجد عربون أو استرداد بعد.",
+    "directions": {
+      "in": "عربون",
+      "out": "استرداد"
+    },
+    "methods": {
+      "cash": "نقدي",
+      "bank_transfer": "تحويل بنكي",
+      "store_credit": "رصيد المتجر"
+    }
+  },
+  "balances": {
+    "title": "الأرصدة",
+    "deposits_paid": "العربون المدفوع",
+    "delivered_value": "قيمة المُسلَّم",
+    "unpaid": "المتبقي"
+  },
+  "actions": {
+    "title": "إجراءات الطلب",
+    "deposit": "إضافة عربون",
+    "reserve": "حجز الآن",
+    "link": "ربط بأمر شراء",
+    "createPo": "إنشاء أمر شراء",
+    "line": "البند {no}: {name}",
+    "close": "إغلاق",
+    "linkReturnMissing": "أمر الشراء الجديد لا يحتوي على بند لهذا المنتج، لذلك لم يتم الربط. استخدم \"ربط بأمر شراء\".",
+    "cancel": "إلغاء الطلب",
+    "print": "طباعة"
+  },
+  "new": {
+    "link": "أمر جديد",
+    "title": "أمر بيع جديد",
+    "choose": "اختر…",
+    "addProduct": "إضافة منتج",
+    "noLines": "أضف منتجًا واحدًا على الأقل.",
+    "remove": "حذف",
+    "submit": "إنشاء الأمر"
+  },
+  "picker": {
+    "chosen": "المختار: {name}",
+    "failed": "تعذر البحث في المنتجات."
+  },
+  "serials": {
+    "title": "الأرقام التسلسلية: تم اختيار {picked} من {quantity}",
+    "chooseBranch": "اختر فرعًا لعرض وحداته.",
+    "failed": "تعذر تحميل الوحدات.",
+    "none": "لا توجد وحدات من هذا المنتج في مخزون هذا الفرع."
+  },
+  "convert": {
+    "button": "إنشاء أمر بيع",
+    "title": "إنشاء أمر بيع من عرض السعر",
+    "help": "تبقى الأسعار كما في عرض السعر. اختر طريقة توفير كل بند.",
+    "line": "البند {no}: {description}",
+    "product": "المنتج لهذا البند",
+    "openOrder": "الأمر {number}",
+    "submit": "تأكيد الأمر",
+    "close": "إغلاق",
+    "loading": "جارٍ تحميل المنتجات…",
+    "loadFailed": "تعذر تحميل منتجات عرض السعر."
+  },
+  "errors": {
+    "fallback": "تعذر إتمام طلب البيع. راجع الحقول وحاول مرة أخرى.",
+    "ORDER_NOT_FOUND": "لم يتم العثور على هذا الطلب.",
+    "ORDER_NOT_OPEN": "هذا الطلب لم يعد مفتوحًا.",
+    "ORDER_HAS_DELIVERIES": "تم تسليم جزء من هذا الطلب، لذا لا يمكن إلغاؤه.",
+    "QUOTATION_NOT_FOUND": "لم يتم العثور على عرض السعر هذا.",
+    "QUOTATION_NOT_ACCEPTED": "يمكن تحويل عرض السعر المقبول فقط إلى طلب.",
+    "QUOTATION_ALREADY_ORDERED": "عرض السعر هذا له طلب بالفعل.",
+    "LINE_NOT_TO_ORDER": "يمكن ربط بند \"بالطلب\" فقط بأمر شراء.",
+    "PO_LINE_OVERCOMMITTED": "لا توجد كمية متبقية في بند أمر الشراء هذا لهذا الطلب.",
+    "PO_NOT_OPEN": "أمر الشراء هذا لم يعد مفتوحًا.",
+    "PO_LINE_PRODUCT_MISMATCH": "بند أمر الشراء هذا لمنتج مختلف.",
+    "PURCHASE_ORDER_NOT_FOUND": "لم يتم العثور على أمر الشراء هذا.",
+    "DEPOSIT_EXCEEDS_BALANCE": "العربون أكبر من المتبقي على الطلب (الحد الأقصى {max}).",
+    "DEPOSIT_EXCEEDS_BALANCE_NO_MAX": "العربون أكبر من المتبقي على الطلب.",
+    "REFUND_MUST_EQUAL_DEPOSITS": "يجب أن يساوي الاسترداد العربون المدفوع ({deposits})؛ المُدخل {refund}.",
+    "REFUND_MUST_EQUAL_DEPOSITS_NO_AMOUNTS": "يجب أن يساوي الاسترداد العربون المدفوع.",
+    "ORDER_LINES_INVALID": "راجع بنود الطلب: يحتاج كل بند إلى منتج وكمية وسعر صحيح.",
+    "QUOTE_LINE_NEEDS_PRODUCT": "اختر منتجًا لكل بند مخصص في عرض السعر.",
+    "UNITS_REQUIRED": "اختر وحدة واحدة لكل قطعة في كل بند مُسلسل من المخزون.",
+    "NOT_ENOUGH_STOCK_TO_RESERVE": "لا يوجد مخزون كافٍ في هذا الفرع لحجز هذه الأصناف.",
+    "UNIT_NOT_AVAILABLE": "إحدى الوحدات المختارة غير متاحة.",
+    "UNIT_NOT_AVAILABLE_TO_RESERVE": "لا يمكن حجز إحدى الوحدات المختارة: ليست في مخزون هذا الفرع.",
+    "OUT_OF_STOCK": "المخزون غير كافٍ.",
+    "PRICE_OVERRIDE_REQUIRED": "ليست لديك صلاحية تغيير هذا السعر.",
+    "DISCOUNT_ABOVE_CAP": "هذا الخصم أعلى من الحد المسموح لك.",
+    "REASON_REQUIRED": "أدخل السبب.",
+    "SHIFT_REQUIRED": "افتح وردية على هذا الجهاز لاستلام أو رد الأموال.",
+    "DEVICE_REVOKED": "هذا الجهاز لم يعد جهاز نقطة بيع مقترنًا.",
+    "INSUFFICIENT_FUNDS": "النقدية في الدرج غير كافية لهذا الاسترداد.",
+    "INSUFFICIENT_STORE_CREDIT": "رصيد المتجر لدى العميل غير كافٍ.",
+    "VALIDATION_FAILED": "راجع القيم وحاول مرة أخرى.",
+    "SHIFT_CLOSED": "هذه الوردية مغلقة. افتح وردية جديدة.",
+    "BRANCH_DENIED": "لا يمكنك استخدام هذا الفرع."
+  },
+  "deposit": {
+    "title": "إضافة عربون",
+    "description": "استلم عربونًا على هذا الطلب: أي مبلغ حتى الرصيد غير المدفوع.",
+    "total": "الرصيد غير المدفوع"
+  },
+  "reserve": {
+    "title": "حجز {name} الآن",
+    "description": "احجز {quantity} من مخزون {branch} لهذا البند.",
+    "submit": "حجز"
+  },
+  "link": {
+    "title": "ربط {name} بأمر شراء",
+    "description": "أوامر الشراء المفتوحة لهذا الفرع التي بها بند لهذا المنتج.",
+    "choose": "بند أمر الشراء",
+    "option": "{number} · {supplier} · {status} · {quantity} مطلوب، {remaining} متبقٍ",
+    "loading": "جارٍ تحميل أوامر الشراء…",
+    "failed": "تعذّر تحميل أوامر الشراء.",
+    "none": "لا يوجد أمر شراء مفتوح لهذا المنتج.",
+    "submit": "ربط"
+  },
+  "cancel": {
+    "title": "إلغاء الطلب",
+    "description": "أعد للعميل العربون. يجب أن يساوي مجموع بنود الاسترداد العربون المدفوع تمامًا.",
+    "noDeposits": "لم يُدفع عربون على هذا الطلب، فلا يوجد ما يُسترد.",
+    "reason": "السبب",
+    "reasonLength": "اكتب سببًا من 3 إلى 500 حرف.",
+    "deposits": "العربون المطلوب رده",
+    "refunded": "مجموع بنود الاسترداد",
+    "mismatch": "مجموع بنود الاسترداد {refund}؛ يجب أن يساوي العربون المدفوع ({deposits}).",
+    "line": "بند الاسترداد {no}",
+    "method": "الطريقة، البند {no}",
+    "amount": "المبلغ، البند {no}",
+    "account": "الحساب البنكي، البند {no}",
+    "reference": "مرجع التحويل، البند {no}",
+    "remove": "حذف",
+    "removeLine": "حذف بند الاسترداد {no}",
+    "addLine": "إضافة بند استرداد",
+    "submit": "تأكيد الإلغاء"
+  },
+  "print": {
+    "title": "تأكيد الطلب",
+    "print": "طباعة",
+    "loading": "جارٍ تحميل الطلب…",
+    "number": "رقم الطلب",
+    "date": "التاريخ",
+    "customer": "العميل",
+    "phone": "الهاتف",
+    "deliveryAddress": "عنوان التسليم",
+    "notes": "ملاحظات",
+    "depositsPaid": "العربون المدفوع",
+    "balanceDue": "المتبقي عند التسليم"
+  }
+}

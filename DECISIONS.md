@@ -47,3 +47,9 @@ EC-147: POS writes recheck the shift device on every call; only force_close_shif
 
 ### S08 offline POS (EC-75)
 - Decisions D1, D8, D10 and D11 of S08 are in EcoFin-API `DECISIONS.md` (D90). On the Web: every sale goes through the IndexedDB outbox (`src/offline/`); offline, the POS is cash-only on the lease's snapshot, opened with the cashier's PIN, and the app shell is served by the service worker of the production build.
+
+### S10 sales orders (EC-77)
+- Deposits carry no VAT and no ETA receipt; VAT and the receipt come with the delivery sale (S11). To confirm with the client's tax advisor. Server details: EcoFin-API `DECISIONS.md` (D91).
+- A reserved serial can't be moved out until its reservation is released (decision 5).
+- Cancel refunds deposits in full; keeping a fee and installment contracts on orders are later stories.
+- Orders are online-only: the offline POS hides every order action. "Create order" on a quote shows only when the customer's orders (first 100) include none for that quote; "Create purchase order" opens U05's form with a prefill and links the new PO line on return.

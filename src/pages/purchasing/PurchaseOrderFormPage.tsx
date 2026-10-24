@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   PurchaseOrderCreateBody,
@@ -43,6 +43,31 @@ interface Line {
   expected_unit_cost: string;
 }
 
+/**
+ * S10: what another page hands the new form in the route state: one line to start with, and where
+ * to go once the order is saved. The form goes there with `{ purchaseOrder: <the saved order> }`
+ * as the route state (and back there on Cancel).
+ */
+export interface PurchaseOrderPrefill {
+  line: { product_id: string; name: string; sku: string; quantity: number };
+  returnTo: string;
+}
+
+/** Route state can be anything (history, a stale tab): use it only when it has the right shape. */
+function readPrefill(state: unknown): PurchaseOrderPrefill | null {
+  const p = state as Partial<PurchaseOrderPrefill> | null;
+  const l = p?.line;
+  return typeof p?.returnTo === 'string' &&
+    p.returnTo.startsWith('/') &&
+    l &&
+    Uuid.safeParse(l.product_id).success &&
+    typeof l.name === 'string' &&
+    typeof l.sku === 'string' &&
+    Number.isInteger(l.quantity)
+    ? { line: l, returnTo: p.returnTo }
+    : null;
+}
+
 const uuidOrEmpty = (v: string | null) => (v && Uuid.safeParse(v).success ? v : '');
 const LOW_PARAMS = (branchId: string) => ({ low_only: true, branch_id: branchId, pageSize: 100 });
 
@@ -54,6 +79,7 @@ const LOW_PARAMS = (branchId: string) => ({ low_only: true, branch_id: branchId,
 export default function PurchaseOrderFormPage() {
   const { id } = useParams();
   const [search] = useSearchParams();
+  const location = useLocation();
   const orgId = useAuthStore((s) => s.orgId);
   const editing = id !== undefined;
   const validId = !editing || Uuid.safeParse(id).success;
@@ -123,17 +149,27 @@ export default function PurchaseOrderFormPage() {
           expected_unit_cost: '',
         }))
     : undefined;
-  return <PurchaseOrderForm order={order.data} branchId={urlBranch} lowLines={lowLines} />;
+  const prefill = editing ? null : readPrefill(location.state);
+  return (
+    <PurchaseOrderForm
+      order={order.data}
+      branchId={urlBranch}
+      lowLines={lowLines}
+      prefill={prefill}
+    />
+  );
 }
 
 function PurchaseOrderForm({
   order,
   branchId: urlBranch,
   lowLines,
+  prefill,
 }: {
   order?: PurchaseOrder | undefined;
   branchId: string;
   lowLines?: Line[] | undefined;
+  prefill: PurchaseOrderPrefill | null;
 }) {
   const orgId = useAuthStore((s) => s.orgId);
   const cache = useQueryClient();
@@ -155,7 +191,10 @@ function PurchaseOrderForm({
           quantity: String(l.quantity),
           expected_unit_cost: l.expected_unit_cost ?? '',
         }))
-      : (lowLines ?? []),
+      : (lowLines ??
+          (prefill
+            ? [{ ...prefill.line, quantity: String(prefill.line.quantity), expected_unit_cost: '' }]
+            : [])),
   );
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -228,7 +267,8 @@ function PurchaseOrderForm({
         : await purchaseOrdersApi.create(parsed.data as PurchaseOrderCreateBody, key);
       notify.success(t('purchases.orders.form.saved', { number: saved.number }));
       await cache.invalidateQueries({ queryKey: purchaseOrderKeys.all(orgId) });
-      void navigate(`/purchasing/orders/${saved.id}`);
+      if (prefill) void navigate(prefill.returnTo, { state: { purchaseOrder: saved } });
+      else void navigate(`/purchasing/orders/${saved.id}`);
     } catch (err) {
       setError(orderError(err));
       // A refused call can be tried again; after a success the form stays locked until it leaves.
@@ -240,7 +280,9 @@ function PurchaseOrderForm({
   const supplierOptions = order
     ? [{ value: order.supplier_id, label: order.supplier_name }]
     : (suppliers.data?.items ?? []).map((s) => ({ value: s.id, label: s.name }));
-  const back = order ? `/purchasing/orders/${order.id}` : '/purchasing/orders';
+  const back = order
+    ? `/purchasing/orders/${order.id}`
+    : (prefill?.returnTo ?? '/purchasing/orders');
 
   return (
     <PageContainer>
