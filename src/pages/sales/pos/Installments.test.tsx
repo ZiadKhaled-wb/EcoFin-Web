@@ -26,7 +26,10 @@ import { salesApi } from '@/services/salesApi';
 import { settingsApi } from '@/services/settingsApi';
 import { shiftsApi } from '@/services/shiftsApi';
 import { shopProfileApi } from '@/services/shopProfileApi';
+import { ORG_A, USER_ID } from '@/test/authFixtures';
 import { permissionsFixture, renderApp, signIn, signOut } from '@/test/renderApp';
+import { shopToday } from '../../installments/installmentShared';
+import { posScope } from './posStorage';
 import PosPage from '../PosPage';
 
 vi.mock('@/lib/supabase', () => ({ supabase: {} }));
@@ -39,6 +42,9 @@ const SALE = 'a0770000-0000-4000-8000-000000000005';
 const CONTRACT = 'a0770000-0000-4000-8000-000000000006';
 const POLICY = 'a0770000-0000-4000-8000-000000000007';
 const APPROVAL = 'a0770000-0000-4000-8000-000000000008';
+const SARA = 'a0770000-0000-4000-8000-000000000009';
+const GONE = 'a0770000-0000-4000-8000-00000000000a';
+const HELD_KEY = `ecofin.pos.held.${posScope(ORG_A, USER_ID)}`;
 const SEARCH_EN = 'Find a product by name, SKU or barcode';
 const ts = '2026-10-16T08:00:00.000Z';
 
@@ -118,8 +124,17 @@ function quoteOf(body: SaleQuoteBody): SaleQuote {
   } as SaleQuote;
 }
 
-/** The server's preview: 20 % profit for 12 months, the customer passes when `ok`. */
-function previewOf(body: InstallmentPreviewBody, ok = true): InstallmentPreview {
+/**
+ * The server's preview: 20 % profit for 12 months. The credit check is `ok` (within the limit),
+ * `blocked` (over it) or `approved` (over it, but an approved exception covers it: the API answers
+ * allowed + approved_approval_id, see get_customer_credit_check).
+ */
+function previewOf(
+  body: InstallmentPreviewBody,
+  credit: 'ok' | 'blocked' | 'approved' = 'ok',
+): InstallmentPreview {
+  const ok = credit === 'ok';
+  const covered = credit === 'approved';
   const financed = Number(body.cash_price) - Number(body.down_payment);
   const profit = (financed * 0.2).toFixed(2);
   const total = (financed * 1.2).toFixed(2);
@@ -155,16 +170,16 @@ function previewOf(body: InstallmentPreviewBody, ok = true): InstallmentPreview 
     },
     customer: {
       credit: {
-        allowed: ok,
+        allowed: ok || covered,
         reasons: ok ? [] : ['limit'],
-        needs_approval: !ok,
+        needs_approval: !ok && !covered,
         limit: '100000.00',
         exposure: '0.00',
         available: ok ? '100000.00' : '0.00',
         score: 80,
         min_score: 0,
         pending_approval_id: null,
-        approved_approval_id: ok ? null : APPROVAL,
+        approved_approval_id: covered ? APPROVAL : null,
       },
       guarantors: {
         policy_id: POLICY,
@@ -418,7 +433,9 @@ describe('N02 installment sale in the POS', () => {
     'uses an approved credit exception and sells with no down payment step at 0.00',
     { timeout: 20_000 },
     async () => {
-      preview.mockImplementation(async (body: InstallmentPreviewBody) => previewOf(body, false));
+      preview.mockImplementation(async (body: InstallmentPreviewBody) =>
+        previewOf(body, 'approved'),
+      );
       const user = await open();
       await user.click(await screen.findByRole('button', { name: 'Installments' }));
       await waitFor(() => expect(termsButton()).toBeEnabled());
@@ -441,4 +458,221 @@ describe('N02 installment sale in the POS', () => {
       expect(screen.queryByRole('dialog', { name: 'Down payment' })).not.toBeInTheDocument();
     },
   );
+
+  it(
+    'a sale within the credit limit sends no credit_approval_id',
+    { timeout: 20_000 },
+    async () => {
+      const user = await open();
+      await user.click(await screen.findByRole('button', { name: 'Installments' }));
+      await waitFor(() => expect(termsButton()).toBeEnabled());
+      await user.click(termsButton());
+      const dialog = await screen.findByRole('dialog', { name: 'Installment sale' });
+      expect(await within(dialog).findByText('Credit: OK')).toBeInTheDocument();
+      const next = within(dialog).getByRole('button', { name: 'Next: down payment' });
+      await waitFor(() => expect(next).toBeEnabled());
+      await user.click(next);
+      const pay = await screen.findByRole('dialog', { name: 'Down payment' });
+      await user.click(within(pay).getByRole('button', { name: 'Pay' }));
+
+      await waitFor(() => expect(sell).toHaveBeenCalledTimes(1));
+      expect(sell.mock.calls[0]![0]).not.toHaveProperty('credit_approval_id');
+    },
+  );
+
+  describe('EC-151 held installment carts', () => {
+    const sara = {
+      id: SARA,
+      full_name: 'Sara Adel',
+      relation: 'sister',
+      archived_at: null,
+    } as unknown as Awaited<ReturnType<typeof guarantorsApi.ofCustomer>>[number];
+    const inDays = (n: number) => {
+      const d = new Date(`${shopToday()}T12:00:00Z`);
+      d.setUTCDate(d.getUTCDate() + n);
+      return d.toISOString().slice(0, 10);
+    };
+    /** A cart held on this device, as the hold stores it; `installment` is the EC-151 part. */
+    const held = (installment?: Record<string, unknown>) => [
+      {
+        id: 'b0660000-0000-4000-8000-000000000001',
+        at: ts,
+        note: '',
+        lines: [
+          {
+            key: TV,
+            product_id: TV,
+            name: 'TV',
+            sku: tv.sku,
+            unit_id: null,
+            serial: null,
+            quantity: '1',
+            price: '',
+            discount: { type: 'percent', value: '' },
+          },
+        ],
+        customer: { id: MONA, name: 'Mona Adel', phone: null },
+        saleDiscount: { type: 'percent', value: '' },
+        reason: '',
+        ...(installment ? { installment } : {}),
+      },
+    ];
+    const withWeekly = () =>
+      vi.spyOn(settingsApi, 'get').mockResolvedValue({
+        installment_policy: { ...policy, allowed_frequencies: ['monthly', 'weekly'] },
+      } as unknown as ShopSettings);
+
+    /** Opens the page, resumes the held cart and opens its installment terms. */
+    async function resumeToTerms(switchToInstallments = false) {
+      await renderApp(<PosPage />, { lang: 'en', route: '/sales/pos' });
+      const user = userEvent.setup();
+      await user.click(await screen.findByRole('button', { name: 'Held carts (1)' }));
+      const list = await screen.findByRole('dialog', { name: 'Held carts' });
+      await user.click(within(list).getByRole('button', { name: 'Resume' }));
+      // A cart held with terms comes back in installment mode; one held without them does not.
+      if (switchToInstallments) {
+        await user.click(await screen.findByRole('button', { name: 'Installments' }));
+      }
+      await waitFor(() => expect(termsButton()).toBeEnabled());
+      await user.click(termsButton());
+      return { user, dialog: await screen.findByRole('dialog', { name: 'Installment sale' }) };
+    }
+
+    it(
+      'hold then resume keeps the down payment, the count and the ticked guarantor',
+      { timeout: 30_000 },
+      async () => {
+        vi.spyOn(guarantorsApi, 'ofCustomer').mockResolvedValue([sara]);
+        const user = await open();
+        await user.click(await screen.findByRole('button', { name: 'Installments' }));
+        await waitFor(() => expect(termsButton()).toBeEnabled());
+        await user.click(termsButton());
+        const dialog = await screen.findByRole('dialog', { name: 'Installment sale' });
+        const down = within(dialog).getByLabelText('Down payment');
+        await user.clear(down);
+        await user.type(down, '3000');
+        const count = within(dialog).getByLabelText('Number of installments');
+        await user.clear(count);
+        await user.type(count, '10');
+        await user.click(await within(dialog).findByRole('checkbox', { name: /Sara Adel/ }));
+        await user.click(within(dialog).getByRole('button', { name: 'Back to the cart' }));
+
+        await user.keyboard('{F8}');
+        const hold = await screen.findByRole('dialog', { name: 'Hold this cart' });
+        await user.type(within(hold).getByLabelText('Note (optional)'), 'later{Enter}');
+        await screen.findByRole('button', { name: 'Held carts (1)' });
+        const kept = JSON.parse(localStorage.getItem(HELD_KEY)!) as Record<string, unknown>[];
+        expect(kept[0]!.installment).toEqual({
+          down_payment: '3000.00',
+          installments_count: 10,
+          frequency: 'monthly',
+          guarantor_ids: [SARA],
+        });
+
+        await user.keyboard('{F9}');
+        const list = await screen.findByRole('dialog', { name: 'Held carts' });
+        await user.click(within(list).getByRole('button', { name: 'Resume' }));
+        await waitFor(() => expect(termsButton()).toBeEnabled());
+        await user.click(termsButton());
+        const back = await screen.findByRole('dialog', { name: 'Installment sale' });
+        expect(within(back).getByLabelText('Down payment')).toHaveValue('3000.00');
+        expect(within(back).getByLabelText('Number of installments')).toHaveValue('10');
+        expect(await within(back).findByRole('checkbox', { name: /Sara Adel/ })).toBeChecked();
+        expect(within(back).queryByText(/no longer/)).not.toBeInTheDocument();
+      },
+    );
+
+    it(
+      'resume restores the frequency and the first due date too',
+      { timeout: 30_000 },
+      async () => {
+        withWeekly();
+        const first = inDays(10);
+        localStorage.setItem(
+          HELD_KEY,
+          JSON.stringify(
+            held({
+              down_payment: '2500.00',
+              installments_count: 8,
+              frequency: 'weekly',
+              first_due_date: first,
+              guarantor_ids: [],
+            }),
+          ),
+        );
+        const { dialog } = await resumeToTerms();
+        expect(within(dialog).getByLabelText('Down payment')).toHaveValue('2500.00');
+        expect(within(dialog).getByLabelText('Number of installments')).toHaveValue('8');
+        expect(within(dialog).getByLabelText('Frequency')).toHaveValue('weekly');
+        await waitFor(() =>
+          expect(preview.mock.calls.at(-1)![0]).toMatchObject({
+            frequency: 'weekly',
+            installments_count: 8,
+            first_due_date: first,
+          }),
+        );
+        expect(within(dialog).queryByText(/no longer/)).not.toBeInTheDocument();
+      },
+    );
+
+    it(
+      'a cart held before EC-151 (no terms) resumes with the default terms',
+      { timeout: 30_000 },
+      async () => {
+        localStorage.setItem(HELD_KEY, JSON.stringify(held()));
+        const { dialog } = await resumeToTerms(true);
+        expect(within(dialog).getByLabelText('Down payment')).toHaveValue('1200.00');
+        expect(within(dialog).getByLabelText('Number of installments')).toHaveValue('12');
+        expect(within(dialog).queryByText(/no longer/)).not.toBeInTheDocument();
+      },
+    );
+
+    it(
+      'terms that do not parse are dropped, the cart still resumes',
+      { timeout: 30_000 },
+      async () => {
+        localStorage.setItem(
+          HELD_KEY,
+          JSON.stringify(held({ down_payment: 5, frequency: 'daily' })),
+        );
+        const { dialog } = await resumeToTerms(true);
+        expect(within(dialog).getByLabelText('Down payment')).toHaveValue('1200.00');
+      },
+    );
+
+    it(
+      'values the policy or the guarantors no longer allow fall back, with a note each',
+      { timeout: 30_000 },
+      async () => {
+        vi.spyOn(guarantorsApi, 'ofCustomer').mockResolvedValue([sara]);
+        localStorage.setItem(
+          HELD_KEY,
+          JSON.stringify(
+            held({
+              down_payment: '100.00',
+              installments_count: 36,
+              frequency: 'weekly',
+              first_due_date: '2020-01-01',
+              guarantor_ids: [SARA, GONE],
+            }),
+          ),
+        );
+        const { dialog } = await resumeToTerms();
+        expect(within(dialog).getByLabelText('Down payment')).toHaveValue('1200.00');
+        expect(within(dialog).getByLabelText('Number of installments')).toHaveValue('12');
+        expect(within(dialog).getByLabelText('Frequency')).toHaveValue('monthly');
+        for (const note of [
+          'The saved down payment is no longer allowed. The minimum was used.',
+          'The saved number of installments is no longer allowed. The default was used.',
+          'The saved frequency is no longer allowed. The default was used.',
+          'The saved first due date has passed. It was cleared.',
+          'A saved guarantor is no longer linked to this customer. They were unticked.',
+        ]) {
+          expect(await within(dialog).findByText(note)).toBeInTheDocument();
+        }
+        // The guarantor who is still linked stays ticked.
+        expect(await within(dialog).findByRole('checkbox', { name: /Sara Adel/ })).toBeChecked();
+      },
+    );
+  });
 });

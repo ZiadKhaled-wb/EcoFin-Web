@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Uuid, type Customer } from '@ziadkhaled-wb/contracts';
+import { InstallmentFrequency, Uuid, type Customer } from '@ziadkhaled-wb/contracts';
 
 /** S06 (D66): at most this many carts wait on one device for one employee. */
 export const MAX_HELD_CARTS = 10;
@@ -32,8 +32,22 @@ const cartFields = {
 const CartContent = z.object(cartFields);
 /** The cart on screen, kept for a refresh with its idempotency key (one sale for a second Pay). */
 const ActiveCart = z.object({ ...cartFields, key: Uuid });
+/**
+ * EC-151: the installment terms a cashier had typed when the cart was held, and the ticked
+ * guarantors. The server's preview is not kept: it is asked again, and a value the shop's policy
+ * or the customer's guarantors no longer allow is replaced on resume.
+ */
+const InstallmentDraft = z.object({
+  down_payment: z.string().max(20),
+  installments_count: z.number().int().min(1).max(1000),
+  frequency: InstallmentFrequency,
+  first_due_date: z.string().max(10).optional(),
+  guarantor_ids: z.array(Uuid).max(3),
+});
 const HeldCart = z.object({
   ...cartFields,
+  // Carts held before EC-151 have no terms; terms that do not parse are dropped, not the cart.
+  installment: InstallmentDraft.optional().catch(undefined),
   id: Uuid,
   at: z.string().datetime(),
   note: z.string().max(80),
@@ -43,6 +57,9 @@ export type DiscountDraft = z.infer<typeof DiscountDraft>;
 export type CartLine = z.infer<typeof StoredLine>;
 export type PosCustomer = z.infer<typeof StoredCustomer>;
 export type CartContent = z.infer<typeof CartContent>;
+export type InstallmentDraft = z.infer<typeof InstallmentDraft>;
+/** What Hold keeps: the cart and, in installment mode, the terms typed so far. */
+export type HeldContent = CartContent & { installment?: InstallmentDraft | undefined };
 export type ActiveCart = z.infer<typeof ActiveCart>;
 export type HeldCart = z.infer<typeof HeldCart>;
 

@@ -17,7 +17,14 @@
     "cancel": "Back to the cart",
     "toDownPayment": "Next: down payment",
     "confirm": "Confirm the sale",
-    "checking": "Checking with the server…"
+    "checking": "Checking with the server…",
+    "restored": {
+      "down": "The saved down payment is no longer allowed. The minimum was used.",
+      "count": "The saved number of installments is no longer allowed. The default was used.",
+      "frequency": "The saved frequency is no longer allowed. The default was used.",
+      "firstDue": "The saved first due date has passed. It was cleared.",
+      "guarantors": "A saved guarantor is no longer linked to this customer. They were unticked."
+    }
   },
   "fields": {
     "downPayment": "Down payment",
