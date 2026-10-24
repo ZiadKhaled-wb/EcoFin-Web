@@ -1,0 +1,192 @@
+{
+  "nav": {
+    "title": "Legal"
+  },
+  "title": "Legal cases",
+  "description": "Cases the shop has taken to court for defaulted contracts. A case never changes what a customer owes: no fee or cost is ever added. A lawyer sees only the cases assigned to them.",
+  "tabs": {
+    "open": "Open",
+    "closed": "Closed",
+    "all": "All"
+  },
+  "filters": {
+    "search": "Case number, court number, contract number, customer name or phone",
+    "lawyer": "Lawyer",
+    "allLawyers": "All lawyers"
+  },
+  "columns": {
+    "number": "Case",
+    "courtNumber": "Court no. {number}",
+    "contract": "Contract",
+    "customer": "Customer",
+    "lawyer": "Lawyer",
+    "status": "Status",
+    "nextHearing": "Next hearing",
+    "claim": "Claim",
+    "remaining": "Left to pay"
+  },
+  "empty": {
+    "open": "No open legal cases.",
+    "closed": "No closed legal cases.",
+    "all": "No legal cases yet."
+  },
+  "status": {
+    "preparing": "Preparing",
+    "filed": "Filed",
+    "in_court": "In court",
+    "judgment": "Judgment",
+    "closed": "Closed"
+  },
+  "outcomeKind": {
+    "paid": "Paid",
+    "settled_out_of_court": "Settled out of court",
+    "judgment_enforced": "Judgment enforced",
+    "withdrawn": "Withdrawn",
+    "dismissed_by_court": "Dismissed by the court",
+    "other": "Other"
+  },
+  "fields": {
+    "court": "Court",
+    "caseType": "Case type",
+    "caseNumber": "Court case number",
+    "claim": "Claim",
+    "lawyer": "Lawyer",
+    "openedOn": "Opened on",
+    "openedBy": "Opened by",
+    "referral": "Legal referral",
+    "guarantors": "Guarantors"
+  },
+  "blocked": "Blocked",
+  "noLawyer": "Not assigned",
+  "hearingSoon": "within 7 days",
+  "more": "Show more",
+  "cancel": "Cancel",
+  "save": "Save",
+  "loadFailed": "The legal cases could not be loaded.",
+  "flag": {
+    "label": "Legal: {status}",
+    "open": "Open the legal case"
+  },
+  "referral": {
+    "viewCase": "View the case"
+  },
+  "open": {
+    "button": "Open legal case",
+    "title": "Open a legal case for contract {number}",
+    "description": "The case is opened with the contract's customer and the claim below. You can add the court details later.",
+    "lawyer": "Lawyer",
+    "noLawyer": "Assign later",
+    "lawyerHelp": "A lawyer is needed before the case is filed.",
+    "claim": "Claim",
+    "claimHelp": "At most what the contract still owes: {amount}. Court costs are never part of it.",
+    "claimTooHigh": "The claim can't be more than what the contract still owes ({amount}).",
+    "claimZero": "The claim must be above 0.",
+    "note": "First note (optional)",
+    "blockNotice": "Opening a case blocks the customer from new installment sales. Closing the case does not unblock them: you lift the block yourself from the customer's page.",
+    "confirm": "Open the case",
+    "viewExisting": "Open the existing case"
+  },
+  "case": {
+    "title": "Case {number}",
+    "details": "Case details",
+    "edit": "Edit details",
+    "notFound": "This case was not found",
+    "notFoundHint": "It may be another shop's case, or assigned to another lawyer.",
+    "loadFailed": "The case could not be loaded.",
+    "fromReferral": "Referred on {date}, {days} days late",
+    "fileNeeds": {
+      "lawyer": "To file the case, first assign a lawyer.",
+      "court": "To file the case, first add the court.",
+      "number": "To file the case, first add the court case number."
+    }
+  },
+  "move": {
+    "filed": "File the case",
+    "in_court": "Move to court",
+    "judgment": "Record the judgment",
+    "appeal": "Appeal (back to court)"
+  },
+  "close": {
+    "button": "Close the case",
+    "title": "Close case {number}",
+    "description": "Closing records how the case ended. It changes nothing on the contract or the customer: a write-off or settlement is done on the contract page, and the customer stays blocked until you lift it.",
+    "kind": "How did it end?",
+    "pick": "Choose",
+    "note": "Note (optional)",
+    "noteRequired": "Note (required for Other)",
+    "confirm": "Close the case",
+    "closedWith": "Closed: {kind}",
+    "noEffect": "Closing did not change the contract or the customer."
+  },
+  "edit": {
+    "title": "Edit case {number}",
+    "claimLocked": "The claim can't change once the case is filed."
+  },
+  "amounts": {
+    "title": "Amounts",
+    "hint": "Payments are taken on the collection screen like any other. This page only shows them.",
+    "claim": "Claim",
+    "total": "Total payable",
+    "paidBefore": "Paid before the case",
+    "paidSince": "Paid since it was opened",
+    "remaining": "Left to pay",
+    "collections": "Collections since the case was opened",
+    "noCollections": "No collections since the case was opened.",
+    "receipt": "Receipt",
+    "date": "Date",
+    "amount": "Amount",
+    "takenBy": "Taken by"
+  },
+  "hearings": {
+    "title": "Hearings",
+    "add": "Add a hearing",
+    "addTitle": "Add a hearing",
+    "addDescription": "A past date is fine: use it to record history.",
+    "date": "Hearing date",
+    "notes": "Notes (optional)",
+    "outcome": "What happened",
+    "outcomeTitle": "Hearing of {date}",
+    "outcomeIs": "Result: {outcome}",
+    "noOutcome": "No result recorded yet.",
+    "record": "Record the result",
+    "empty": "No hearings yet."
+  },
+  "notes": {
+    "title": "Notes",
+    "hint": "Notes are never edited or deleted.",
+    "add": "New note",
+    "save": "Add the note",
+    "empty": "No notes yet."
+  },
+  "documents": {
+    "title": "Papers",
+    "upload": "Add a paper",
+    "open": "Open",
+    "empty": "No papers yet.",
+    "unnamed": "Paper",
+    "hint": "Images and PDF files only.",
+    "loadFailed": "The papers could not be loaded.",
+    "uploadFailed": "The paper could not be uploaded.",
+    "openFailed": "The paper could not be opened.",
+    "typeNotAllowed": "Only images (JPG, PNG, WebP) and PDF files are accepted.",
+    "tooLarge": "The file is too large."
+  },
+  "errors": {
+    "failed": "Something went wrong. Try again.",
+    "LEGAL_CASE_NOT_FOUND": "This case was not found.",
+    "HEARING_NOT_FOUND": "This hearing was not found.",
+    "LEGAL_CASE_ALREADY_OPEN": "This contract already has an open legal case.",
+    "LEGAL_CASE_CLOSED": "The case is closed and can't be changed.",
+    "LEGAL_CASE_FILED": "The claim can't change once the case is filed.",
+    "LEGAL_STATUS_INVALID": "The case can't move to that status from where it is.",
+    "LEGAL_CONTRACT_NOT_DEFAULTED": "This contract has nothing overdue, so it can't be sent to court.",
+    "LEGAL_CLAIM_TOO_HIGH": "The claim can't be more than what the contract still owes.",
+    "LAWYER_INVALID": "Choose an active lawyer of this shop.",
+    "CONTRACT_NOT_FOUND": "The contract was not found.",
+    "MODULE_NOT_IN_PLAN": "Legal cases are not part of this shop's plan.",
+    "PERMISSION_DENIED": "You are not allowed to do this.",
+    "IDEMPOTENCY_CONFLICT": "This request was already sent with different details. Close the dialog and try again.",
+    "VALIDATION_FAILED": "Check the details. Filing a case needs a lawyer, a court and a court case number.",
+    "SUBSCRIPTION_EXPIRED": "The subscription has expired. You can read but not change cases."
+  }
+}

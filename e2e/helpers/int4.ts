@@ -52,6 +52,8 @@ export async function session(
   warnings?: string[],
   /** The browser's own time zone (D01 runs it in UTC, as CI does; the shop's day is the server's). */
   timezoneId?: string,
+  /** Where the first page after sign-in is (L01: a lawyer lands on /legal, not on the dashboard). */
+  landing: RegExp = /\/(dashboard|select-shop)/,
 ) {
   const context = await browser.newContext({
     extraHTTPHeaders: { 'X-Forwarded-For': `198.51.101.${(ipCounter++ % 250) + 1}` },
@@ -66,7 +68,7 @@ export async function session(
   await page.locator('input').first().fill(email);
   await page.locator('input[type=password]').fill(PASSWORD);
   await page.locator('button[type=submit]').click();
-  await expect(page).toHaveURL(/\/(dashboard|select-shop)/);
+  await expect(page).toHaveURL(landing);
   return { context, page, orgId } satisfies Session;
 }
 

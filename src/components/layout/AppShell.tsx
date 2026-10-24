@@ -11,6 +11,7 @@ import { usePermissions } from '@/features/me/usePermissions';
 import { t } from '@/i18n';
 import { useAuthStore } from '@/store/authStore';
 import SubscriptionBanner from '@/features/subscription/SubscriptionBanner';
+import { useShopModules } from '@/features/subscription/useShopModules';
 import OfflineController from '@/offline/OfflineController';
 import { useOfflineStore } from '@/offline/store';
 
@@ -25,13 +26,14 @@ export default function AppShell() {
   const user = useAuthStore((s) => s.user);
   const permissions = usePermissions();
   const keys = permissions.data?.keys;
+  const modules = useShopModules();
   const offline = useOfflineStore((s) => s.mode.mode === 'offline');
   const items = useMemo(
     () =>
       offline
         ? OFFLINE_NAV
-        : filterNav(NAV, user && keys ? { ...user, permissions: [...keys] } : user),
-    [user, keys, offline],
+        : filterNav(NAV, user && keys ? { ...user, permissions: [...keys] } : user, modules),
+    [user, keys, offline, modules],
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
 

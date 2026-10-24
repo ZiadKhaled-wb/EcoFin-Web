@@ -10,6 +10,7 @@ import {
   EyeIcon,
   FactoryIcon,
   PackageIcon,
+  ScaleIcon,
   SettingsIcon,
   TruckIcon,
   UsersIcon,
@@ -18,6 +19,7 @@ import {
 import DiscountApprovalsBadge from '@/features/approvals/DiscountApprovalsBadge';
 import type { TranslationKey } from '@/i18n';
 import type { AuthUser, Role } from '@/types/auth';
+import type { ModuleKey } from '@ziadkhaled-wb/contracts';
 import type { ComponentType } from 'react';
 
 /**
@@ -44,6 +46,10 @@ export interface NavItem {
   permissionsAny?: string[];
   /** Hidden from anyone holding one of these (N06: the field home is for collectors, not managers). */
   permissionsNone?: string[];
+  /** L01: hidden when the shop's plan lacks this module (known once the plan loaded; the server checks too). */
+  module?: ModuleKey;
+  /** L01: hidden from anyone this answers true for (the lawyer's menu has no dashboard). */
+  hiddenFor?: (user: AuthUser) => boolean;
   /** Drawn at the end of the menu line (a count of what waits). */
   badge?: ComponentType;
 }
@@ -52,8 +58,33 @@ const OWNER: Role = 'OWNER';
 // DRAFT: the branch-manager role (was OPS_MANAGER in the partner's list). F09 replaces this matrix.
 const BRANCH_MANAGER: Role = 'BRANCH_MANAGER';
 
+/**
+ * L01 (D92): the keys of the LAWYER role. A user whose permissions are all in this list (and who can see
+ * legal cases) is a lawyer: the menu has no dashboard for them and they land on /legal.
+ */
+const LEGAL_ONLY_KEYS: readonly string[] = [
+  'legal.view',
+  'legal.manage',
+  'customer.view_pii',
+  'overdue.view',
+];
+export function isLegalOnly(user: AuthUser): boolean {
+  return (
+    user.permissions.includes('legal.view') &&
+    user.permissions.every((k) => LEGAL_ONLY_KEYS.includes(k))
+  );
+}
+/** Where a signed-in user starts: the dashboard, or the cases for a lawyer. */
+export const homePath = (user: AuthUser): string => (isLegalOnly(user) ? '/legal' : '/dashboard');
+
 export const NAV: NavItem[] = [
-  { id: 'dashboard', labelKey: 'nav.dashboard', icon: DashboardIcon, to: '/dashboard' },
+  {
+    id: 'dashboard',
+    labelKey: 'nav.dashboard',
+    icon: DashboardIcon,
+    to: '/dashboard',
+    hiddenFor: isLegalOnly,
+  },
   {
     id: 'sales',
     labelKey: 'nav.sales',
@@ -253,6 +284,15 @@ export const NAV: NavItem[] = [
     icon: AlertIcon,
     to: '/installments/overdue',
     permission: 'overdue.view',
+  },
+  // L01 + N09 (D92): legal cases. A lawyer sees only the cases assigned to them (the server filters).
+  {
+    id: 'legal',
+    labelKey: 'legal.nav.title',
+    icon: ScaleIcon,
+    to: '/legal',
+    permission: 'legal.view',
+    module: 'legal',
   },
   // N06 (D81): the collector's home (their wallet and today's route). Managers hold collector.settle
   // and work from the wallets page instead.
@@ -460,7 +500,9 @@ export const NAV: NavItem[] = [
 ];
 
 /** The one visibility rule: the menu (filterNav) and the route guard (RequireNavItem) both use it. */
-export function canSee(item: NavItem, user: AuthUser): boolean {
+export function canSee(item: NavItem, user: AuthUser, modules?: readonly string[]): boolean {
+  if (item.hiddenFor?.(user)) return false;
+  if (item.module && modules && !modules.includes(item.module)) return false;
   if (item.permissionsNone?.some((key) => user.permissions.includes(key))) return false;
   if (!item.roles && !item.permission && !item.permissionsAny) return true;
   return !!(
@@ -470,14 +512,18 @@ export function canSee(item: NavItem, user: AuthUser): boolean {
   );
 }
 
-export function filterNav(items: NavItem[], user: AuthUser | null): NavItem[] {
+export function filterNav(
+  items: NavItem[],
+  user: AuthUser | null,
+  modules?: readonly string[],
+): NavItem[] {
   if (!user) return [];
   return items.flatMap((item) => {
     if (item.children) {
-      const children = filterNav(item.children, user);
+      const children = filterNav(item.children, user, modules);
       return children.length ? [{ ...item, children }] : [];
     }
-    return canSee(item, user) ? [item] : [];
+    return canSee(item, user, modules) ? [item] : [];
   });
 }
 
