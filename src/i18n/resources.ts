@@ -1,6 +1,8 @@
 import arEmployees from './locales/ar/employees.json';
 import arQuotations from './locales/ar/quotations.json';
 import enQuotations from './locales/en/quotations.json';
+import arSalesOrders from './locales/ar/salesOrders.json';
+import enSalesOrders from './locales/en/salesOrders.json';
 import enEmployees from './locales/en/employees.json';
 import arAudit from './locales/ar/audit.json';
 import arBranches from './locales/ar/branches.json';
@@ -100,6 +102,7 @@ import enOffline from './locales/en/offline.json';
 /** One JSON file per namespace and language. The first segment of a key is its namespace. */
 export const ar = {
   quotations: arQuotations,
+  salesOrders: arSalesOrders,
   employees: arEmployees,
   branches: arBranches,
   settings: arSettings,
@@ -154,6 +157,7 @@ export const ar = {
 type SameShape<T> = { [K in keyof T]: T[K] extends string ? string : SameShape<T[K]> };
 export const en: SameShape<typeof ar> = {
   quotations: enQuotations,
+  salesOrders: enSalesOrders,
   employees: enEmployees,
   branches: enBranches,
   settings: enSettings,

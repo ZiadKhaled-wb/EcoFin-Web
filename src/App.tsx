@@ -1,5 +1,8 @@
 import WarrantyPage from '@/pages/sales/WarrantyPage';
 import QuotationsPage, { QuotationEditor, QuotationPrintPage } from '@/pages/sales/QuotationsPage';
+import SalesOrdersPage, { SalesOrderDetailPage } from '@/pages/sales/SalesOrdersPage';
+import NewSalesOrderPage from '@/pages/sales/NewSalesOrderPage';
+import SalesOrderPrintPage from '@/pages/sales/SalesOrderPrintPage';
 import WarrantyClaimPage from '@/pages/sales/WarrantyClaimPage';
 import WarrantyClaimPrintPage from '@/pages/sales/WarrantyClaimPrintPage';
 import SalesHistoryPage from '@/pages/sales/SalesHistoryPage';
@@ -159,6 +162,7 @@ const REAL_ROUTES = new Set([
   '/sales/pos',
   '/sales/offline',
   '/sales/quotations',
+  '/sales/orders',
 ]);
 /** U01: the suppliers pages follow the menu item's rule (roles OWNER, BRANCH_MANAGER, WAREHOUSE,
  * ACCOUNTANT); the server checks the purchasing read keys on every call (D53). */
@@ -565,6 +569,38 @@ export default function App() {
                     element={
                       <RequirePermission permission="quotation.manage">
                         <QuotationPrintPage />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/sales/orders"
+                    element={
+                      <RequirePermission permission="order.manage">
+                        <SalesOrdersPage />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/sales/orders/new"
+                    element={
+                      <RequirePermission permission="order.manage">
+                        <NewSalesOrderPage />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/sales/orders/:id"
+                    element={
+                      <RequirePermission permission="order.manage">
+                        <SalesOrderDetailPage />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="/sales/orders/:id/print"
+                    element={
+                      <RequirePermission permission="order.manage">
+                        <SalesOrderPrintPage />
                       </RequirePermission>
                     }
                   />

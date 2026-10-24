@@ -9,17 +9,22 @@ import {
   QuotationStatus,
   computeDocumentTax,
   type ShopSettings,
+  type SalesOrder,
 } from '@ziadkhaled-wb/contracts';
 import { t, getLanguage, directionOf } from '@/i18n';
+import { useOfflineStore } from '@/offline/store';
 import { quotationsApi } from '@/services/quotationsApi';
 import { settingsApi } from '@/services/settingsApi';
 import { customersApi } from '@/services/customersApi';
 import { productsApi } from '@/services/productsApi';
+import { salesOrdersApi } from '@/services/salesOrdersApi';
 import { useBranches } from '@/features/me/useBranches';
 import { useMe } from '@/features/me/useMe';
 import { useCan } from '@/features/me/useCan';
 import { ApiError } from '@/lib/api';
 import { quotationActions, priceLocked, duplicateQuotation } from './quotationRules';
+import { salesOrderErrorMessage } from './salesOrderRules';
+import QuoteOrderDialog from './QuoteOrderDialog';
 import './Quotations.css';
 const blank = (): QuotationLineInput => ({
   product_id: null,
@@ -157,7 +162,7 @@ export default function QuotationsPage() {
     </main>
   );
 }
-function CustomerPicker({
+export function CustomerPicker({
   value,
   onChange,
   name,
@@ -215,7 +220,8 @@ export function QuotationEditor() {
     navigate = useNavigate(),
     branches = useBranches(),
     me = useMe(),
-    override = useCan('price.override');
+    override = useCan('price.override'),
+    canOrder = useCan('order.manage');
   const initial = location.state as ReturnType<typeof duplicateQuotation> | null;
   const [quote, setQuote] = useState<Quotation | null>(null),
     [branch, setBranch] = useState(initial?.branch_id ?? ''),
@@ -248,6 +254,28 @@ export function QuotationEditor() {
       alive = false;
     };
   }, []);
+  // S10: an accepted quote has an order when one of its customer's orders points back to it.
+  const [order, setOrder] = useState<SalesOrder | null | undefined>(undefined),
+    [converting, setConverting] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    if (canOrder && quote?.effective_status === 'accepted' && quote.customer_id)
+      void salesOrdersApi
+        .list({ customer_id: quote.customer_id, page_size: 100 })
+        .then((r) => {
+          if (alive) setOrder(r.items.find((o) => o.quotation?.id === quote.id) ?? null);
+        })
+        .catch((e) => {
+          if (alive) setError(salesOrderErrorMessage(e));
+        });
+    return () => {
+      alive = false;
+    };
+  }, [canOrder, quote]);
+  // S10: orders are online-only, so the offline POS (S08) offers no "Create order".
+  const offline = useOfflineStore((s) => s.mode.mode === 'offline');
+  const showCreateOrder =
+    canOrder && !offline && quote?.effective_status === 'accepted' && order === null;
   const editable = !quote || quote.effective_status === 'draft';
   function fill(q: Quotation) {
     setQuote(q);
@@ -548,6 +576,16 @@ export function QuotationEditor() {
         {quote && (
           <>
             <Link to={`/sales/quotations/${quote.id}/print`}>{t('quotations.print')}</Link>
+            {order && (
+              <Link to={`/sales/orders/${order.id}`}>
+                {t('salesOrders.convert.openOrder', { number: order.number })}
+              </Link>
+            )}
+            {showCreateOrder && (
+              <button disabled={busy} onClick={() => setConverting(true)}>
+                {t('salesOrders.convert.button')}
+              </button>
+            )}
             <button
               onClick={() =>
                 navigate('/sales/quotations/new', { state: duplicateQuotation(quote) })
@@ -558,6 +596,9 @@ export function QuotationEditor() {
           </>
         )}
       </div>
+      {converting && quote && (
+        <QuoteOrderDialog quote={quote} onClose={() => setConverting(false)} />
+      )}
       {pending && (
         <div role="dialog" aria-label={t(`quotations.${pending}`)}>
           <label>

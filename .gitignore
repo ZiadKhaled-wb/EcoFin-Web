@@ -12,3 +12,6 @@ opencode.jsonc
 # Playwright output
 test-results/
 playwright-report/
+
+# Local CI runs (fresh clones, deleted after the run)
+.ci-local/

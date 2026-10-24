@@ -1,0 +1,65 @@
+/* S10 order confirmation: A4, the same layout in AR (RTL) and EN (logical properties only). */
+.sales-order-print {
+  max-inline-size: 190mm;
+  margin-inline: auto;
+  padding: 10mm;
+  color: #000;
+  background: #fff;
+  overflow-wrap: anywhere;
+}
+.sales-order-print h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+}
+.sales-order-print h2 {
+  font-weight: 700;
+  margin-block-start: 4mm;
+}
+.sales-order-print dl {
+  margin-block: 4mm;
+}
+.sales-order-print dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-block-end: 1px solid #ddd;
+  padding-block: 1mm;
+}
+.sales-order-print dt {
+  font-weight: 600;
+}
+.sales-order-print .sales-order-print-due {
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-block-end: 2px solid #000;
+}
+.sales-order-print table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+.sales-order-print th,
+.sales-order-print td {
+  padding: 0.5rem;
+  border-block-end: 1px solid #aaa;
+  text-align: start;
+  vertical-align: top;
+}
+.sales-order-print-root {
+  display: none;
+}
+@media print {
+  .sales-order-print-root {
+    display: block !important;
+  }
+  .sales-order-print {
+    padding: 0;
+    inline-size: 100%;
+  }
+  .sales-order-print tr {
+    break-inside: avoid;
+  }
+  .sales-order-print thead {
+    display: table-header-group;
+  }
+}

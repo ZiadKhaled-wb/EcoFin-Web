@@ -1,0 +1,223 @@
+{
+  "title": "Sales orders",
+  "all": "All",
+  "status": "Status",
+  "branch": "Branch",
+  "from": "From",
+  "to": "To",
+  "search": "Search",
+  "number": "Number",
+  "customer": "Customer",
+  "total": "Total",
+  "deposits_paid": "Deposits paid",
+  "unpaid": "Unpaid",
+  "empty": "No orders match these filters.",
+  "loading": "Loading order…",
+  "previous": "Previous",
+  "next": "Next",
+  "pageOf": "Page {page} of {pages}",
+  "back": "Back to orders",
+  "states": {
+    "open": "Open",
+    "partially_delivered": "Partly delivered",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "header": {
+    "phone": "Phone",
+    "deliveryAddress": "Delivery address",
+    "notes": "Notes",
+    "quotation": "Quotation",
+    "cancelledReason": "Cancellation reason",
+    "createdAt": "Created",
+    "none": "—"
+  },
+  "lines": {
+    "title": "Lines",
+    "product": "Product",
+    "customNotes": "Notes",
+    "quantity": "Quantity",
+    "unitPrice": "Unit price",
+    "discount": "Discount",
+    "tax": "Tax",
+    "lineTotal": "Line total",
+    "fulfilment": "Fulfilment",
+    "progress": "Progress",
+    "delivered": "{delivered} of {quantity} delivered",
+    "remaining": "{remaining} remaining"
+  },
+  "fulfilment": {
+    "from_stock": "From stock",
+    "to_order": "To order",
+    "reserved": "{reserved} of {quantity} reserved",
+    "serials": "Serials: {serials}",
+    "purchaseOrder": "Purchase order {number} ({status})",
+    "poReceived": "{received} of {ordered} received",
+    "noPurchaseOrder": "To order, no purchase order"
+  },
+  "totals": {
+    "subtotal": "Subtotal",
+    "discount_total": "Discount",
+    "tax_total": "Tax",
+    "total": "Total"
+  },
+  "payments": {
+    "title": "Payments",
+    "number": "Number",
+    "direction": "Type",
+    "method": "Method",
+    "amount": "Amount",
+    "reference": "Reference",
+    "paidAt": "Date",
+    "none": "No deposits or refunds yet.",
+    "directions": {
+      "in": "Deposit",
+      "out": "Refund"
+    },
+    "methods": {
+      "cash": "Cash",
+      "bank_transfer": "Bank transfer",
+      "store_credit": "Store credit"
+    }
+  },
+  "balances": {
+    "title": "Balances",
+    "deposits_paid": "Deposits paid",
+    "delivered_value": "Delivered value",
+    "unpaid": "Unpaid"
+  },
+  "actions": {
+    "title": "Order actions",
+    "deposit": "Add deposit",
+    "reserve": "Reserve now",
+    "link": "Link purchase order",
+    "createPo": "Create purchase order",
+    "line": "Line {no}: {name}",
+    "close": "Close",
+    "linkReturnMissing": "The new purchase order has no line for this product, so it wasn't linked. Use \"Link purchase order\".",
+    "cancel": "Cancel order",
+    "print": "Print"
+  },
+  "new": {
+    "link": "New order",
+    "title": "New order",
+    "choose": "Choose…",
+    "addProduct": "Add a product",
+    "noLines": "Add at least one product.",
+    "remove": "Remove",
+    "submit": "Create order"
+  },
+  "picker": {
+    "chosen": "Chosen: {name}",
+    "failed": "Could not search the products."
+  },
+  "serials": {
+    "title": "Serials: {picked} of {quantity} picked",
+    "chooseBranch": "Choose a branch to see its units.",
+    "failed": "Could not load the units.",
+    "none": "No units of this product are in stock at this branch."
+  },
+  "convert": {
+    "button": "Create order",
+    "title": "Create an order from this quote",
+    "help": "The prices stay the quote's. Choose how each line is filled.",
+    "line": "Line {no}: {description}",
+    "product": "Product for this line",
+    "openOrder": "Order {number}",
+    "submit": "Confirm order",
+    "close": "Close",
+    "loading": "Loading the products…",
+    "loadFailed": "Could not load the quote's products."
+  },
+  "errors": {
+    "fallback": "Could not complete the order request. Check the fields and try again.",
+    "ORDER_NOT_FOUND": "This order was not found.",
+    "ORDER_NOT_OPEN": "This order is no longer open.",
+    "ORDER_HAS_DELIVERIES": "This order has deliveries, so it can't be cancelled.",
+    "QUOTATION_NOT_FOUND": "This quotation was not found.",
+    "QUOTATION_NOT_ACCEPTED": "Only an accepted quotation can become an order.",
+    "QUOTATION_ALREADY_ORDERED": "This quotation already has an order.",
+    "LINE_NOT_TO_ORDER": "Only a \"to order\" line can be linked to a purchase order.",
+    "PO_LINE_OVERCOMMITTED": "That purchase order line has no quantity left for this order.",
+    "PO_NOT_OPEN": "That purchase order is no longer open.",
+    "PO_LINE_PRODUCT_MISMATCH": "That purchase order line is for a different product.",
+    "PURCHASE_ORDER_NOT_FOUND": "That purchase order was not found.",
+    "DEPOSIT_EXCEEDS_BALANCE": "The deposit is more than the order's unpaid balance (at most {max}).",
+    "DEPOSIT_EXCEEDS_BALANCE_NO_MAX": "The deposit is more than the order's unpaid balance.",
+    "REFUND_MUST_EQUAL_DEPOSITS": "The refund must equal the deposits paid ({deposits}); it is {refund}.",
+    "REFUND_MUST_EQUAL_DEPOSITS_NO_AMOUNTS": "The refund must equal the deposits paid.",
+    "REFUND_METHOD_NOT_ALLOWED": "Store-credit deposits go back only as store credit: at most {max} can be refunded in cash or by bank transfer, not {refund}.",
+    "REFUND_METHOD_NOT_ALLOWED_NO_AMOUNTS": "Store-credit deposits go back only as store credit; refund the rest as store credit.",
+    "ORDER_LINES_INVALID": "Check the order lines: each needs a product, a quantity and a valid price.",
+    "QUOTE_LINE_NEEDS_PRODUCT": "Choose a product for every custom quotation line.",
+    "UNITS_REQUIRED": "Pick exactly one unit per item for each serialized line from stock.",
+    "NOT_ENOUGH_STOCK_TO_RESERVE": "There isn't enough stock at this branch to hold these items.",
+    "UNIT_NOT_AVAILABLE": "One of the chosen units is not available.",
+    "UNIT_NOT_AVAILABLE_TO_RESERVE": "One of the chosen units can't be held: it isn't in stock at this branch.",
+    "OUT_OF_STOCK": "Not enough stock.",
+    "PRICE_OVERRIDE_REQUIRED": "You don't have permission to change this price.",
+    "DISCOUNT_ABOVE_CAP": "This discount is above your limit.",
+    "REASON_REQUIRED": "Enter a reason.",
+    "SHIFT_REQUIRED": "Open a shift on this computer to take or refund money.",
+    "DEVICE_REVOKED": "This computer is no longer a paired POS device.",
+    "INSUFFICIENT_FUNDS": "Not enough cash in the drawer for this refund.",
+    "INSUFFICIENT_STORE_CREDIT": "The customer doesn't have enough store credit.",
+    "VALIDATION_FAILED": "Check the values and try again.",
+    "SHIFT_CLOSED": "This shift is closed. Open a new shift.",
+    "BRANCH_DENIED": "You can't use this branch."
+  },
+  "deposit": {
+    "title": "Add deposit",
+    "description": "Take a deposit on this order: any amount up to the unpaid balance.",
+    "total": "Unpaid balance"
+  },
+  "reserve": {
+    "title": "Reserve {name} now",
+    "description": "Hold {quantity} from the stock at {branch} for this line.",
+    "submit": "Reserve"
+  },
+  "link": {
+    "title": "Link {name} to a purchase order",
+    "description": "Open purchase orders of this branch with a line for this product.",
+    "choose": "Purchase order line",
+    "option": "{number} · {supplier} · {status} · {quantity} ordered, {remaining} to come",
+    "loading": "Loading the purchase orders…",
+    "failed": "Could not load the purchase orders.",
+    "none": "No open purchase order has this product.",
+    "submit": "Link"
+  },
+  "cancel": {
+    "title": "Cancel order",
+    "description": "Give the customer their deposits back. The refund lines must add up exactly to the deposits paid.",
+    "noDeposits": "No deposits were paid on this order, so there is nothing to refund.",
+    "reason": "Reason",
+    "reasonLength": "Enter a reason of 3 to 500 characters.",
+    "deposits": "Deposits to refund",
+    "refunded": "Refund lines total",
+    "mismatch": "The refund lines total {refund}; they must equal the deposits paid ({deposits}).",
+    "methodRule": "{credit} of the deposits was paid with store credit and goes back only as store credit. Cash and bank transfer refunds: up to {max}.",
+    "methodExceeded": "The cash and bank transfer lines total {refund}; at most {max} can go back in cash or by bank transfer.",
+    "line": "Refund line {no}",
+    "method": "Method, line {no}",
+    "amount": "Amount, line {no}",
+    "account": "Bank account, line {no}",
+    "reference": "Transfer reference, line {no}",
+    "remove": "Remove",
+    "removeLine": "Remove refund line {no}",
+    "addLine": "Add a refund line",
+    "submit": "Confirm cancellation"
+  },
+  "print": {
+    "title": "Order confirmation",
+    "print": "Print",
+    "loading": "Loading order…",
+    "number": "Order number",
+    "date": "Date",
+    "customer": "Customer",
+    "phone": "Phone",
+    "deliveryAddress": "Delivery address",
+    "notes": "Notes",
+    "depositsPaid": "Deposits paid",
+    "balanceDue": "Balance due at delivery"
+  }
+}

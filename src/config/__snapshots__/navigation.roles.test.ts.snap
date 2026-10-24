@@ -5,7 +5,6 @@ exports[`menu by role (TEST-2) > ACCOUNTANT sees these pages 1`] = `
   "/dashboard",
   "/sales/history",
   "/sales/returns",
-  "/sales/orders",
   "/sales/invoices",
   "/inventory/stock",
   "/inventory/movements",

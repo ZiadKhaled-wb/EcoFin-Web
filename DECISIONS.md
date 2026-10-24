@@ -54,3 +54,10 @@ EC-147: POS writes recheck the shift device on every call; only force_close_shif
 - `/contracts/:id` also opens for `legal.view` (a lawyer reads the contract of their case; the server already allowed it). The contract page then shows the sale number without a link (no sales key), no link to the customer (no customers menu) and no printing.
 - The claim is checked on the client against what the contract still owes (`compareMoney`), only when it was changed; a typed "10500" is padded before it is compared. The server's answer wins (`LEGAL_CLAIM_TOO_HIGH`).
 - Contracts 0.63.0 is the published package (tag `contracts-v0.63.0` on the API merge of PR 113).
+
+### S10 sales orders (EC-77)
+- Deposits carry no VAT and no ETA receipt; VAT and the receipt come with the delivery sale (S11). To confirm with the client's tax advisor. Server details: EcoFin-API `DECISIONS.md` (D93, contracts 0.64.0).
+- A reserved serial can't be moved out until its reservation is released (decision 5).
+- Cancel refunds deposits in full; keeping a fee and installment contracts on orders are later stories.
+- Refund methods on cancel: a store-credit deposit goes back only as store credit (server: `REFUND_METHOD_NOT_ALLOWED`, D93). The cancel dialog opens with cash for the cash/bank deposits and store credit for the rest, says how much may go back in cash or by bank, and blocks a split above it.
+- Orders are online-only: the offline POS hides every order action. "Create order" on a quote shows only when the customer's orders (first 100) include none for that quote; "Create purchase order" opens U05's form with a prefill and links the new PO line on return.

@@ -1,0 +1,160 @@
+.sales-order-page {
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+.sales-order-page h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.sales-order-page h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-block-end: 0.5rem;
+}
+.sales-order-filters,
+.sales-order-heading,
+.sales-order-pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: end;
+}
+.sales-order-heading,
+.sales-order-pager {
+  align-items: center;
+}
+.sales-order-page label {
+  display: grid;
+  gap: 0.25rem;
+}
+.sales-order-page input,
+.sales-order-page select {
+  border: 1px solid #999;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #111);
+}
+.sales-order-page button,
+.sales-order-page a {
+  padding: 0.5rem;
+  text-decoration: underline;
+}
+.sales-order-page button:disabled {
+  opacity: 0.5;
+}
+.sales-order-page table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.sales-order-page th,
+.sales-order-page td {
+  padding: 0.5rem;
+  border-block-end: 1px solid #aaa;
+  text-align: start;
+  vertical-align: top;
+}
+.sales-order-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.5rem 1.5rem;
+}
+.sales-order-facts > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-block-end: 1px solid #ddd;
+  padding-block: 0.25rem;
+}
+.sales-order-facts dt {
+  font-weight: 600;
+}
+.sales-order-muted {
+  display: block;
+  opacity: 0.75;
+  font-size: 0.875rem;
+}
+/* The actions area of the order detail (deposit, reserve, link a PO, cancel, print). */
+.sales-order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.sales-order-actions:empty {
+  display: none;
+}
+/* New order and quote conversion: one bordered block per line, the pickers inside it. */
+.sales-order-form,
+.sales-order-line,
+.sales-order-serials {
+  display: grid;
+  gap: 0.75rem;
+}
+.sales-order-line {
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  align-items: end;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+}
+.sales-order-line > .sales-order-serials,
+.sales-order-line > .sales-order-picker {
+  grid-column: 1 / -1;
+}
+.sales-order-line legend,
+.sales-order-serials legend {
+  font-weight: 600;
+  padding-inline: 0.25rem;
+}
+.sales-order-page textarea {
+  border: 1px solid #999;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+}
+.sales-order-picker-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-inline-start: 0;
+  list-style: none;
+}
+/* S10 actions: the order-level bar, then one row of buttons per "to order" line. */
+.sales-order-action-bar,
+.sales-order-line-actions > li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.sales-order-line-actions {
+  display: grid;
+  gap: 0.5rem;
+  inline-size: 100%;
+  padding-inline-start: 0;
+  list-style: none;
+}
+.sales-order-choice {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+/* S10 cancel dialog: the reason, then one row per refund line. */
+.sales-order-cancel,
+.sales-order-refunds {
+  display: grid;
+  gap: 0.75rem;
+}
+.sales-order-refunds {
+  padding-inline-start: 0;
+  list-style: none;
+}
+.sales-order-refunds > li {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+  align-items: end;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+}
