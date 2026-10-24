@@ -118,8 +118,17 @@ function quoteOf(body: SaleQuoteBody): SaleQuote {
   } as SaleQuote;
 }
 
-/** The server's preview: 20 % profit for 12 months, the customer passes when `ok`. */
-function previewOf(body: InstallmentPreviewBody, ok = true): InstallmentPreview {
+/**
+ * The server's preview: 20 % profit for 12 months. The credit check is `ok` (within the limit),
+ * `blocked` (over it) or `approved` (over it, but an approved exception covers it: the API answers
+ * allowed + approved_approval_id, see get_customer_credit_check).
+ */
+function previewOf(
+  body: InstallmentPreviewBody,
+  credit: 'ok' | 'blocked' | 'approved' = 'ok',
+): InstallmentPreview {
+  const ok = credit === 'ok';
+  const covered = credit === 'approved';
   const financed = Number(body.cash_price) - Number(body.down_payment);
   const profit = (financed * 0.2).toFixed(2);
   const total = (financed * 1.2).toFixed(2);
@@ -155,16 +164,16 @@ function previewOf(body: InstallmentPreviewBody, ok = true): InstallmentPreview 
     },
     customer: {
       credit: {
-        allowed: ok,
+        allowed: ok || covered,
         reasons: ok ? [] : ['limit'],
-        needs_approval: !ok,
+        needs_approval: !ok && !covered,
         limit: '100000.00',
         exposure: '0.00',
         available: ok ? '100000.00' : '0.00',
         score: 80,
         min_score: 0,
         pending_approval_id: null,
-        approved_approval_id: ok ? null : APPROVAL,
+        approved_approval_id: covered ? APPROVAL : null,
       },
       guarantors: {
         policy_id: POLICY,
@@ -418,7 +427,9 @@ describe('N02 installment sale in the POS', () => {
     'uses an approved credit exception and sells with no down payment step at 0.00',
     { timeout: 20_000 },
     async () => {
-      preview.mockImplementation(async (body: InstallmentPreviewBody) => previewOf(body, false));
+      preview.mockImplementation(async (body: InstallmentPreviewBody) =>
+        previewOf(body, 'approved'),
+      );
       const user = await open();
       await user.click(await screen.findByRole('button', { name: 'Installments' }));
       await waitFor(() => expect(termsButton()).toBeEnabled());
@@ -439,6 +450,27 @@ describe('N02 installment sale in the POS', () => {
       expect(body).toMatchObject({ credit_approval_id: APPROVAL, terms: { down_payment: '0.00' } });
       expect(body).not.toHaveProperty('payments');
       expect(screen.queryByRole('dialog', { name: 'Down payment' })).not.toBeInTheDocument();
+    },
+  );
+
+  it(
+    'a sale within the credit limit sends no credit_approval_id',
+    { timeout: 20_000 },
+    async () => {
+      const user = await open();
+      await user.click(await screen.findByRole('button', { name: 'Installments' }));
+      await waitFor(() => expect(termsButton()).toBeEnabled());
+      await user.click(termsButton());
+      const dialog = await screen.findByRole('dialog', { name: 'Installment sale' });
+      expect(await within(dialog).findByText('Credit: OK')).toBeInTheDocument();
+      const next = within(dialog).getByRole('button', { name: 'Next: down payment' });
+      await waitFor(() => expect(next).toBeEnabled());
+      await user.click(next);
+      const pay = await screen.findByRole('dialog', { name: 'Down payment' });
+      await user.click(within(pay).getByRole('button', { name: 'Pay' }));
+
+      await waitFor(() => expect(sell).toHaveBeenCalledTimes(1));
+      expect(sell.mock.calls[0]![0]).not.toHaveProperty('credit_approval_id');
     },
   );
 });

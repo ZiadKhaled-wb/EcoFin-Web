@@ -154,8 +154,9 @@ export default function InstallmentDialog({
     setPicked((list) => (on ? [...list, id].slice(0, 3) : list.filter((g) => g !== id)));
 
   const credit = checks?.credit;
-  const approvalId =
-    credit && !credit.allowed ? (credit.approved_approval_id ?? undefined) : undefined;
+  // The server answers allowed + approved_approval_id when an approved exception covers the amount:
+  // the sale must carry that id, or the server raises CREDIT_LIMIT_EXCEEDED (EC-148).
+  const approvalId = credit?.approved_approval_id ?? undefined;
   const canContinue = !!server?.can_confirm && !busy && input !== null;
 
   function next() {
@@ -299,11 +300,11 @@ export default function InstallmentDialog({
           <section className="space-y-3 rounded-control border border-line p-3">
             <h3 className="type-label">{t('installments.checks.title')}</h3>
             <div className="flex flex-wrap items-center gap-2" data-testid="check-credit">
-              <Badge tone={checks.credit.allowed ? 'success' : approvalId ? 'warning' : 'danger'}>
-                {checks.credit.allowed
-                  ? t('installments.checks.creditOk')
-                  : approvalId
-                    ? t('installments.checks.creditApproved')
+              <Badge tone={approvalId ? 'warning' : checks.credit.allowed ? 'success' : 'danger'}>
+                {approvalId
+                  ? t('installments.checks.creditApproved')
+                  : checks.credit.allowed
+                    ? t('installments.checks.creditOk')
                     : checks.credit.pending_approval_id
                       ? t('installments.checks.creditPending')
                       : t('installments.checks.creditNo')}
