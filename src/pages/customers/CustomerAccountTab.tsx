@@ -29,6 +29,7 @@ import { salesHistoryApi } from '@/services/salesHistoryApi';
 import { useAuthStore } from '@/store/authStore';
 import { t, type TranslationKey } from '@/i18n';
 import ContractScheduleDrawer from './ContractScheduleDrawer';
+import { LegalFlagBadge } from '../legal/legalShared';
 import CustomerGuarantorsCard from './CustomerGuarantorsCard';
 
 const CONTRACT_TONE: Record<CustomerContractSummary['status'], BadgeTone> = {
@@ -254,9 +255,13 @@ function ContractsCard({
                   {c.next_due_date ? formatBusinessDate(c.next_due_date) : '—'}
                 </td>
                 <td className={td}>
-                  <Badge tone={CONTRACT_TONE[c.status]}>
-                    {t(`customerAccount.contracts.status.${c.status}`)}
-                  </Badge>
+                  <div className="flex flex-wrap items-center gap-1">
+                    <Badge tone={CONTRACT_TONE[c.status]}>
+                      {t(`customerAccount.contracts.status.${c.status}`)}
+                    </Badge>
+                    {/* N09: the contract's open legal case. */}
+                    <LegalFlagBadge legalCase={c.legal_case} />
+                  </div>
                 </td>
                 <td className={td}>
                   <Button size="sm" variant="ghost" onClick={() => onOpen(c)}>

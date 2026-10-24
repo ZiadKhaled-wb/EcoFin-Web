@@ -7,6 +7,7 @@ import WarrantyClaimPage from '@/pages/sales/WarrantyClaimPage';
 import WarrantyClaimPrintPage from '@/pages/sales/WarrantyClaimPrintPage';
 import SalesHistoryPage from '@/pages/sales/SalesHistoryPage';
 import SalesReportPage from '@/pages/reports/SalesReportPage';
+import ReceivablesReportPage from '@/pages/reports/ReceivablesReportPage';
 import ReturnPage from '@/pages/sales/ReturnPage';
 import ReturnsPage from '@/pages/sales/ReturnsPage';
 import ReturnDetailPage from '@/pages/sales/ReturnDetailPage';
@@ -16,6 +17,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import GuestOnly from '@/components/guards/GuestOnly';
 import RequireAuth from '@/components/guards/RequireAuth';
+import HomeGate from '@/components/guards/HomeGate';
 import RequireNavItem from '@/components/guards/RequireNavItem';
 import RequirePermission from '@/components/guards/RequirePermission';
 import RequirePasswordChanged from '@/components/guards/RequirePasswordChanged';
@@ -26,8 +28,7 @@ import ResetPasswordPage from '@/pages/auth/ResetPasswordPage';
 import ChangePasswordPage from '@/pages/auth/ChangePasswordPage';
 import ShopPickerPage from '@/pages/auth/ShopPickerPage';
 import AppShell from '@/components/layout/AppShell';
-import { navLeaves } from '@/config/navigation';
-import DashboardPage from '@/pages/DashboardPage';
+import { navLeaves, type NavItem } from '@/config/navigation';
 import ModulePlaceholderPage from '@/pages/ModulePlaceholderPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import RequireSuperAdmin from '@/components/guards/RequireSuperAdmin';
@@ -79,6 +80,8 @@ import CollectionsPage from '@/pages/collections/CollectionsPage';
 import CollectPage from '@/pages/collections/CollectPage';
 import CollectionReceiptPage from '@/pages/collections/CollectionReceiptPage';
 import OverduePage from '@/pages/installments/OverduePage';
+import LegalCasesPage from '@/pages/legal/LegalCasesPage';
+import LegalCasePage from '@/pages/legal/LegalCasePage';
 import ContractChangesPage from '@/pages/installments/ContractChangesPage';
 import FieldHomePage from '@/pages/collections/FieldHomePage';
 import WalletsPage from '@/pages/installments/WalletsPage';
@@ -143,6 +146,7 @@ const REAL_ROUTES = new Set([
   '/customers/surveys',
   '/collections',
   '/installments/overdue',
+  '/legal',
   '/installments/changes',
   '/field',
   '/installments/wallets',
@@ -166,6 +170,12 @@ const SUPPLIERS_ITEM = navLeaves().find((i) => i.id === 'suppliers')!;
 /** R01: the customers pages follow the menu item's rule; the server checks the customer read keys
  * and masks national IDs without customer.view_pii on every call (D62). */
 const CUSTOMERS_ITEM = navLeaves().find((i) => i.id === 'customers')!;
+/** L01: a lawyer reads the contract of their case (the server allows legal.view), so the contract page also opens for legal.view; the menu keeps no Customers for them. */
+const CONTRACT_ITEM: NavItem = {
+  ...CUSTOMERS_ITEM,
+  id: 'contract',
+  permissionsAny: ['legal.view'],
+};
 /** R05: the survey pages follow their menu item (any of the three survey keys); the server checks
  * every call and gives a collector only the surveys assigned to them (D75). */
 const SURVEYS_ITEM = navLeaves().find((i) => i.id === 'surveys')!;
@@ -174,6 +184,8 @@ const SURVEYS_ITEM = navLeaves().find((i) => i.id === 'surveys')!;
 const COLLECTIONS_ITEM = navLeaves().find((i) => i.id === 'collections')!;
 /** N04: the overdue page follows its menu item (overdue.view); the server checks every call (D79). */
 const OVERDUE_ITEM = navLeaves().find((i) => i.id === 'overdue')!;
+/** L01: the legal pages follow their menu item (legal.view); the server checks the module, the permission and which cases a lawyer may see on every call (D92). */
+const LEGAL_ITEM = navLeaves().find((i) => i.id === 'legal')!;
 const CONTRACT_CHANGES_ITEM = navLeaves().find((i) => i.id === 'contract-changes')!;
 /** N06: the collector's home and the wallets pages follow their menu items; the server checks every call (D81). */
 const FIELD_ITEM = navLeaves().find((i) => i.id === 'field')!;
@@ -201,6 +213,7 @@ const POS_ITEM = navLeaves().find((i) => i.id === 'pos')!;
 const WARRANTY_ITEM = navLeaves().find((i) => i.id === 'sales-warranty')!;
 const HISTORY_ITEM = navLeaves().find((i) => i.id === 'sales-history')!;
 const SALES_REPORT_ITEM = navLeaves().find((i) => i.id === 'sales-report')!;
+const RECEIVABLES_REPORT_ITEM = navLeaves().find((i) => i.id === 'receivables-report')!;
 const RETURNS_ITEM = navLeaves().find((i) => i.id === 'sales-returns')!;
 
 export default function App() {
@@ -239,7 +252,7 @@ export default function App() {
 
               <Route element={<RequirePasswordChanged />}>
                 <Route element={<AppShell />}>
-                  <Route path="/dashboard" element={<DashboardPage />} />
+                  <Route path="/dashboard" element={<HomeGate />} />
                   <Route path="/onboarding" element={<OnboardingWizardPage />} />
                   <Route element={<RequirePermission permission="employee.manage" />}>
                     <Route path="/settings/employees" element={<EmployeesPage />} />
@@ -390,6 +403,22 @@ export default function App() {
                     }
                   />
                   <Route
+                    path="/legal"
+                    element={
+                      <RequireNavItem item={LEGAL_ITEM}>
+                        <LegalCasesPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
+                    path="/legal/cases/:id"
+                    element={
+                      <RequireNavItem item={LEGAL_ITEM}>
+                        <LegalCasePage />
+                      </RequireNavItem>
+                    }
+                  />
+                  <Route
                     path="/installments/changes"
                     element={
                       <RequireNavItem item={CONTRACT_CHANGES_ITEM}>
@@ -432,7 +461,7 @@ export default function App() {
                   <Route
                     path="/contracts/:id"
                     element={
-                      <RequireNavItem item={CUSTOMERS_ITEM}>
+                      <RequireNavItem item={CONTRACT_ITEM}>
                         <ContractPage />
                       </RequireNavItem>
                     }
@@ -614,6 +643,15 @@ export default function App() {
                     element={
                       <RequireNavItem item={SALES_REPORT_ITEM}>
                         <SalesReportPage />
+                      </RequireNavItem>
+                    }
+                  />
+                  {/* D03 (D90): receivables aging; the server checks report.financial. */}
+                  <Route
+                    path="/reports/receivables"
+                    element={
+                      <RequireNavItem item={RECEIVABLES_REPORT_ITEM}>
+                        <ReceivablesReportPage />
                       </RequireNavItem>
                     }
                   />

@@ -79,7 +79,8 @@ describe('N02 contract page', () => {
   beforeEach(() => {
     signIn();
     vi.spyOn(meApi, 'permissions').mockResolvedValue(
-      permissionsFixture(['customer.create'] as PermissionKey[]),
+      // L01: the sale link needs a sales permission (a lawyer reads the contract without one).
+      permissionsFixture(['customer.create', 'sale.create'] as PermissionKey[]),
     );
   });
   afterEach(() => {

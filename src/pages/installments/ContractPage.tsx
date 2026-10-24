@@ -13,11 +13,14 @@ import LoadingState from '@/components/ui/LoadingState';
 import { ApiError } from '@/lib/api';
 import { formatBusinessDate, formatDateTime, formatMoney, formatNumber } from '@/lib/format';
 import { installmentKeys, installmentsApi } from '@/services/installmentsApi';
+import { OpenLegalCaseButton } from '@/features/legal/OpenLegalCaseDialog';
 import { useCan } from '@/features/me/useCan';
+import { useIsLegalOnly, useNavAccess } from '@/features/me/useNavAccess';
 import { useAuthStore } from '@/store/authStore';
 import PrintDocumentButtons from '@/features/contractDocuments/PrintDocumentButtons';
 import { MigratedBadge } from '@/features/migration/MigratedNote';
 import { t } from '@/i18n';
+import { LegalFlagBadge } from '../legal/legalShared';
 import { relationLabel } from '../customers/guarantorShared';
 import { RescheduleDialog, SettleDialog, WriteOffDialog } from './ContractChangeDialogs';
 import ContractHistory from './ContractHistory';
@@ -63,6 +66,13 @@ export default function ContractPage() {
   const canSettle = useCan('contract.settle_early');
   const canReschedule = useCan('schedule.change');
   const isOwner = useAuthStore((s) => s.user?.role === 'OWNER');
+  // L01: a lawyer reads the contract of their case but has no sales, customers or printing; the link to the
+  // sale shows only to whoever may open sales.
+  const legalOnly = useIsLegalOnly();
+  const canSeeCustomer = useNavAccess('customers');
+  const canSell = useCan('sale.create');
+  const canReport = useCan('report.view');
+  const canSeeSale = canSell || canReport;
   const [changing, setChanging] = useState<'settle' | 'reschedule' | 'writeOff' | null>(null);
   const query = useQuery({
     queryKey: installmentKeys.contract(orgId, id),
@@ -117,11 +127,17 @@ export default function ContractPage() {
                 {t('contractChanges.actions.writeOff')}
               </Button>
             )}
+            {/* L01: the owner turns a defaulted contract into a legal case (no case open yet). */}
+            {isOwner && open && Number(c.balance.overdue) > 0 && !c.legal_case && (
+              <OpenLegalCaseButton contractId={c.id} contractNumber={c.number} size="md" />
+            )}
             {/* N07 (D82): the printed contract and promissory notes. */}
-            <PrintDocumentButtons contractId={c.id} notes={open} />
-            <Link to={`/customers/${c.customer.id}`} className="btn btn-ghost">
-              {t('installments.contract.toCustomer')}
-            </Link>
+            {!legalOnly && <PrintDocumentButtons contractId={c.id} notes={open} />}
+            {canSeeCustomer && (
+              <Link to={`/customers/${c.customer.id}`} className="btn btn-ghost">
+                {t('installments.contract.toCustomer')}
+              </Link>
+            )}
           </div>
         }
       />
@@ -134,14 +150,22 @@ export default function ContractPage() {
         <Card>
           <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Fact label={t('installments.contract.status')}>
-              <Badge tone={c.status === 'active' ? 'brand' : 'neutral'}>
-                {t(`customerAccount.contracts.status.${c.status}`)}
-              </Badge>
+              <div className="flex flex-wrap items-center gap-1">
+                <Badge tone={c.status === 'active' ? 'brand' : 'neutral'}>
+                  {t(`customerAccount.contracts.status.${c.status}`)}
+                </Badge>
+                {/* N09: the open legal case, linked to the case for whoever may read it. */}
+                <LegalFlagBadge legalCase={c.legal_case} />
+              </div>
             </Fact>
             <Fact label={t('installments.contract.customer')}>
-              <Link to={`/customers/${c.customer.id}`} className="text-brand-700 hover:underline">
+              {canSeeCustomer ? (
+                <Link to={`/customers/${c.customer.id}`} className="text-brand-700 hover:underline">
+                  <bdi>{c.customer.name}</bdi>
+                </Link>
+              ) : (
                 <bdi>{c.customer.name}</bdi>
-              </Link>
+              )}
               {c.customer.phone && (
                 <span className="type-caption block" dir="ltr">
                   {c.customer.phone}
@@ -151,13 +175,18 @@ export default function ContractPage() {
             <Fact label={t('installments.contract.sale')}>
               {c.migration_source && <MigratedBadge source={c.migration_source} />}
               {!c.migration_source && c.sale_id ? (
-                <Link
-                  to={`/sales/${c.sale_id}`}
-                  className="text-brand-700 hover:underline"
-                  dir="ltr"
-                >
-                  {c.sale_number}
-                </Link>
+                canSeeSale ? (
+                  <Link
+                    to={`/sales/${c.sale_id}`}
+                    className="text-brand-700 hover:underline"
+                    dir="ltr"
+                  >
+                    {c.sale_number}
+                  </Link>
+                ) : (
+                  // L01: the number is printed on the contract, but there is no link without a sales permission.
+                  <span dir="ltr">{c.sale_number}</span>
+                )
               ) : (
                 '—'
               )}

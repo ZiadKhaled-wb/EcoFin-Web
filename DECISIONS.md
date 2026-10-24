@@ -48,8 +48,15 @@ EC-147: POS writes recheck the shift device on every call; only force_close_shif
 ### S08 offline POS (EC-75)
 - Decisions D1, D8, D10 and D11 of S08 are in EcoFin-API `DECISIONS.md` (D90). On the Web: every sale goes through the IndexedDB outbox (`src/offline/`); offline, the POS is cash-only on the lease's snapshot, opened with the cashier's PIN, and the app shell is served by the service worker of the production build.
 
+### L01 + N09 legal module pages (EC-108, EC-88)
+- The rules and the numbers are in EcoFin-API `DECISIONS.md` (D92, contracts 0.63.0). On the Web: Legal in the menu (`legal.view`, hidden when the plan has no `legal` module, known from the subscription status), the cases list `/legal` (open / closed / all tabs, search, lawyer filter for the owner, a hearing within 7 days highlighted), the case page `/legal/cases/:id` (details, the status moves the server allows, hearings, append-only notes, papers through F14 with purpose `legal_document`, the money since the case was opened; no collect button), "Open legal case" (owner only) on the legal referrals tab and the contract page, and the N09 badge "Legal: {status}" on the contract page, the customer account's contract rows and the overdue list. A referral that became a case shows "case opened" and a link to the case instead of "dismiss".
+- **One rule for the lawyer** (`isLegalOnly` in `src/config/navigation.ts`): a user whose keys are all in {legal.view, legal.manage, customer.view_pii, overdue.view} has no dashboard in the menu and lands on `/legal`. `/dashboard` is `HomeGate`, which sends such a user to `homePath`; the login still goes to `/dashboard` (the keys are only known after the permissions load).
+- `/contracts/:id` also opens for `legal.view` (a lawyer reads the contract of their case; the server already allowed it). The contract page then shows the sale number without a link (no sales key), no link to the customer (no customers menu) and no printing.
+- The claim is checked on the client against what the contract still owes (`compareMoney`), only when it was changed; a typed "10500" is padded before it is compared. The server's answer wins (`LEGAL_CLAIM_TOO_HIGH`).
+- Contracts 0.63.0 is the published package (tag `contracts-v0.63.0` on the API merge of PR 113).
+
 ### S10 sales orders (EC-77)
-- Deposits carry no VAT and no ETA receipt; VAT and the receipt come with the delivery sale (S11). To confirm with the client's tax advisor. Server details: EcoFin-API `DECISIONS.md` (D91).
+- Deposits carry no VAT and no ETA receipt; VAT and the receipt come with the delivery sale (S11). To confirm with the client's tax advisor. Server details: EcoFin-API `DECISIONS.md` (D93, contracts 0.64.0).
 - A reserved serial can't be moved out until its reservation is released (decision 5).
 - Cancel refunds deposits in full; keeping a fee and installment contracts on orders are later stories.
 - Orders are online-only: the offline POS hides every order action. "Create order" on a quote shows only when the customer's orders (first 100) include none for that quote; "Create purchase order" opens U05's form with a prefill and links the new PO line on return.
