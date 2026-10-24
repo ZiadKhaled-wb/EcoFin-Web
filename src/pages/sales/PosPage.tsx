@@ -36,7 +36,7 @@ import CustomerPicker from './pos/CustomerPicker';
 import { HeldCartsDialog, HoldDialog, ShortcutsDialog } from './pos/HeldCarts';
 import ProductPane from './pos/ProductPane';
 import UnitPicker from './pos/UnitPicker';
-import { posScope } from './pos/posStorage';
+import { posScope, type InstallmentDraft } from './pos/posStorage';
 import { useCartApproval } from './pos/useCartApproval';
 import { useHeldCarts } from './pos/useHeldCarts';
 import { POS_SHORTCUTS, inputIn, useEvent, usePosShortcuts } from './pos/usePosShortcuts';
@@ -119,6 +119,8 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
   const installments = canInstall && mode === 'installments';
   const [plan, setPlan] = useState<InstallmentPlan | null>(null);
   const [planError, setPlanError] = useState('');
+  /** EC-151: the terms typed so far (kept by Hold and by Back to the cart). */
+  const [draft, setDraft] = useState<InstallmentDraft | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const discountRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLElement>(null);
@@ -263,8 +265,12 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
     }
   }
   function hold(note: string) {
-    if (held.hold(cart.content, note)) cart.reset();
-    else setError(t('sales.pos.hold.full'));
+    const terms = installments && draft ? { installment: draft } : {};
+    if (held.hold({ ...cart.content, ...terms }, note)) {
+      cart.reset();
+      setPlan(null);
+      setDraft(null);
+    } else setError(t('sales.pos.hold.full'));
     setDialog(null);
   }
   function resume(id: string) {
@@ -278,6 +284,10 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
         saleDiscount: taken.saleDiscount,
         reason: taken.reason,
       });
+      // EC-151: the terms come back with the cart; the dialog checks them against today's policy.
+      setPlan(null);
+      setDraft(taken.installment ?? null);
+      if (taken.installment && canInstall) setMode('installments');
     }
     setDialog(null);
   }
@@ -303,7 +313,12 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
 
   if (revoked) return <Notice tone="error">{t('cash.shifts.revoked')}</Notice>;
   if (cart.done) {
-    return <DoneCard sale={cart.done} contract={cart.doneContract} onNew={cart.reset} />;
+    const startNew = () => {
+      cart.reset();
+      setPlan(null);
+      setDraft(null);
+    };
+    return <DoneCard sale={cart.done} contract={cart.doneContract} onNew={startNew} />;
   }
 
   const close = () => setDialog(null);
@@ -353,7 +368,8 @@ function Sell({ shift, scope }: { shift: Shift; scope: string }) {
           cashPrice={quote.total}
           customer={{ id: cart.customer.id, name: cart.customer.name }}
           policy={policy}
-          initial={plan}
+          initial={draft}
+          onChange={setDraft}
           error={planError}
           busy={cart.busy}
           onContinue={agree}

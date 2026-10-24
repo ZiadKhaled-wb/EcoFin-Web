@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import {
   InstallmentPreviewBody,
@@ -32,18 +32,14 @@ import AddGuarantorDialog from '../../customers/AddGuarantorDialog';
 import CreditExceptionDialog from '../../customers/CreditExceptionDialog';
 import { relationLabel } from '../../customers/guarantorShared';
 import { installmentError, shopToday, violationText } from '../../installments/installmentShared';
+import type { InstallmentDraft } from './posStorage';
 
 const MONEY = /^\d{1,16}(\.\d{1,2})?$/;
 const PREVIEW_DELAY_MS = 300;
 
 /** What the cashier agreed on, to be sold: the terms of the preview and the customer's checks. */
-export interface InstallmentPlan {
-  down_payment: string;
-  installments_count: number;
-  frequency: InstallmentFrequency;
-  first_due_date?: string;
+export interface InstallmentPlan extends InstallmentDraft {
   policy_version: number;
-  guarantor_ids: string[];
   credit_approval_id?: string;
   /** The server's preview the cashier saw (the receipt and the done card show it). */
   terms: InstallmentTerms;
@@ -69,6 +65,46 @@ function inputOf(
   };
 }
 
+/** Which saved value was replaced on opening (EC-151); each has a short note on screen. */
+type Restored = 'down' | 'count' | 'frequency' | 'firstDue';
+
+/**
+ * The fields the dialog opens with. Saved terms (a plan sent back after a refusal, or the terms of
+ * a held cart) are kept when the shop's policy still allows them; anything else falls back to the
+ * default and is named in `notes`.
+ */
+function startOf(
+  policy: InstallmentPolicy,
+  cashPrice: string,
+  today: string,
+  initial: InstallmentDraft | null,
+) {
+  const notes: Restored[] = [];
+  let frequency: InstallmentFrequency = policy.allowed_frequencies[0] ?? 'monthly';
+  let count = Math.min(12, policy.max_months);
+  let firstDue = '';
+  if (initial) {
+    if (policy.allowed_frequencies.includes(initial.frequency)) frequency = initial.frequency;
+    else notes.push('frequency');
+    if (initial.installments_count >= 1 && initial.installments_count <= policy.max_months) {
+      count = initial.installments_count;
+    } else notes.push('count');
+    if (initial.first_due_date && initial.first_due_date >= today)
+      firstDue = initial.first_due_date;
+    else if (initial.first_due_date) notes.push('firstDue');
+  }
+  // The smallest down payment the policy allows for these terms.
+  const base = inputOf(cashPrice, '0.00', String(count), frequency, '');
+  let down = (base && computeInstallmentTerms(policy, base, today).min_down_payment) ?? '0.00';
+  if (initial) {
+    const typed = MONEY.test(initial.down_payment) ? roundMoney(initial.down_payment) : null;
+    if (typed !== null && compareMoney(typed, down) >= 0 && compareMoney(typed, cashPrice) <= 0) {
+      down = typed;
+    } else notes.push('down');
+  }
+  return { frequency, count: String(count), firstDue, down, notes };
+}
+
 /**
  * N02 (D77): the terms of an installment sale of the cart, for the chosen customer. The numbers
  * appear as the cashier types (the contracts' copy of the engine, with the shop's policy), then the
@@ -83,6 +119,7 @@ export default function InstallmentDialog({
   initial,
   error,
   busy,
+  onChange,
   onContinue,
   onClose,
 }: {
@@ -91,36 +128,74 @@ export default function InstallmentDialog({
   customer: { id: string; name: string | null };
   /** The shop's current policy (any employee reads the settings). */
   policy: InstallmentPolicy;
-  /** The plan the cashier had chosen, when the dialog opens again after a refused sale. */
-  initial: InstallmentPlan | null;
+  /** The terms the cashier had typed: after a refused sale, a closed dialog or a resumed held cart. */
+  initial: InstallmentDraft | null;
   /** Why the last attempt was refused. */
   error: string;
   busy: boolean;
+  /** The valid terms after every edit, so the cart can keep them (Hold, Back to the cart). */
+  onChange: (draft: InstallmentDraft) => void;
   onContinue: (plan: InstallmentPlan) => void;
   onClose: () => void;
 }) {
   const orgId = useAuthStore((s) => s.orgId);
   const dateId = useId();
   const [today] = useState(() => shopToday());
-  const [frequency, setFrequency] = useState<InstallmentFrequency>(
-    initial?.frequency ?? policy.allowed_frequencies[0] ?? 'monthly',
-  );
-  const [count, setCount] = useState(
-    String(initial?.installments_count ?? Math.min(12, policy.max_months)),
-  );
-  const [firstDue, setFirstDue] = useState(initial?.first_due_date ?? '');
-  // The down payment starts at the smallest the policy allows for these terms.
-  const [down, setDown] = useState(() => {
-    if (initial) return initial.down_payment;
-    const input = inputOf(cashPrice, '0.00', count, frequency, '');
-    return (input && computeInstallmentTerms(policy, input, today).min_down_payment) ?? '0.00';
+  const [start] = useState(() => startOf(policy, cashPrice, today, initial));
+  const [frequency, setFrequency] = useState<InstallmentFrequency>(start.frequency);
+  const [count, setCount] = useState(start.count);
+  const [firstDue, setFirstDue] = useState(start.firstDue);
+  const [down, setDown] = useState(start.down);
+  const [savedPicked] = useState<string[]>(() => initial?.guarantor_ids ?? []);
+  const [pickedRaw, setPicked] = useState<string[]>(savedPicked);
+  const guarantors = useQuery({
+    queryKey: guarantorKeys.ofCustomer(orgId, customer.id),
+    queryFn: () => guarantorsApi.ofCustomer(customer.id),
   });
-  const [picked, setPicked] = useState<string[]>(initial?.guarantor_ids ?? []);
+  const linked = (guarantors.data ?? []).filter((g) => g.archived_at === null);
+  // A saved guarantor who is no longer linked to this customer is left out, with a note (EC-151).
+  const stale =
+    guarantors.data !== undefined && savedPicked.some((id) => !linked.some((g) => g.id === id));
+  const picked = guarantors.data
+    ? pickedRaw.filter((id) => linked.some((g) => g.id === id))
+    : pickedRaw;
   const [asking, setAsking] = useState(false);
   const [adding, setAdding] = useState(false);
 
   const input = inputOf(cashPrice, down, count, frequency, firstDue);
   const live = input ? computeInstallmentTerms(policy, input, today) : null;
+
+  /** Tells the cart the new valid terms; a field that is not valid yet keeps the last valid ones. */
+  function report(fields: {
+    down?: string;
+    count?: string;
+    frequency?: InstallmentFrequency;
+    firstDue?: string;
+    picked?: string[];
+  }) {
+    const next = inputOf(
+      cashPrice,
+      fields.down ?? down,
+      fields.count ?? count,
+      fields.frequency ?? frequency,
+      fields.firstDue ?? firstDue,
+    );
+    if (!next) return;
+    onChange({
+      down_payment: next.down_payment,
+      installments_count: next.installments_count,
+      frequency: next.frequency,
+      ...(next.first_due_date ? { first_due_date: next.first_due_date } : {}),
+      guarantor_ids: fields.picked ?? picked,
+    });
+  }
+  // A replaced saved value is written back, so the cart does not keep the old one.
+  const reported = useRef(false);
+  useEffect(() => {
+    if (reported.current) return;
+    reported.current = true;
+    if (start.notes.length > 0) report({});
+  });
 
   // The server's preview follows the fields a moment after the last change.
   const wanted = input
@@ -145,13 +220,19 @@ export default function InstallmentDialog({
   const terms = server?.terms ?? live;
   const checks = server?.customer ?? null;
 
-  const guarantors = useQuery({
-    queryKey: guarantorKeys.ofCustomer(orgId, customer.id),
-    queryFn: () => guarantorsApi.ofCustomer(customer.id),
-  });
-  const linked = (guarantors.data ?? []).filter((g) => g.archived_at === null);
+  const choose = (list: string[]) => {
+    setPicked(list);
+    report({ picked: list });
+  };
   const toggle = (id: string, on: boolean) =>
-    setPicked((list) => (on ? [...list, id].slice(0, 3) : list.filter((g) => g !== id)));
+    choose(on ? [...picked, id].slice(0, 3) : picked.filter((g) => g !== id));
+  // The cart keeps the cleaned list, not the saved one.
+  const syncedGuarantors = useRef(false);
+  useEffect(() => {
+    if (!stale || syncedGuarantors.current) return;
+    syncedGuarantors.current = true;
+    report({});
+  });
 
   const credit = checks?.credit;
   // The server answers allowed + approved_approval_id when an approved exception covers the amount:
@@ -205,7 +286,10 @@ export default function InstallmentDialog({
           <MoneyInput
             label={t('installments.fields.downPayment')}
             value={down}
-            onValueChange={setDown}
+            onValueChange={(v) => {
+              setDown(v);
+              report({ down: v });
+            }}
             {...(terms?.min_down_payment
               ? {
                   help: t('installments.fields.downAtLeast', {
@@ -219,7 +303,10 @@ export default function InstallmentDialog({
             value={count}
             decimals={0}
             maxLength={3}
-            onValueChange={setCount}
+            onValueChange={(v) => {
+              setCount(v);
+              report({ count: v });
+            }}
             {...(terms
               ? {
                   help: t('installments.fields.maxMonths', {
@@ -232,15 +319,32 @@ export default function InstallmentDialog({
             label={t('installments.fields.frequency')}
             value={frequency}
             options={frequencies}
-            onChange={(e) => setFrequency(e.target.value as InstallmentFrequency)}
+            onChange={(e) => {
+              const next = e.target.value as InstallmentFrequency;
+              setFrequency(next);
+              report({ frequency: next });
+            }}
           />
           <div>
             <label className="field-label" htmlFor={dateId}>
               {t('installments.fields.firstDue')}
             </label>
-            <DateInput id={dateId} value={firstDue} onChange={(e) => setFirstDue(e.target.value)} />
+            <DateInput
+              id={dateId}
+              value={firstDue}
+              onChange={(e) => {
+                setFirstDue(e.target.value);
+                report({ firstDue: e.target.value });
+              }}
+            />
           </div>
         </div>
+
+        {[...start.notes, ...(stale ? (['guarantors'] as const) : [])].map((n) => (
+          <Notice key={n} tone="info">
+            {t(`installments.dialog.restored.${n}`)}
+          </Notice>
+        ))}
 
         {terms && (
           <dl className="grid grid-cols-2 gap-x-4 gap-y-1 sm:grid-cols-4" aria-live="polite">

@@ -3,7 +3,7 @@ import {
   MAX_HELD_CARTS,
   readHeldCarts,
   writeHeldCarts,
-  type CartContent,
+  type HeldContent,
   type HeldCart,
 } from './posStorage';
 
@@ -23,7 +23,7 @@ export function useHeldCarts(scope: string) {
     carts,
     full: carts.length >= MAX_HELD_CARTS,
     /** False when the list is full: the cart stays on screen. */
-    hold(cart: CartContent, note: string): boolean {
+    hold(cart: HeldContent, note: string): boolean {
       if (carts.length >= MAX_HELD_CARTS) return false;
       save([
         { ...cart, id: crypto.randomUUID(), at: new Date().toISOString(), note: note.trim() },
