@@ -295,6 +295,7 @@ describe('S10 sales orders', () => {
       'UNITS_REQUIRED',
       'PO_LINE_PRODUCT_MISMATCH',
       'REFUND_MUST_EQUAL_DEPOSITS',
+      'REFUND_METHOD_NOT_ALLOWED',
       'NOT_ENOUGH_STOCK_TO_RESERVE',
       'UNIT_NOT_AVAILABLE_TO_RESERVE',
       'SHIFT_REQUIRED',
@@ -828,6 +829,57 @@ describe('S10 sales orders', () => {
           expect(salesOrdersApi.cancel).toHaveBeenCalledWith(
             ID,
             { reason: 'ok  ay', refund: [] },
+            expect.stringMatching(/^[0-9a-f-]{36}$/),
+          ),
+        );
+      });
+
+      it('W2 store-credit deposits go back only as store credit: the split is prefilled and cash beyond the cash deposits blocks submit', async () => {
+        const mixed = fixture();
+        mixed.payments = [
+          { ...mixed.payments[0]!, method: 'store_credit', amount: '1000.00' },
+          { ...mixed.payments[0]!, id: LINE2, number: 'BR1-RC-26-2', amount: '500.00' },
+        ];
+        mixed.balances = { ...mixed.balances, deposits_paid: '1500.00' };
+        vi.mocked(salesOrdersApi.get).mockResolvedValue(mixed);
+        vi.mocked(salesOrdersApi.cancel).mockResolvedValue(mixed);
+        await renderApp(
+          <Routes>
+            <Route path="/sales/orders/:id" element={<SalesOrderDetailPage />} />
+          </Routes>,
+          { lang: 'en', route: '/sales/orders/' + ID },
+        );
+        await screen.findByRole('heading', { name: 'BR1-SO-26-1' });
+        const { user, dialog, submit } = await openCancel();
+        // Prefilled: cash for the cash deposit, store credit for the store-credit deposit; the rule is shown.
+        expect(dialog.getAllByRole('group', { name: /Refund line/ })).toHaveLength(2);
+        expect(dialog.getByLabelText('Method, line 1')).toHaveValue('cash');
+        expect(dialog.getByLabelText('Amount, line 1')).toHaveValue('500.00');
+        expect(dialog.getByLabelText('Method, line 2')).toHaveValue('store_credit');
+        expect(dialog.getByLabelText('Amount, line 2')).toHaveValue('1000.00');
+        expect(dialog.getByTestId('cancel-method-rule')).toHaveTextContent(/store credit/);
+        await user.type(dialog.getByLabelText('Reason'), 'Customer changed mind');
+        expect(submit).toBeEnabled();
+        // All 1500 back in cash: the sum is right but the method is not allowed.
+        await user.click(dialog.getByRole('button', { name: 'Remove refund line 2' }));
+        const amount = dialog.getByLabelText('Amount, line 1');
+        await user.clear(amount);
+        await user.type(amount, '1500');
+        expect(submit).toBeDisabled();
+        expect(
+          dialog.getByText(/at most .* can go back in cash or by bank transfer/),
+        ).toBeInTheDocument();
+        // All 1500 as store credit is allowed.
+        await user.selectOptions(dialog.getByLabelText('Method, line 1'), 'store_credit');
+        expect(submit).toBeEnabled();
+        await user.click(submit);
+        await waitFor(() =>
+          expect(salesOrdersApi.cancel).toHaveBeenCalledWith(
+            ID,
+            {
+              reason: 'Customer changed mind',
+              refund: [{ method: 'store_credit', amount: '1500.00' }],
+            },
             expect.stringMatching(/^[0-9a-f-]{36}$/),
           ),
         );

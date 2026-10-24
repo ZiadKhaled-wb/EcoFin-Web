@@ -5,6 +5,7 @@ import {
   SalePayments,
   compareMoney,
   roundMoney,
+  subtractMoney,
   sumMoney,
   type CancelSalesOrderBody,
   type Money,
@@ -58,6 +59,33 @@ const newLine = (method: SalePaymentMethod, amount: string): RefundLine => ({
   reference: '',
 });
 
+const isCashBank = (m: SalePaymentMethod) => m === 'cash' || m === 'bank_transfer';
+
+/**
+ * Net deposits paid in cash or by bank transfer: the most the cash + bank refund lines may give back.
+ * A store-credit deposit goes back only as store credit (REFUND_METHOD_NOT_ALLOWED on the server).
+ */
+function cashBankDeposits(order: SalesOrder): Money {
+  const total = (direction: 'in' | 'out') =>
+    sumMoney(
+      order.payments
+        .filter((p) => p.direction === direction && isCashBank(p.method))
+        .map((p) => p.amount),
+    );
+  const net = subtractMoney(total('in'), total('out'));
+  return compareMoney(net, ZERO) > 0 ? net : ZERO;
+}
+
+/** The opening refund lines: cash for what was paid in cash or by bank, store credit for the rest. */
+function prefill(deposits: Money, cashBank: Money): RefundLine[] {
+  const cash = compareMoney(cashBank, deposits) < 0 ? cashBank : deposits;
+  const credit = subtractMoney(deposits, cash);
+  return [
+    ...(compareMoney(cash, ZERO) > 0 ? [newLine('cash', cash)] : []),
+    ...(compareMoney(credit, ZERO) > 0 ? [newLine('store_credit', credit)] : []),
+  ];
+}
+
 /** The refund lines as the server takes them; null while one is not valid yet. */
 function toRefund(lines: readonly RefundLine[]): Refund[] | null {
   const out: Refund[] = [];
@@ -75,9 +103,10 @@ function toRefund(lines: readonly RefundLine[]): Refund[] | null {
 
 /**
  * S10 "Cancel order" (`order.cancel`, Decision 9): a reason, and refund lines that give the net
- * deposits back. They open as one cash line for the whole deposits; the cashier splits them over
- * cash, bank transfers and store credit, and Confirm opens only when they sum exactly to the
- * deposits (decimal compare). Without deposits there are no refund lines.
+ * deposits back. They open as one cash line for the cash and bank deposits (plus a store-credit line
+ * for any store-credit deposits); the cashier splits them over cash, bank transfers and store credit,
+ * and Confirm opens only when they sum exactly to the deposits (decimal compare) and the cash + bank
+ * lines stay within the cash and bank deposits. Without deposits there are no refund lines.
  */
 export default function CancelOrderDialog({
   order,
@@ -94,9 +123,12 @@ export default function CancelOrderDialog({
   const orgId = useAuthStore((s) => s.orgId);
   const deposits = order.balances.deposits_paid;
   const hasDeposits = compareMoney(deposits, ZERO) > 0;
+  const cashBankMax = cashBankDeposits(order);
+  const creditOnly = subtractMoney(deposits, cashBankMax);
+  const hasCreditDeposits = compareMoney(creditOnly, ZERO) > 0;
   const [reason, setReason] = useState('');
   const [lines, setLines] = useState<RefundLine[]>(() =>
-    hasDeposits ? [newLine('cash', deposits)] : [],
+    hasDeposits ? prefill(deposits, cashBankMax) : [],
   );
   const [error, setError] = useState('');
   const accounts = useQuery({
@@ -111,9 +143,13 @@ export default function CancelOrderDialog({
   const refund = toRefund(lines);
   const refunded = sumMoney(lines.map((l) => positive(l.amount) ?? ZERO));
   const balanced = compareMoney(refunded, deposits) === 0;
+  const cashBankRefund = sumMoney(
+    lines.filter((l) => isCashBank(l.method)).map((l) => positive(l.amount) ?? ZERO),
+  );
+  const methodsOk = compareMoney(cashBankRefund, cashBankMax) <= 0;
   const accepted =
     refund !== null && (refund.length === 0 || SalePayments.safeParse(refund).success);
-  const ready = reasonOk && accepted && balanced;
+  const ready = reasonOk && accepted && balanced && methodsOk;
   // The next refund line takes a method that is still allowed; none left disables adding.
   const nextMethod = ADD_ORDER.find(
     (m) => lines.filter((l) => l.method === m).length < METHOD_LIMIT[m],
@@ -175,11 +211,27 @@ export default function CancelOrderDialog({
                 <dd data-testid="cancel-refunded">{formatMoney(refunded)}</dd>
               </div>
             </dl>
+            {hasCreditDeposits && (
+              <p data-testid="cancel-method-rule">
+                {t('salesOrders.cancel.methodRule', {
+                  credit: formatMoney(creditOnly),
+                  max: formatMoney(cashBankMax),
+                })}
+              </p>
+            )}
             {!balanced && (
               <p role="status">
                 {t('salesOrders.cancel.mismatch', {
                   deposits: formatMoney(deposits),
                   refund: formatMoney(refunded),
+                })}
+              </p>
+            )}
+            {!methodsOk && (
+              <p role="status">
+                {t('salesOrders.cancel.methodExceeded', {
+                  refund: formatMoney(cashBankRefund),
+                  max: formatMoney(cashBankMax),
                 })}
               </p>
             )}

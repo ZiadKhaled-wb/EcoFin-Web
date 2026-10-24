@@ -1,5 +1,6 @@
 import {
   DepositExceedsBalanceDetail,
+  RefundMethodNotAllowedDetail,
   RefundMustEqualDepositsDetail,
   type FulfilmentMode,
   type SalesOrderLine,
@@ -26,6 +27,15 @@ export function salesOrderErrorMessage(error: unknown) {
           refund: formatMoney(d.data.refund),
         })
       : t('salesOrders.errors.REFUND_MUST_EQUAL_DEPOSITS_NO_AMOUNTS');
+  }
+  if (code === 'REFUND_METHOD_NOT_ALLOWED') {
+    const d = RefundMethodNotAllowedDetail.safeParse((error as ApiError).details);
+    return d.success
+      ? t('salesOrders.errors.REFUND_METHOD_NOT_ALLOWED', {
+          max: formatMoney(d.data.cash_bank_max),
+          refund: formatMoney(d.data.cash_bank_refund),
+        })
+      : t('salesOrders.errors.REFUND_METHOD_NOT_ALLOWED_NO_AMOUNTS');
   }
   // The AR and EN files hold the same keys, so the EN file says which codes have a message.
   return code && Object.hasOwn(messages.errors, code)
