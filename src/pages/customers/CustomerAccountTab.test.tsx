@@ -335,6 +335,31 @@ describe('R02 customer account tab', () => {
     },
   );
 
+  it('N09: a contract with an open legal case carries the legal flag on its row', async () => {
+    setPermissions(['customer.create', 'sale.create', 'legal.view']);
+    vi.spyOn(customerAccountApi, 'account').mockResolvedValue(
+      account({
+        contracts: [
+          contract({
+            legal_case: {
+              id: 'a0740000-0000-4000-8000-0000000000e1',
+              number: 'BR1-LC-26-000001',
+              status: 'filed',
+              opened_on: '2026-10-24',
+            },
+          }),
+        ],
+      }),
+    );
+    await renderTab('en');
+    const contracts = await screen.findByRole('table', {
+      name: t('customerAccount.contracts.caption'),
+    });
+    expect(await within(contracts).findByRole('link', { name: 'Legal: Filed' })).toHaveAttribute(
+      'href',
+      '/legal/cases/a0740000-0000-4000-8000-0000000000e1',
+    );
+  });
   it('a customer without money shows the empty states', async () => {
     vi.spyOn(customerAccountApi, 'account').mockResolvedValue(emptyAccount());
     await renderTab();

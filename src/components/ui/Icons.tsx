@@ -27,6 +27,7 @@ import {
   Plus,
   Printer,
   ScanBarcode,
+  Scale,
   Search,
   Settings,
   ShoppingCart,
@@ -102,3 +103,4 @@ export const PrintIcon = wrap(Printer);
 export const DownloadIcon = wrap(Download);
 export const FilterIcon = wrap(ListFilter);
 export const BarcodeIcon = wrap(ScanBarcode);
+export const ScaleIcon = wrap(Scale);

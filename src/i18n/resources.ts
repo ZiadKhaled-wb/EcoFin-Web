@@ -72,7 +72,9 @@ import arInstallments from './locales/ar/installments.json';
 import enInstallments from './locales/en/installments.json';
 import arCollections from './locales/ar/collections.json';
 import enCollections from './locales/en/collections.json';
+import arLegal from './locales/ar/legal.json';
 import arOverdue from './locales/ar/overdue.json';
+import enLegal from './locales/en/legal.json';
 import enOverdue from './locales/en/overdue.json';
 import arContractChanges from './locales/ar/contractChanges.json';
 import enContractChanges from './locales/en/contractChanges.json';
@@ -133,6 +135,7 @@ export const ar = {
   receipts: arReceipts,
   installments: arInstallments,
   collections: arCollections,
+  legal: arLegal,
   overdue: arOverdue,
   contractChanges: arContractChanges,
   wallets: arWallets,
@@ -186,6 +189,7 @@ export const en: SameShape<typeof ar> = {
   receipts: enReceipts,
   installments: enInstallments,
   collections: enCollections,
+  legal: enLegal,
   overdue: enOverdue,
   contractChanges: enContractChanges,
   wallets: enWallets,

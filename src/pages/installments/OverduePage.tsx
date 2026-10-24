@@ -22,6 +22,7 @@ import SearchInput from '@/components/ui/SearchInput';
 import Select from '@/components/ui/Select';
 import Skeleton from '@/components/ui/Skeleton';
 import Textarea from '@/components/ui/Textarea';
+import { OpenLegalCaseButton } from '@/features/legal/OpenLegalCaseDialog';
 import { useBranches } from '@/features/me/useBranches';
 import { useCan } from '@/features/me/useCan';
 import { useCollectorOptions } from './walletShared';
@@ -32,6 +33,7 @@ import { uuidParam } from '@/lib/urlFilters';
 import { overdueApi, overdueKeys } from '@/services/overdueApi';
 import { useAuthStore } from '@/store/authStore';
 import { t } from '@/i18n';
+import { LegalFlagBadge } from '../legal/legalShared';
 
 const th = 'type-label px-4 py-3 text-start';
 const thNum = 'type-label px-4 py-3 text-end';
@@ -322,6 +324,8 @@ function ContractsTab() {
                             {t(`overdue.flags.legal.${row.legal_referral.status}`)}
                           </Badge>
                         )}
+                        {/* N09: the contract's open legal case, linked for whoever may read it. */}
+                        <LegalFlagBadge legalCase={row.legal_case} />
                       </div>
                     </td>
                     <td className={td}>
@@ -675,14 +679,25 @@ function ReferralsTab({ isOwner }: { isOwner: boolean }) {
             kind="referrals"
             action={(a) =>
               isOwner && a.status === 'open' ? (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="whitespace-nowrap"
-                  onClick={() => setDismissing(a)}
-                >
-                  {t('overdue.referrals.dismiss')}
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  {/* L01: the owner turns the referral into a legal case. */}
+                  <OpenLegalCaseButton
+                    contractId={a.contract.id}
+                    contractNumber={a.contract.number}
+                  />
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="whitespace-nowrap"
+                    onClick={() => setDismissing(a)}
+                  >
+                    {t('overdue.referrals.dismiss')}
+                  </Button>
+                </div>
+              ) : a.status === 'case_opened' && a.legal_case_id ? (
+                <Link to={`/legal/cases/${a.legal_case_id}`} className="link whitespace-nowrap">
+                  {t('legal.referral.viewCase')}
+                </Link>
               ) : null
             }
           />

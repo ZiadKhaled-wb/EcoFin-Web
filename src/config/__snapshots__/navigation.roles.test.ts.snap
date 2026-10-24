@@ -64,6 +64,7 @@ exports[`menu by role (TEST-2) > BRANCH_MANAGER sees these pages 1`] = `
   "/customers",
   "/collections",
   "/installments/overdue",
+  "/legal",
   "/installments/wallets",
   "/installments/changes",
   "/customers/credit-exceptions",
@@ -117,8 +118,8 @@ exports[`menu by role (TEST-2) > COLLECTOR sees these pages 1`] = `
 
 exports[`menu by role (TEST-2) > LAWYER sees these pages 1`] = `
 [
-  "/dashboard",
   "/installments/overdue",
+  "/legal",
 ]
 `;
 
@@ -152,6 +153,7 @@ exports[`menu by role (TEST-2) > OWNER sees these pages 1`] = `
   "/customers",
   "/collections",
   "/installments/overdue",
+  "/legal",
   "/installments/wallets",
   "/installments/changes",
   "/customers/credit-exceptions",
